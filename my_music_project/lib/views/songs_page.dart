@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/music_player_viewmodel.dart';
 import '../utils/file_name_handler.dart';
+import '../widgets/app_scaffold.dart';
 import 'player_page.dart';
 
 class SongsPage extends StatelessWidget {
@@ -9,47 +10,38 @@ class SongsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: const Text('Bài hát', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => context.read<MusicPlayerViewModel>().loadSongs(),
-          ),
-        ],
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1E1E2C),
-              Color(0xFF121212),
-            ],
-          ),
+    return AppScaffold(
+      title: 'Bài hát',
+      scrollableAppBar: true,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.refresh, color: Colors.white),
+          onPressed: () => context.read<MusicPlayerViewModel>().loadSongs(),
         ),
-        child: Consumer<MusicPlayerViewModel>(
-          builder: (context, viewModel, _) {
-            if (!viewModel.hasPermission) {
-              return _PermissionView(viewModel: viewModel);
-            }
+      ],
+      body: Consumer<MusicPlayerViewModel>(
+        builder: (context, viewModel, _) {
+          if (!viewModel.hasPermission) {
+            return _PermissionView(viewModel: viewModel);
+          }
 
-            if (viewModel.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+          if (viewModel.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            );
+          }
 
-            if (viewModel.songs.isEmpty) {
-              return const Center(child: Text('Không tìm thấy bài hát nào'));
-            }
+          if (viewModel.songs.isEmpty) {
+            return const Center(
+              child: Text(
+                'Không tìm thấy bài hát nào',
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          }
 
-            return _SongsList(viewModel: viewModel);
-          },
-        ),
+          return _SongsList(viewModel: viewModel);
+        },
       ),
     );
   }
@@ -83,7 +75,6 @@ class _PermissionView extends StatelessWidget {
   }
 }
 
-
 class _SongsList extends StatelessWidget {
   final MusicPlayerViewModel viewModel;
 
@@ -92,7 +83,9 @@ class _SongsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 100, 16, 16),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(16),
       itemCount: viewModel.songs.length,
       itemBuilder: (context, index) {
         final song = viewModel.songs[index];

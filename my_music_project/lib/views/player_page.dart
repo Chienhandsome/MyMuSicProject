@@ -16,7 +16,7 @@ class PlayerPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        title: const Text('Đang phát'),
+        title: const Text('Đang phát', style: TextStyle(color: Colors.white, fontSize: 400)),
       ),
       body: Consumer<MusicPlayerViewModel>(
         builder: (context, viewModel, _) {
