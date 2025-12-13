@@ -15,9 +15,13 @@ class SongsPage extends StatelessWidget {
       scrollableAppBar: true,
       actions: [
         IconButton(
-          icon: const Icon(Icons.refresh, color: Colors.white),
+          icon: const Icon(Icons.refresh, color: Colors.white70),
           onPressed: () => context.read<MusicPlayerViewModel>().loadSongs(),
         ),
+        IconButton(
+          icon: const Icon(Icons.search, color: Colors.white70,),
+          onPressed: () => onSearchEvent(),
+        )
       ],
       body: Consumer<MusicPlayerViewModel>(
         builder: (context, viewModel, _) {
@@ -45,6 +49,10 @@ class SongsPage extends StatelessWidget {
       ),
     );
   }
+
+  void onSearchEvent() {}
+
+
 }
 
 class _PermissionView extends StatelessWidget {

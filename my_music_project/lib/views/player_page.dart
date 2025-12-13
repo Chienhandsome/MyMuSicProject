@@ -13,10 +13,16 @@ class PlayerPage extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.deepPurpleAccent),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        title: const Text('Đang phát', style: TextStyle(color: Colors.white, fontSize: 400)),
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        title: const Text('Đang phát'),
       ),
       body: Consumer<MusicPlayerViewModel>(
         builder: (context, viewModel, _) {
@@ -75,13 +81,10 @@ class PlayerPage extends StatelessWidget {
                     // 🎶 Song title
                     ScrollingTitle(
                       text: currentSong.title,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
 
                     const SizedBox(height: 32),
