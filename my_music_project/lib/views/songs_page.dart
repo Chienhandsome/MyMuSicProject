@@ -19,7 +19,17 @@ class SongsPage extends StatelessWidget {
           onPressed: () => context.read<MusicPlayerViewModel>().loadSongs(),
         ),
         IconButton(
-          icon: const Icon(Icons.search, color: Colors.white70,),
+          icon: const Icon(
+            Icons.search,
+            color: Colors.white70,
+          ),
+          onPressed: () => onSearchEvent(),
+        ),
+        IconButton(
+          icon: const Icon(
+            Icons.more_vert,
+            color: Colors.white70,
+          ),
           onPressed: () => onSearchEvent(),
         )
       ],
@@ -51,8 +61,6 @@ class SongsPage extends StatelessWidget {
   }
 
   void onSearchEvent() {}
-
-
 }
 
 class _PermissionView extends StatelessWidget {
@@ -102,9 +110,7 @@ class _SongsList extends StatelessWidget {
         return Card(
           elevation: isPlaying ? 6 : 1,
           margin: const EdgeInsets.only(bottom: 12),
-          color: isPlaying
-              ? const Color(0xFF2A2A3D)
-              : const Color(0xFF1C1C2E),
+          color: isPlaying ? const Color(0xFF2A2A3D) : const Color(0xFF1C1C2E),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -124,6 +130,9 @@ class _SongsList extends StatelessWidget {
               song.durationText,
               style: const TextStyle(color: Colors.white54),
             ),
+            trailing: IconButton(
+                onPressed: () => _onMoreEvent(context, index),
+                icon: const Icon(Icons.more_vert)),
             onTap: () => _playSong(context, index),
           ),
         );
@@ -139,5 +148,109 @@ class _SongsList extends StatelessWidget {
         MaterialPageRoute(builder: (_) => const PlayerPage()),
       );
     }
+  }
+
+  void _onMoreEvent(BuildContext context, int index) {
+    final song = viewModel.songs[index];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF121212),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.play_arrow, color: Colors.white),
+                title:
+                    const Text('Play', style: TextStyle(color: Colors.white)),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  await viewModel.playSongAt(index);
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PlayerPage()),
+                    );
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.queue_music, color: Colors.white),
+                title: const Text('Add to queue',
+                    style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Add to queue: not implemented')),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.info_outline, color: Colors.white),
+                title: const Text('Details',
+                    style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _showDetails(context, song);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.share, color: Colors.white),
+                title:
+                    const Text('Share', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Share: not implemented')),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.close, color: Colors.white70),
+                title: const Text('Cancel',
+                    style: TextStyle(color: Colors.white70)),
+                onTap: () => Navigator.pop(ctx),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showDetails(BuildContext context, dynamic song) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1C1C2E),
+          title: Text(song.title, style: const TextStyle(color: Colors.white)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Path: ${song.path}',
+                  style: const TextStyle(color: Colors.white70)),
+              const SizedBox(height: 8),
+              Text('Duration: ${song.durationText}',
+                  style: const TextStyle(color: Colors.white70)),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child:
+                  const Text('Close', style: TextStyle(color: Colors.white70)),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

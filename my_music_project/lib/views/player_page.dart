@@ -23,6 +23,12 @@ class PlayerPage extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
         title: const Text('Đang phát'),
+        actions: [
+          IconButton(
+              onPressed: () => onMoreEvent(),
+              icon: const Icon(Icons.more_vert)
+          )
+        ],
       ),
       body: Consumer<MusicPlayerViewModel>(
         builder: (context, viewModel, _) {
@@ -105,4 +111,6 @@ class PlayerPage extends StatelessWidget {
       ),
     );
   }
+
+  void onMoreEvent() {}
 }
