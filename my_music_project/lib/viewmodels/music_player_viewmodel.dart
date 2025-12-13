@@ -23,9 +23,6 @@ class MusicPlayerViewModel extends ChangeNotifier {
   PlayMode get playMode => _audioService.playMode;
   int get currentIndex => _audioService.currentIndex;
 
-  double? _dragValue;
-  double? get dragValue => _dragValue;
-
   Future<void> init() async {
     await requestPermission();
     if (_hasPermission) {
@@ -83,16 +80,6 @@ class MusicPlayerViewModel extends ChangeNotifier {
     final currentModeIndex = modes.indexOf(_audioService.playMode);
     final nextMode = modes[(currentModeIndex + 1) % modes.length];
     _audioService.setPlayMode(nextMode);
-    notifyListeners();
-  }
-
-  void updateDragValue(double value) {
-    _dragValue = value;
-    notifyListeners();
-  }
-
-  void endDrag() {
-    _dragValue = null;
     notifyListeners();
   }
 
