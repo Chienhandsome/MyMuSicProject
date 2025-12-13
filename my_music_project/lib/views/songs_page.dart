@@ -10,8 +10,11 @@ class SongsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Bài hát'),
+        title: const Text('Bài hát', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -19,22 +22,34 @@ class SongsPage extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<MusicPlayerViewModel>(
-        builder: (context, viewModel, _) {
-          if (!viewModel.hasPermission) {
-            return _PermissionView(viewModel: viewModel);
-          }
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF1E1E2C),
+              Color(0xFF121212),
+            ],
+          ),
+        ),
+        child: Consumer<MusicPlayerViewModel>(
+          builder: (context, viewModel, _) {
+            if (!viewModel.hasPermission) {
+              return _PermissionView(viewModel: viewModel);
+            }
 
-          if (viewModel.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+            if (viewModel.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (viewModel.songs.isEmpty) {
-            return const Center(child: Text('Không tìm thấy bài hát nào'));
-          }
+            if (viewModel.songs.isEmpty) {
+              return const Center(child: Text('Không tìm thấy bài hát nào'));
+            }
 
-          return _SongsList(viewModel: viewModel);
-        },
+            return _SongsList(viewModel: viewModel);
+          },
+        ),
       ),
     );
   }
@@ -51,8 +66,13 @@ class _PermissionView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('Cần quyền truy cập bộ nhớ'),
+          const Icon(Icons.lock, size: 64, color: Colors.white70),
           const SizedBox(height: 16),
+          const Text(
+            'Cần quyền truy cập bộ nhớ',
+            style: TextStyle(color: Colors.white),
+          ),
+          const SizedBox(height: 24),
           ElevatedButton(
             onPressed: viewModel.requestPermission,
             child: const Text('Cấp quyền'),
@@ -63,6 +83,7 @@ class _PermissionView extends StatelessWidget {
   }
 }
 
+
 class _SongsList extends StatelessWidget {
   final MusicPlayerViewModel viewModel;
 
@@ -71,24 +92,39 @@ class _SongsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 100, 16, 16),
       itemCount: viewModel.songs.length,
       itemBuilder: (context, index) {
         final song = viewModel.songs[index];
         final isPlaying = viewModel.currentIndex == index;
 
-        return ListTile(
-          leading: Icon(
-            Icons.music_note,
-            color: isPlaying ? Theme.of(context).primaryColor : null,
+        return Card(
+          elevation: isPlaying ? 6 : 1,
+          margin: const EdgeInsets.only(bottom: 12),
+          color: isPlaying
+              ? const Color(0xFF2A2A3D)
+              : const Color(0xFF1C1C2E),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-          title: Text(
-            FileNameHandler.limit(song.title, 30),
-            style: TextStyle(
-              fontWeight: isPlaying ? FontWeight.bold : FontWeight.normal,
+          child: ListTile(
+            leading: Icon(
+              isPlaying ? Icons.equalizer : Icons.music_note,
+              color: isPlaying ? Colors.deepPurpleAccent : Colors.white70,
             ),
+            title: Text(
+              FileNameHandler.limit(song.title, 28),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: isPlaying ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            subtitle: Text(
+              song.durationText,
+              style: const TextStyle(color: Colors.white54),
+            ),
+            onTap: () => _playSong(context, index),
           ),
-          subtitle: Text(song.durationText),
-          onTap: () => _playSong(context, index),
         );
       },
     );
