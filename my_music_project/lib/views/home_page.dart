@@ -13,20 +13,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [
-    SongsPage(),
-    MorePage(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     if (kDebugMode) {
-      print("home page build");
+      print("home page build - index: $_currentIndex");
     }
+
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
-      body: _pages[_currentIndex],
-
+      body: IndexedStack(
+        index: _currentIndex,
+        children: const [
+          SongsPage(),
+          MorePage(),
+        ],
+      ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Color(0xFF1C1C2E),
@@ -67,3 +68,4 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
