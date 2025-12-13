@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class MorePage extends StatelessWidget {
@@ -5,6 +6,9 @@ class MorePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (kDebugMode) {
+      print("more page build");
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Nhiều hơn'),

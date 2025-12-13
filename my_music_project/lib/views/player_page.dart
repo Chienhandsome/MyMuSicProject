@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/music_player_viewmodel.dart';
@@ -10,6 +11,9 @@ class PlayerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (kDebugMode) {
+      print("player page build");
+    }
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(

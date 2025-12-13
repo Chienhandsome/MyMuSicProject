@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'songs_page.dart';
 import 'more_page.dart';
@@ -19,6 +20,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (kDebugMode) {
+      print("home page build");
+    }
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       body: _pages[_currentIndex],
