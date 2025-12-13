@@ -94,6 +94,16 @@ class MusicPlayerViewModel extends ChangeNotifier {
     }
   }
 
+  bool get isPlaying => _audioService.audioPlayer.playing;
+
+  Future<void> togglePlayPause() async {
+    if (isPlaying) {
+      await pause();
+    } else {
+      await play();
+    }
+  }
+
   @override
   void dispose() {
     _audioService.dispose();
