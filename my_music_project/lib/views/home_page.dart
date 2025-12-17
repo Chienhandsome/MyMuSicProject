@@ -32,7 +32,18 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const MiniPlayer(),
+          // optional: lift the mini player slightly from screen bottom
+          const SizedBox(height: 8),
+
+          // optional horizontal padding around mini player
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12.0),
+            child: MiniPlayer(),
+          ),
+
+          // space between mini player and bottom navigation bar
+          const SizedBox(height: 8),
+
           Container(
             decoration: const BoxDecoration(
               color: Color(0xFF1C1C2E),

@@ -145,13 +145,14 @@ class _SongsList extends StatelessWidget {
   }
 
   Future<void> _playSong(BuildContext context, int index) async {
-    await viewModel.playSongAt(index);
     if (context.mounted) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const PlayerPage()),
       );
     }
+
+    await viewModel.playSongAt(index);
   }
 
   void _onMoreEvent(BuildContext context, int index) {
@@ -174,13 +175,13 @@ class _SongsList extends StatelessWidget {
                     const Text('Play', style: TextStyle(color: Colors.white)),
                 onTap: () async {
                   Navigator.pop(ctx);
-                  await viewModel.playSongAt(index);
                   if (context.mounted) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const PlayerPage()),
                     );
                   }
+                  await viewModel.playSongAt(index);
                 },
               ),
               ListTile(

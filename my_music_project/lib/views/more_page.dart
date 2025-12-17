@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/app_scaffold.dart';
+
 class MorePage extends StatelessWidget {
   const MorePage({super.key});
 
@@ -9,11 +11,10 @@ class MorePage extends StatelessWidget {
     if (kDebugMode) {
       print("more page build");
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Nhiều hơn'),
-      ),
-      body: const Center(
+    return const AppScaffold(
+      title: 'Tùy chọn',
+      scrollableAppBar: true,
+      body: Center(
         child: Text('Tính năng đang phát triển'),
       ),
     );
