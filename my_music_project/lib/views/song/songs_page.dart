@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/music_player_viewmodel.dart';
-import '../utils/file_name_handler.dart';
-import '../widgets/app_scaffold.dart';
-import 'player_page.dart';
+import '../../viewmodels/music_player_viewmodel.dart';
+import '../../utils/file_name_handler.dart';
+import '../../widgets/app_scaffold.dart';
+import '../player/player_page.dart';
+import 'song_item.dart';
 
 class SongsPage extends StatelessWidget {
   const SongsPage({super.key});
@@ -109,37 +110,7 @@ class _SongsList extends StatelessWidget {
       itemCount: viewModel.songs.length,
       itemBuilder: (context, index) {
         final song = viewModel.songs[index];
-        final isPlaying = viewModel.currentIndex == index;
-
-        return Card(
-          elevation: isPlaying ? 6 : 1,
-          margin: const EdgeInsets.only(bottom: 12),
-          color: isPlaying ? const Color(0xFF2A2A3D) : const Color(0xFF1C1C2E),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ListTile(
-            leading: Icon(
-              isPlaying ? Icons.equalizer : Icons.music_note,
-              color: isPlaying ? Colors.deepPurpleAccent : Colors.white70,
-            ),
-            title: Text(
-              FileNameHandler.limit(song.title, 28),
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: isPlaying ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-            subtitle: Text(
-              song.durationText,
-              style: const TextStyle(color: Colors.white54),
-            ),
-            trailing: IconButton(
-                onPressed: () => _onMoreEvent(context, index),
-                icon: const Icon(Icons.more_vert)),
-            onTap: () => _playSong(context, index),
-          ),
-        );
+        return SongItem(viewModel: viewModel, index: index, song: song);
       },
     );
   }

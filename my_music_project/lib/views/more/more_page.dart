@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/app_scaffold.dart';
+import '../../widgets/app_scaffold.dart';
 
 class MorePage extends StatelessWidget {
   const MorePage({super.key});

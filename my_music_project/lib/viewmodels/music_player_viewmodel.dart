@@ -75,6 +75,10 @@ class MusicPlayerViewModel extends ChangeNotifier {
     await _audioService.seek(position);
   }
 
+  Future<void> mute() async {
+    await _audioService.audioPlayer.setVolume(0);
+  }
+
   void togglePlayMode() {
     final modes = PlayMode.values;
     final currentModeIndex = modes.indexOf(_audioService.playMode);
@@ -109,4 +113,6 @@ class MusicPlayerViewModel extends ChangeNotifier {
     _audioService.dispose();
     super.dispose();
   }
+
+
 }

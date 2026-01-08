@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'viewmodels/music_player_viewmodel.dart';
-import 'views/home_page.dart';
+import 'home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +14,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => MusicPlayerViewModel()..init(),
+      create: (_) {
+        final vm = MusicPlayerViewModel();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          vm.init();
+        });
+        return vm;
+      },
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Music Player',
@@ -23,6 +29,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: const HomePage(),
+        // home: const Text("haha"),
       ),
     );
   }

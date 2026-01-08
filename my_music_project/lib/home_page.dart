@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'songs_page.dart';
-import 'more_page.dart';
-import '../widgets/mini_player.dart';
+import 'views/song/songs_page.dart';
+import 'views/more/more_page.dart';
+import 'widgets/mini_player.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

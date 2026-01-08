@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/music_player_viewmodel.dart';
-import '../views/player_page.dart';
+import '../views/player/player_page.dart';
 import '../utils/file_name_handler.dart';
 
 class MiniPlayer extends StatelessWidget {
