@@ -1,13 +1,17 @@
+import 'dart:ffi';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:my_music_project/models/shared_preferences_helper.dart';
 import '../models/song_model.dart';
 
 enum PlayMode { sequential, repeat, shuffle }
 
+
 class AudioPlayerService {
   final AudioPlayer _audioPlayer = AudioPlayer();
   final Random _random = Random();
+
 
   List<SongModel> _playlist = [];
   int _currentIndex = -1;

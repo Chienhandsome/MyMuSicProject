@@ -22,7 +22,11 @@ class PlayerControls extends StatelessWidget {
           icon: Icons.skip_next,
           onPressed: viewModel.playNext,
         ),
-        const SizedBox(width: 48),
+//        const SizedBox(width: 48),
+        _ShuffleButton(
+          icon: Icons.shuffle,
+          onPressed: viewModel.mute,
+        ),
       ],
     );
   }
@@ -63,13 +67,13 @@ class _SkipButton extends StatelessWidget {
   }
 }
 
-class _VolumeButton extends StatelessWidget{
+class _ShuffleButton extends StatelessWidget{
 
   final IconData icon;
   final VoidCallback onPressed;
 
 
-  const _VolumeButton({
+  const _ShuffleButton({
     required this.icon,
     required this.onPressed
   });
