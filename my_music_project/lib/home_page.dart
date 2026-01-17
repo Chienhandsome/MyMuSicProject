@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           // optional: lift the mini player slightly from screen bottom
-          const SizedBox(height: 8),
+          // const SizedBox(height: 8),
 
           // optional horizontal padding around mini player
           const Padding(
@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
           ),
 
           // space between mini player and bottom navigation bar
-          const SizedBox(height: 8),
+          const SizedBox(height: 2),
 
           Container(
             decoration: const BoxDecoration(

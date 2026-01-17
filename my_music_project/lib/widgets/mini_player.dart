@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/music_player_viewmodel.dart';
 import '../views/player/player_page.dart';
-import '../utils/file_name_handler.dart';
+
 
 class MiniPlayer extends StatelessWidget {
   const MiniPlayer({super.key});
@@ -57,7 +57,7 @@ class MiniPlayer extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          FileNameHandler.limit(currentSong.title, 30),
+                          currentSong.title,
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,

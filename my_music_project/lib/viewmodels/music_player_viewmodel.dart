@@ -53,22 +53,22 @@ class MusicPlayerViewModel extends ChangeNotifier {
 
   Future<void> play() async {
     await _audioService.play();
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future<void> pause() async {
     await _audioService.pause();
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future<void> playNext() async {
     await _audioService.playNext();
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future<void> playPrevious() async {
     await _audioService.playPrevious();
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future<void> seek(Duration position) async {
