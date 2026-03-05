@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'views/song/songs_page.dart';
 import 'views/more/more_page.dart';
 import 'widgets/mini_player.dart';
+import 'viewmodels/music_player_viewmodel.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,6 +15,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MusicPlayerViewModel>().init();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

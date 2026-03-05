@@ -114,7 +114,7 @@ class PlayerPage extends StatelessWidget {
 }
 
 class _PlayerMoreMenu extends StatelessWidget {
-  const _PlayerMoreMenu({super.key});
+  const _PlayerMoreMenu();
 
   @override
   Widget build(BuildContext context) {

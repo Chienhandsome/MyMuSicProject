@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:my_music_project/views/search/search_page.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/music_player_viewmodel.dart';
 import '../../widgets/app_scaffold.dart';
@@ -24,21 +25,18 @@ class SongsPage extends StatelessWidget {
             Icons.search,
             color: Colors.white70,
           ),
-          onPressed: () => onSearchEvent(),
+          onPressed: () => onSearchEvent(context),
         ),
         IconButton(
           icon: const Icon(
             Icons.more_vert,
             color: Colors.white70,
           ),
-          onPressed: () => onSearchEvent(),
+          onPressed: () => onMoreEvent(context),
         )
       ],
       body: Consumer<MusicPlayerViewModel>(
         builder: (context, viewModel, _) {
-          if (!viewModel.hasPermission) {
-            return _PermissionView(viewModel: viewModel);
-          }
 
           if (viewModel.isLoading) {
             return const Center(
@@ -61,38 +59,28 @@ class SongsPage extends StatelessWidget {
     );
   }
 
-  void onSearchEvent() {}
-}
+  void onSearchEvent(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('search: not implemented'),
+        duration: Duration(milliseconds: 500) ,
+      ),
+    );
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const SearchPage())
+    );
+  }
 
-class _PermissionView extends StatelessWidget {
-  final MusicPlayerViewModel viewModel;
-
-  const _PermissionView({required this.viewModel});
-
-  @override
-  Widget build(BuildContext context) {
-    if (kDebugMode) {
-      print("song page build");
-    }
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.lock, size: 64, color: Colors.white70),
-          const SizedBox(height: 16),
-          const Text(
-            'Cần quyền truy cập bộ nhớ',
-            style: TextStyle(color: Colors.white),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: viewModel.requestPermission,
-            child: const Text('Cấp quyền'),
-          ),
-        ],
+  void onMoreEvent(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('more: not implemented'),
+        duration: Duration(milliseconds: 500)
       ),
     );
   }
+
 }
 
 class _SongsList extends StatelessWidget {
@@ -110,110 +98,6 @@ class _SongsList extends StatelessWidget {
       itemBuilder: (context, index) {
         final song = viewModel.songs[index];
         return SongItem(viewModel: viewModel, index: index, song: song);
-      },
-    );
-  }
-
-  void _onMoreEvent(BuildContext context, int index) {
-    final song = viewModel.songs[index];
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF121212),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.play_arrow, color: Colors.white),
-                title:
-                    const Text('Play', style: TextStyle(color: Colors.white)),
-                onTap: () async {
-                  Navigator.pop(ctx);
-                  if (context.mounted) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const PlayerPage()),
-                    );
-                  }
-                  await viewModel.playSongAt(index);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.queue_music, color: Colors.white),
-                title: const Text('Add to queue',
-                    style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Add to queue: not implemented')),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.info_outline, color: Colors.white),
-                title: const Text('Details',
-                    style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  _showDetails(context, song);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.share, color: Colors.white),
-                title:
-                    const Text('Share', style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Share: not implemented')),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.close, color: Colors.white70),
-                title: const Text('Cancel',
-                    style: TextStyle(color: Colors.white70)),
-                onTap: () => Navigator.pop(ctx),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _showDetails(BuildContext context, dynamic song) {
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF1C1C2E),
-          title: Text(song.title, style: const TextStyle(color: Colors.white)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Path: ${song.path}',
-                  style: const TextStyle(color: Colors.white70)),
-              const SizedBox(height: 8),
-              Text('Duration: ${song.durationText}',
-                  style: const TextStyle(color: Colors.white70)),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child:
-                  const Text('Close', style: TextStyle(color: Colors.white70)),
-            ),
-          ],
-        );
       },
     );
   }

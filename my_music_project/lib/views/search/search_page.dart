@@ -1,0 +1,363 @@
+import 'package:diacritic/diacritic.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../viewmodels/music_player_viewmodel.dart';
+import '../../models/song_model.dart';
+import '../song/song_item.dart';
+
+class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateMixin {
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
+  List<SongModel> _searchResults = [];
+  bool _isSearching = false;
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    _animationController.forward();
+
+    // Auto focus on search field
+    Future.delayed(const Duration(milliseconds: 100), () {
+      _searchFocusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _performSearch(String query) {
+    setState(() {
+      _searchQuery = query.trim();
+      _isSearching = true;
+    });
+
+    final viewModel = context.read<MusicPlayerViewModel>();
+
+    if (_searchQuery.isEmpty) {
+      setState(() {
+        _searchResults = [];
+        _isSearching = false;
+      });
+      return;
+    }
+
+    // Filter songs based on query
+    final results = viewModel.songs.where((song) {
+      final title = removeDiacritics(song.title.toLowerCase());
+      final query = removeDiacritics(_searchQuery.toLowerCase());
+
+      return title.contains(query);
+    }).toList();
+
+    setState(() {
+      _searchResults = results;
+      _isSearching = false;
+    });
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() {
+      _searchQuery = '';
+      _searchResults = [];
+    });
+    _searchFocusNode.requestFocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = context.watch<MusicPlayerViewModel>();
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF121212),
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.deepPurpleAccent),
+        backgroundColor: const Color(0xFF1C1C2E),
+        elevation: 0,
+        title: Container(
+          height: 45,
+          decoration: BoxDecoration(
+            color: const Color(0xFF2A2A3D),
+            borderRadius: BorderRadius.circular(25),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: TextField(
+            controller: _searchController,
+            focusNode: _searchFocusNode,
+            style: const TextStyle(color: Colors.white, fontSize: 16),
+            decoration: InputDecoration(
+              hintText: 'Tìm kiếm bài hát...',
+              hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+              prefixIcon: const Icon(Icons.search, color: Colors.deepPurpleAccent, size: 22),
+              suffixIcon: _searchQuery.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear, color: Colors.white70, size: 20),
+                      onPressed: _clearSearch,
+                    )
+                  : null,
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            onChanged: _performSearch,
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: _onMicClick,
+            icon: const Icon(Icons.mic_outlined, color: Colors.deepPurpleAccent),
+            tooltip: 'Tìm kiếm bằng giọng nói',
+          ),
+        ],
+      ),
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: _buildBody(viewModel),
+      ),
+    );
+  }
+
+  Widget _buildBody(MusicPlayerViewModel viewModel) {
+    if (_isSearching) {
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.deepPurpleAccent),
+      );
+    }
+
+    if (_searchQuery.isEmpty) {
+      return _buildEmptyState(viewModel);
+    }
+
+    if (_searchResults.isEmpty) {
+      return _buildNoResults();
+    }
+
+    return _buildSearchResults(viewModel);
+  }
+
+  Widget _buildEmptyState(MusicPlayerViewModel viewModel) {
+    final recentSongs = viewModel.songs.take(5).toList();
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 24),
+          Center(
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurpleAccent.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.music_note,
+                    size: 64,
+                    color: Colors.deepPurpleAccent,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Tìm kiếm bài hát yêu thích',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Nhập tên bài hát để bắt đầu tìm kiếm',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.6),
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (recentSongs.isNotEmpty) ...[
+            const SizedBox(height: 40),
+            const Text(
+              '🎵 Gợi ý cho bạn',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: recentSongs.length,
+              itemBuilder: (context, index) {
+                return SongItem(
+                  viewModel: viewModel,
+                  index: viewModel.songs.indexOf(recentSongs[index]),
+                  song: recentSongs[index],
+                );
+              },
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNoResults() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.05),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.search_off,
+              size: 64,
+              color: Colors.white38,
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Không tìm thấy kết quả',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 48),
+            child: Text(
+              'Không tìm thấy bài hát phù hợp với "$_searchQuery"',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.6),
+                fontSize: 14,
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          TextButton.icon(
+            onPressed: _clearSearch,
+            icon: const Icon(Icons.refresh, color: Colors.deepPurpleAccent),
+            label: const Text(
+              'Tìm kiếm khác',
+              style: TextStyle(color: Colors.deepPurpleAccent),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchResults(MusicPlayerViewModel viewModel) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              const Icon(Icons.search, color: Colors.deepPurpleAccent, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'Tìm thấy ${_searchResults.length} kết quả',
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: _searchResults.length,
+            itemBuilder: (context, index) {
+              final song = _searchResults[index];
+              final originalIndex = viewModel.songs.indexOf(song);
+
+              return TweenAnimationBuilder<double>(
+                duration: Duration(milliseconds: 200 + (index * 50)),
+                tween: Tween(begin: 0.0, end: 1.0),
+                builder: (context, value, child) {
+                  return Transform.translate(
+                    offset: Offset(0, 20 * (1 - value)),
+                    child: Opacity(
+                      opacity: value,
+                      child: child,
+                    ),
+                  );
+                },
+                child: SongItem(
+                  viewModel: viewModel,
+                  index: originalIndex,
+                  song: song,
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _onMicClick() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.mic, color: Colors.white),
+            SizedBox(width: 12),
+            Text('Tìm kiếm bằng giọng nói (Sắp ra mắt)'),
+          ],
+        ),
+        backgroundColor: Color(0xFF2A2A3D),
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+}
+
