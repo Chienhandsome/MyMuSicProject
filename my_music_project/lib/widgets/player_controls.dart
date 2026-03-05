@@ -13,19 +13,21 @@ class PlayerControls extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         _PlayModeButton(viewModel: viewModel),
+
         _SkipButton(
           icon: Icons.skip_previous,
           onPressed: viewModel.playPrevious,
         ),
         _PlayPauseButton(viewModel: viewModel),
+
         _SkipButton(
           icon: Icons.skip_next,
           onPressed: viewModel.playNext,
         ),
-//        const SizedBox(width: 48),
-        _ShuffleButton(
-          icon: Icons.shuffle,
-          onPressed: viewModel.mute,
+
+        _ContinuePlayButton(
+          icon: viewModel.getIsContinuePlay() ? Icons.repeat_on_rounded : Icons.repeat,
+          onPressed: viewModel.toggleContinuePlay,
         ),
       ],
     );
@@ -37,13 +39,23 @@ class _PlayModeButton extends StatelessWidget {
 
   const _PlayModeButton({required this.viewModel});
 
+  Icon _mapModeToIcon(String mode) {
+    switch (mode) {
+      case 'repeat':
+        return const Icon(Icons.repeat_one, size: 30);
+      case 'sequential':
+        return const Icon(Icons.arrow_forward, size: 30);
+      case 'shuffle':
+        return const Icon(Icons.shuffle, size: 30);
+      default:
+        return const Icon(Icons.skip_next, size: 30);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: Text(
-        viewModel.getPlayModeIcon(),
-        style: const TextStyle(fontSize: 24),
-      ),
+      icon: _mapModeToIcon(viewModel.getPlayMode()),
       onPressed: viewModel.togglePlayMode,
     );
   }
@@ -67,13 +79,13 @@ class _SkipButton extends StatelessWidget {
   }
 }
 
-class _ShuffleButton extends StatelessWidget{
+class _ContinuePlayButton extends StatelessWidget{
 
   final IconData icon;
   final VoidCallback onPressed;
 
 
-  const _ShuffleButton({
+  const _ContinuePlayButton({
     required this.icon,
     required this.onPressed
   });
@@ -82,7 +94,7 @@ class _ShuffleButton extends StatelessWidget{
   Widget build(BuildContext context) {
     return IconButton(
         onPressed: onPressed,
-        icon: Icon(icon, size: 48)
+        icon: Icon(icon, size: 30)
     );
   }
 }
@@ -110,3 +122,4 @@ class _PlayPauseButton extends StatelessWidget {
     );
   }
 }
+

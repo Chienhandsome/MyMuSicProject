@@ -1,28 +1,35 @@
-import 'dart:ffi';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:my_music_project/constants/prefs_keys.dart';
 import 'package:my_music_project/models/shared_preferences_helper.dart';
 import '../models/song_model.dart';
 
 enum PlayMode { sequential, repeat, shuffle }
 
-
 class AudioPlayerService {
+
   final AudioPlayer _audioPlayer = AudioPlayer();
+
   final Random _random = Random();
 
+  bool _isContinuePlay = false;
 
   List<SongModel> _playlist = [];
+
   int _currentIndex = -1;
+
   PlayMode _playMode = PlayMode.sequential;
 
   AudioPlayer get audioPlayer => _audioPlayer;
+
   SongModel? get currentSong =>
       _currentIndex >= 0 && _currentIndex < _playlist.length
           ? _playlist[_currentIndex]
           : null;
+
   PlayMode get playMode => _playMode;
+
   int get currentIndex => _currentIndex;
 
   AudioPlayerService() {
@@ -37,7 +44,30 @@ class AudioPlayerService {
     });
   }
 
+  Future<void> _restoreLastSong() async {
+    String lastSongPath =
+        SharedPreferencesHelper.instance.getString(PrefsKeys.lastSongPath) ?? '';
+
+    if (_currentIndex == -1 && lastSongPath.isNotEmpty) {
+      final index = _playlist.indexWhere((song) => song.path == lastSongPath);
+
+      if (index != -1) {
+        _currentIndex = index;
+
+        await _audioPlayer.setFilePath(_playlist[index].path); // QUAN TRỌNG
+      }
+    }
+  }
+
   Future<void> _handleSongComplete() async {
+    // If continue-play is disabled, do not auto-advance or replay.
+    if (!_isContinuePlay) {
+      debugPrint('Continue play disabled: not advancing to next song.');
+      await seek(Duration.zero);
+      await pause();
+      return;
+    }
+
     switch (_playMode) {
       case PlayMode.repeat:
         await _audioPlayer.seek(Duration.zero);
@@ -67,8 +97,9 @@ class AudioPlayerService {
     await playSongAt(newIndex);
   }
 
-  void setPlaylist(List<SongModel> songs) {
+  Future<void> setPlaylist(List<SongModel> songs) async {
     _playlist = songs;
+    await _restoreLastSong();
   }
 
   void setPlayMode(PlayMode mode) {
@@ -84,6 +115,11 @@ class AudioPlayerService {
     try {
       await _audioPlayer.setFilePath(song.path);
       await _audioPlayer.play();
+
+      await SharedPreferencesHelper.instance.setString(
+          PrefsKeys.lastSongPath,
+          _playlist[_currentIndex].path
+      );
     } catch (e) {
       debugPrint('Error playing song: $e');
     }
@@ -91,6 +127,11 @@ class AudioPlayerService {
 
   Future<void> play() async {
     await _audioPlayer.play();
+
+    await SharedPreferencesHelper.instance.setString(
+        PrefsKeys.lastSongPath,
+        _playlist[_currentIndex].path
+    );
   }
 
   Future<void> pause() async {
@@ -111,6 +152,13 @@ class AudioPlayerService {
     if (_playlist.isEmpty) return;
     int prevIndex = (_currentIndex - 1 + _playlist.length) % _playlist.length;
     await playSongAt(prevIndex);
+  }
+
+  setContinuePlay(bool isContinuePlay) {
+    _isContinuePlay = isContinuePlay;
+  }
+  bool getContinuePlay() {
+    return _isContinuePlay;
   }
 
   void dispose() {

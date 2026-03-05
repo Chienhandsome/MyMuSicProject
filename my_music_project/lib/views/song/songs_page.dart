@@ -114,17 +114,6 @@ class _SongsList extends StatelessWidget {
     );
   }
 
-  Future<void> _playSong(BuildContext context, int index) async {
-    if (context.mounted) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const PlayerPage()),
-      );
-    }
-
-    await viewModel.playSongAt(index);
-  }
-
   void _onMoreEvent(BuildContext context, int index) {
     final song = viewModel.songs[index];
 

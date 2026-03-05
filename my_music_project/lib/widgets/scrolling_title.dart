@@ -22,7 +22,6 @@ class ScrollingTitle extends StatelessWidget {
         blankSpace: 40.0,
         velocity: 30.0,
         startPadding: 8.0,
-        pauseAfterRound: const Duration(seconds: 1),
         fadingEdgeStartFraction: 0.1,
         fadingEdgeEndFraction: 0.1,
         showFadingOnlyWhenScrolling: true,

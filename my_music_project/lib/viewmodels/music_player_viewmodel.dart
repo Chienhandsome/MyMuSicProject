@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import '../models/song_model.dart';
 import '../services/audio_player_service.dart';
@@ -24,6 +26,7 @@ class MusicPlayerViewModel extends ChangeNotifier {
   int get currentIndex => _audioService.currentIndex;
 
   Future<void> init() async {
+    _listenPlayerState();
     await requestPermission();
     if (_hasPermission) {
       await loadSongs();
@@ -40,7 +43,7 @@ class MusicPlayerViewModel extends ChangeNotifier {
     notifyListeners();
 
     _songs = await _musicQueryService.loadSongs();
-    _audioService.setPlaylist(_songs);
+    await _audioService.setPlaylist(_songs);
 
     _isLoading = false;
     notifyListeners();
@@ -53,48 +56,51 @@ class MusicPlayerViewModel extends ChangeNotifier {
 
   Future<void> play() async {
     await _audioService.play();
-    // notifyListeners();
   }
 
   Future<void> pause() async {
     await _audioService.pause();
-    // notifyListeners();
   }
 
   Future<void> playNext() async {
     await _audioService.playNext();
-    // notifyListeners();
+    notifyListeners();
   }
 
   Future<void> playPrevious() async {
     await _audioService.playPrevious();
-    // notifyListeners();
+    notifyListeners();
   }
 
   Future<void> seek(Duration position) async {
     await _audioService.seek(position);
   }
 
-  Future<void> mute() async {
-    await _audioService.audioPlayer.setVolume(0);
+  Future<void> toggleContinuePlay() async {
+    await _audioService.setContinuePlay(!_audioService.getContinuePlay());
+    notifyListeners();
+  }
+
+  bool getIsContinuePlay() {
+    return _audioService.getContinuePlay();
   }
 
   void togglePlayMode() {
-    final modes = PlayMode.values;
+    const modes = PlayMode.values;
     final currentModeIndex = modes.indexOf(_audioService.playMode);
     final nextMode = modes[(currentModeIndex + 1) % modes.length];
     _audioService.setPlayMode(nextMode);
     notifyListeners();
   }
 
-  String getPlayModeIcon() {
+  String getPlayMode() {
     switch (_audioService.playMode) {
       case PlayMode.repeat:
-        return '🔂';
+        return 'repeat';
       case PlayMode.sequential:
-        return '➡️';
+        return 'sequential';
       case PlayMode.shuffle:
-        return '🔀';
+        return 'shuffle';
     }
   }
 
@@ -108,11 +114,38 @@ class MusicPlayerViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> toggleMiniPlayerPause() async {
+    if (isPlaying) {
+      await pause();
+    } else {
+      await play();
+    }
+  }
+
   @override
   void dispose() {
     _audioService.dispose();
     super.dispose();
   }
 
+  void _listenPlayerState() {
+    _audioService.audioPlayer.playerStateStream.listen((state) {
+      notifyListeners();
+    });
+  }
+
+  void startSleepTimer(BuildContext context, Duration duration) {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(
+      SnackBar(content: Text('Đã đặt hẹn giờ: ${duration.inMinutes} phút')),
+    );
+
+    Future.delayed(duration, () {
+      pause();
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Đã tắt nhạc theo hẹn giờ')),
+      );
+    });
+  }
 
 }

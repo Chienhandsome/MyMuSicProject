@@ -27,11 +27,8 @@ class PlayerPage extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
         title: const Text('Đang phát'),
-        actions: [
-          IconButton(
-              onPressed: () => onMoreEvent(),
-              icon: const Icon(Icons.more_vert)
-          )
+        actions: const [
+          _PlayerMoreMenu()
         ],
       ),
       body: Consumer<MusicPlayerViewModel>(
@@ -59,7 +56,6 @@ class PlayerPage extends StatelessWidget {
                   children: [
                     const Spacer(),
 
-                    // 🎵 Album Art (placeholder)
                     Container(
                       width: 260,
                       height: 260,
@@ -115,6 +111,96 @@ class PlayerPage extends StatelessWidget {
       ),
     );
   }
-
-  void onMoreEvent() {}
 }
+
+class _PlayerMoreMenu extends StatelessWidget {
+  const _PlayerMoreMenu({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert),
+      onSelected: (value) => _onMoreEvent(context, value),
+      itemBuilder: (ctx) => const [
+        PopupMenuItem(
+            value: 'timer',
+            child: Text('Hẹn giờ'),
+        ),
+        PopupMenuItem(
+          value: 'favourite',
+          child: Text('Thêm vào yêu thích'),
+        ),
+        PopupMenuItem(
+          value: 'delete',
+          child: Text(
+              'xóa',
+            style: TextStyle(color: Colors.red),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _onMoreEvent(BuildContext context, String value) {
+    if (value == 'timer') {
+      showDialog(
+        context: context,
+        builder: (dialogCtx) => AlertDialog(
+          content: const _SleepTimerSheet(),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          contentPadding: EdgeInsets.zero,
+        ),
+      );
+    }
+  }
+}
+
+class _SleepTimerSheet extends StatelessWidget {
+  const _SleepTimerSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final vm = context.read<MusicPlayerViewModel>();
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 8),
+          const Text('Hẹn giờ tắt', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Divider(),
+          _item(context, vm, '5 phút', const Duration(minutes: 5)),
+          _item(context, vm, '10 phút', const Duration(minutes: 10)),
+          _item(context, vm, '15 phút', const Duration(minutes: 15)),
+          _item(context, vm, '30 phút', const Duration(minutes: 30)),
+          _item(context, vm, '1 giờ', const Duration(hours: 1)),
+          ListTile(
+            title: const Text('Hủy', style: TextStyle(color: Colors.red)),
+            onTap: () => Navigator.pop(context),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _item(BuildContext context, MusicPlayerViewModel vm, String text, Duration d) {
+    return ListTile(
+      title: Text(text),
+      onTap: () {
+        Navigator.pop(context);
+        vm.startSleepTimer(context, d);
+      },
+    );
+  }
+}
+
+
+
+

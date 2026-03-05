@@ -32,30 +32,24 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // optional: lift the mini player slightly from screen bottom
-          // const SizedBox(height: 8),
 
-          // optional horizontal padding around mini player
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 12.0),
             child: MiniPlayer(),
           ),
 
-          // space between mini player and bottom navigation bar
-          const SizedBox(height: 2),
-
           Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFF1C1C2E),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black45,
-                  blurRadius: 12,
-                  offset: Offset(0, -4),
-                ),
-              ],
-            ),
+            // decoration: const BoxDecoration(
+            //   color: Color(0xFF1C1C2E),
+            //   borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            //   boxShadow: [
+            //     BoxShadow(
+            //       color: Colors.black45,
+            //       blurRadius: 12,
+            //       offset: Offset(0, -4),
+            //     ),
+            //   ],
+            // ),
             child: SafeArea(
               top: false,
               child: BottomNavigationBar(

@@ -78,7 +78,7 @@ class MiniPlayer extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: viewModel.togglePlayPause,
+                    onPressed: viewModel.toggleMiniPlayerPause,
                     icon: Icon(
                       viewModel.isPlaying ? Icons.pause : Icons.play_arrow,
                       color: Colors.white,
