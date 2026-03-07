@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../generated/l10n/app_localizations.dart';
 
 class SplashContent extends StatelessWidget {
   final Animation<double> fadeAnimation;
@@ -12,6 +13,8 @@ class SplashContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return FadeTransition(
       opacity: fadeAnimation,
       child: Column(
@@ -22,32 +25,41 @@ class SplashContent extends StatelessWidget {
           const SizedBox(height: 32),
           
           // App name
-          const Text(
-            'Flutter Chat',
-            style: TextStyle(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: 1.5,
-              shadows: [
-                Shadow(
-                  blurRadius: 10.0,
-                  color: Colors.black26,
-                  offset: Offset(2.0, 2.0),
-                ),
+          ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+              colors: [
+                Color(0xFF7C4DFF),
+                Color(0xFFB388FF),
               ],
+            ).createShader(bounds),
+            child: Text(
+              l10n.appName,
+              style: const TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 2.0,
+                shadows: [
+                  Shadow(
+                    blurRadius: 15.0,
+                    color: Colors.black38,
+                    offset: Offset(2.0, 2.0),
+                  ),
+                ],
+              ),
             ),
           ),
           
-          const SizedBox(height: 8),
-          
+          const SizedBox(height: 12),
+
           // Subtitle
-          const Text(
-            'Connect with everyone',
-            style: TextStyle(
+          Text(
+            l10n.feelTheMusic,
+            style: const TextStyle(
               fontSize: 16,
-              color: Colors.white70,
+              color: Color(0xFFB0B0B0),
               fontWeight: FontWeight.w400,
+              letterSpacing: 1.0,
             ),
           ),
           
@@ -59,19 +71,20 @@ class SplashContent extends StatelessWidget {
             height: 50,
             child: CircularProgressIndicator(
               strokeWidth: 3,
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-              backgroundColor: Colors.white.withValues(alpha: 0.3),
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF7C4DFF)),
+              backgroundColor: Colors.white.withValues(alpha: 0.1),
             ),
           ),
           
           const SizedBox(height: 20),
           
           // Loading text
-          const Text(
-            'Đang khởi tạo...',
-            style: TextStyle(
-              color: Colors.white70,
+          Text(
+            l10n.startingUp,
+            style: const TextStyle(
+              color: Color(0xFF9E9E9E),
               fontSize: 14,
+              letterSpacing: 0.5,
             ),
           ),
         ],

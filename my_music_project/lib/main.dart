@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'viewmodels/music_player_viewmodel.dart';
+import 'providers/locale_provider.dart';
 import 'splash/splash_page.dart';
 import 'models/shared_preferences_helper.dart';
+import 'generated/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,16 +20,34 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => MusicPlayerViewModel(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Music Player',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          useMaterial3: true,
-        ),
-        home: const SplashPage(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MusicPlayerViewModel()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
+      ],
+      child: Consumer<LocaleProvider>(
+        builder: (context, localeProvider, child) {
+          return MaterialApp(
+            locale: localeProvider.locale,
+            supportedLocales: const [
+              Locale('en'),
+              Locale('vi'),
+            ],
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            debugShowCheckedModeBanner: false,
+            title: 'Music Player',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+              useMaterial3: true,
+            ),
+            home: const SplashPage(),
+          );
+        },
       ),
     );
   }

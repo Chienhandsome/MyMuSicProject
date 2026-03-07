@@ -1,19 +1,21 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:my_music_project/views/search/search_page.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/music_player_viewmodel.dart';
 import '../../widgets/app_scaffold.dart';
-import '../player/player_page.dart';
-import 'song_item.dart';
+import '../../widgets/song_item.dart';
+import '../../generated/l10n/app_localizations.dart';
+
 
 class SongsPage extends StatelessWidget {
   const SongsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AppScaffold(
-      title: 'Bài hát',
+      title: l10n.songs,
       scrollableAppBar: true,
       actions: [
         IconButton(
@@ -39,16 +41,16 @@ class SongsPage extends StatelessWidget {
         builder: (context, viewModel, _) {
 
           if (viewModel.isLoading) {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(color: Colors.white),
             );
           }
 
           if (viewModel.songs.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
-                'Không tìm thấy bài hát nào',
-                style: TextStyle(color: Colors.white),
+                l10n.noSongs,
+                style: const TextStyle(color: Colors.white),
               ),
             );
           }
@@ -60,12 +62,6 @@ class SongsPage extends StatelessWidget {
   }
 
   void onSearchEvent(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('search: not implemented'),
-        duration: Duration(milliseconds: 500) ,
-      ),
-    );
     Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const SearchPage())
@@ -73,12 +69,7 @@ class SongsPage extends StatelessWidget {
   }
 
   void onMoreEvent(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('more: not implemented'),
-        duration: Duration(milliseconds: 500)
-      ),
-    );
+    // More actions menu - to be implemented
   }
 
 }

@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'views/song/songs_page.dart';
+import 'views/songs/songs_page.dart';
 import 'views/more/more_page.dart';
 import 'widgets/mini_player.dart';
 import 'viewmodels/music_player_viewmodel.dart';
+import 'generated/l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,15 +18,9 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MusicPlayerViewModel>().init();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (kDebugMode) {
       print("home page build - index: $_currentIndex");
     }
@@ -49,17 +44,6 @@ class _HomePageState extends State<HomePage> {
           ),
 
           Container(
-            // decoration: const BoxDecoration(
-            //   color: Color(0xFF1C1C2E),
-            //   borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-            //   boxShadow: [
-            //     BoxShadow(
-            //       color: Colors.black45,
-            //       blurRadius: 12,
-            //       offset: Offset(0, -4),
-            //     ),
-            //   ],
-            // ),
             child: SafeArea(
               top: false,
               child: BottomNavigationBar(
@@ -72,14 +56,14 @@ class _HomePageState extends State<HomePage> {
                 selectedItemColor: Colors.deepPurpleAccent,
                 unselectedItemColor: Colors.white54,
                 type: BottomNavigationBarType.fixed,
-                items: const [
+                items: [
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.music_note),
-                    label: 'Bài hát',
+                    icon: const Icon(Icons.music_note),
+                    label: l10n.songs,
                   ),
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.more_horiz),
-                    label: 'Thêm',
+                    icon: const Icon(Icons.more_horiz),
+                    label: l10n.more,
                   ),
                 ],
               ),

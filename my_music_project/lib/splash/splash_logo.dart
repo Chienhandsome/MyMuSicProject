@@ -15,24 +15,36 @@ class SplashLogo extends StatelessWidget {
       child: Hero(
         tag: 'app-logo',
         child: Container(
-          width: 120,
-          height: 120,
+          padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF7C4DFF),
+                Color(0xFF651FFF),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(32),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
-                blurRadius: 20,
+                color: Colors.deepPurpleAccent.withValues(alpha: 0.5),
+                blurRadius: 30,
                 offset: const Offset(0, 8),
+                spreadRadius: 5,
+              ),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
                 spreadRadius: 2,
               ),
             ],
           ),
           child: const Icon(
-            Icons.chat_bubble_outline_rounded,
-            size: 60,
-            color: Color(0xFF6C63FF),
+            Icons.music_note,
+            size: 64,
+            color: Colors.white,
           ),
         ),
       ),

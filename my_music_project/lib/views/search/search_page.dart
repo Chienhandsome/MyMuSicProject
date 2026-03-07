@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/music_player_viewmodel.dart';
 import '../../models/song_model.dart';
-import '../song/song_item.dart';
+import '../../widgets/song_item.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -360,4 +360,5 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
     );
   }
 }
+
 

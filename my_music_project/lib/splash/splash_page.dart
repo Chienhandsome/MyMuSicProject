@@ -5,6 +5,7 @@ import 'package:my_music_project/splash/splash_logo.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/music_player_viewmodel.dart';
 import '../home_page.dart';
+import '../generated/l10n/app_localizations.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -22,6 +23,10 @@ class _SplashPageState extends State<SplashPage>
   bool _showPermissionRequest = false;
   bool _isCheckingPermission = true;
 
+  // Pre-built HomePage để chuyển đổi mượt mà
+  Widget? _preloadedHomePage;
+  bool _isHomePageReady = false;
+
   @override
   void initState() {
     super.initState();
@@ -31,7 +36,7 @@ class _SplashPageState extends State<SplashPage>
 
   void _setupAnimations() {
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
 
@@ -66,7 +71,11 @@ class _SplashPageState extends State<SplashPage>
     if (!mounted) return;
 
     if (viewModel.hasPermission) {
-      _navigateToHome();
+      // Bắt đầu khởi tạo HomePage và load data đồng thời
+      setState(() {
+        _isCheckingPermission = false;
+      });
+      await _prepareHomePage();
     } else {
       setState(() {
         _isCheckingPermission = false;
@@ -75,9 +84,44 @@ class _SplashPageState extends State<SplashPage>
     }
   }
 
+  Future<void> _prepareHomePage() async {
+    if (!mounted) return;
+
+    final viewModel = context.read<MusicPlayerViewModel>();
+
+    // Tạo HomePage widget trước
+    _preloadedHomePage = const HomePage();
+
+    // Khởi tạo ViewModel (load songs, etc.)
+    await viewModel.init();
+
+    if (!mounted) return;
+
+    setState(() {
+      _isHomePageReady = true;
+    });
+
+    // Đợi một chút để animation mượt mà
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    if (!mounted) return;
+
+    _navigateToHome();
+  }
+
   void _navigateToHome() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const HomePage()),
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            _preloadedHomePage ?? const HomePage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 400),
+      ),
     );
   }
 
@@ -88,12 +132,14 @@ class _SplashPageState extends State<SplashPage>
     if (!mounted) return;
 
     if (viewModel.hasPermission) {
-      _navigateToHome();
+      // Khởi tạo HomePage sau khi có quyền
+      await _prepareHomePage();
     } else {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Quyền truy cập bị từ chối. Vui lòng cấp quyền trong cài đặt.'),
+          SnackBar(
+            content: Text(l10n.permissionDenied),
             backgroundColor: Colors.red,
           ),
         );
@@ -116,10 +162,15 @@ class _SplashPageState extends State<SplashPage>
           builder: (context, child) {
             return Stack(
               children: [
-                SplashContent(
-                  fadeAnimation: _fadeAnimation,
-                  logo: SplashLogo(scaleAnimation: _scaleAnimation),
+                Center(
+                  child: SplashContent(
+                    fadeAnimation: _fadeAnimation,
+                    logo: SplashLogo(scaleAnimation: _scaleAnimation),
+                  ),
                 ),
+                // Hiển thị trạng thái loading khi đang chuẩn bị
+                if (!_isCheckingPermission && !_showPermissionRequest && !_isHomePageReady)
+                  //_buildLoadingIndicator(),
                 if (_showPermissionRequest)
                   _buildPermissionRequest(),
               ],
@@ -130,7 +181,34 @@ class _SplashPageState extends State<SplashPage>
     );
   }
 
+  Widget _buildLoadingIndicator() {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Positioned(
+      bottom: 100,
+      left: 0,
+      right: 0,
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: Column(
+          children: [
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurpleAccent),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.loadingMusic,
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildPermissionRequest() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Center(
       child: FadeTransition(
         opacity: _fadeAnimation,
@@ -140,17 +218,17 @@ class _SplashPageState extends State<SplashPage>
             const SizedBox(height: 150),
             const Icon(Icons.lock, size: 64, color: Colors.white70),
             const SizedBox(height: 16),
-            const Text(
-              'Cần quyền truy cập bộ nhớ',
-              style: TextStyle(color: Colors.white, fontSize: 18),
+            Text(
+              l10n.permissionRequired,
+              style: const TextStyle(color: Colors.white, fontSize: 18),
             ),
             const SizedBox(height: 8),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Text(
-                'Ứng dụng cần quyền truy cập bộ nhớ để quét và phát nhạc',
+                l10n.permissionMessage,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white70, fontSize: 14),
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
               ),
             ),
             const SizedBox(height: 24),
@@ -160,9 +238,9 @@ class _SplashPageState extends State<SplashPage>
                 backgroundColor: Colors.deepPurpleAccent,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               ),
-              child: const Text(
-                'Cấp quyền',
-                style: TextStyle(fontSize: 16),
+              child: Text(
+                l10n.grantPermission,
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ],

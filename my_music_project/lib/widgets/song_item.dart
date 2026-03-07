@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../viewmodels/music_player_viewmodel.dart';
-import '../player/player_page.dart';
+import '../viewmodels/music_player_viewmodel.dart';
+import '../views/player/player_page.dart';
 
 class SongItem extends StatelessWidget {
   final MusicPlayerViewModel viewModel;
@@ -53,6 +53,9 @@ class SongItem extends StatelessWidget {
   }
 
   Future<void> _playSong(BuildContext context) async {
+    // Close keyboard before navigating
+    FocusScope.of(context).unfocus();
+
     if (context.mounted) {
       Navigator.push(
         context,
@@ -80,6 +83,8 @@ class SongItem extends StatelessWidget {
                 title: const Text('Play', style: TextStyle(color: Colors.white)),
                 onTap: () async {
                   Navigator.pop(ctx);
+                  // Close keyboard before navigating
+                  FocusScope.of(context).unfocus();
                   if (context.mounted) {
                     Navigator.push(
                       context,
