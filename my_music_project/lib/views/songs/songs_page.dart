@@ -41,7 +41,7 @@ class SongsPage extends StatelessWidget {
         builder: (context, viewModel, _) {
 
           if (viewModel.isLoading) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(color: Colors.white),
             );
           }

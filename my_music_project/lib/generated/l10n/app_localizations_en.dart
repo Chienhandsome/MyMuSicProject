@@ -96,4 +96,71 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feelTheMusic => 'Feel the music';
+
+  @override
+  String get nowPlaying => 'Now Playing';
+
+  @override
+  String get noSongPlaying => 'No song playing';
+
+  @override
+  String get sleepTimer => 'Sleep Timer';
+
+  @override
+  String get addToFavorites => 'Add to Favorites';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get minutes5 => '5 minutes';
+
+  @override
+  String get minutes10 => '10 minutes';
+
+  @override
+  String get minutes15 => '15 minutes';
+
+  @override
+  String get minutes30 => '30 minutes';
+
+  @override
+  String get hour1 => '1 hour';
+
+  @override
+  String get searchSongs => 'Search songs...';
+
+  @override
+  String get voiceSearch => 'Voice search';
+
+  @override
+  String get searchFavoriteSong => 'Search for your favorite song';
+
+  @override
+  String get typeToSearch => 'Type song name to start searching';
+
+  @override
+  String get suggestionsForYou => '🎵 Suggestions for you';
+
+  @override
+  String get noResultsFound => 'No results found';
+
+  @override
+  String noMatchingSongs(String query) {
+    return 'No songs found matching \"$query\"';
+  }
+
+  @override
+  String get searchAgain => 'Search again';
+
+  @override
+  String foundResults(String count) {
+    return 'Found $count result(s)';
+  }
+
+  @override
+  String get voiceSearchComingSoon => 'Voice search (Coming soon)';
 }

@@ -5,6 +5,7 @@ import '../../viewmodels/music_player_viewmodel.dart';
 import '../../widgets/scrolling_title.dart';
 import '../../widgets/progress_slider.dart';
 import '../../widgets/player_controls.dart';
+import '../../generated/l10n/app_localizations.dart';
 
 class PlayerPage extends StatelessWidget {
   const PlayerPage({super.key});
@@ -26,7 +27,7 @@ class PlayerPage extends StatelessWidget {
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
-        title: const Text('Đang phát'),
+        title: Text(AppLocalizations.of(context)!.nowPlaying),
         actions: const [
           _PlayerMoreMenu()
         ],
@@ -35,7 +36,12 @@ class PlayerPage extends StatelessWidget {
         builder: (context, viewModel, _) {
           final currentSong = viewModel.currentSong;
           if (currentSong == null) {
-            return const Center(child: Text('Không có bài hát nào'));
+            return Center(
+              child: Text(
+                AppLocalizations.of(context)!.noSongPlaying,
+                style: const TextStyle(color: Colors.white),
+              ),
+            );
           }
 
           return Container(
@@ -69,7 +75,7 @@ class PlayerPage extends StatelessWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.4),
+                            color: Colors.black.withValues(alpha: 0.4),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
@@ -118,23 +124,24 @@ class _PlayerMoreMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return PopupMenuButton<String>(
       icon: const Icon(Icons.more_vert),
       onSelected: (value) => _onMoreEvent(context, value),
-      itemBuilder: (ctx) => const [
+      itemBuilder: (ctx) => [
         PopupMenuItem(
             value: 'timer',
-            child: Text('Hẹn giờ'),
+            child: Text(l10n.sleepTimer),
         ),
         PopupMenuItem(
           value: 'favourite',
-          child: Text('Thêm vào yêu thích'),
+          child: Text(l10n.addToFavorites),
         ),
         PopupMenuItem(
           value: 'delete',
           child: Text(
-              'xóa',
-            style: TextStyle(color: Colors.red),
+              l10n.delete,
+            style: const TextStyle(color: Colors.red),
           ),
         ),
       ],
@@ -158,11 +165,12 @@ class _PlayerMoreMenu extends StatelessWidget {
 }
 
 class _SleepTimerSheet extends StatelessWidget {
-  const _SleepTimerSheet({super.key});
+  const _SleepTimerSheet();
 
   @override
   Widget build(BuildContext context) {
     final vm = context.read<MusicPlayerViewModel>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       decoration: BoxDecoration(
@@ -173,15 +181,15 @@ class _SleepTimerSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(height: 8),
-          const Text('Hẹn giờ tắt', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(l10n.sleepTimer, style: const TextStyle(fontWeight: FontWeight.bold)),
           const Divider(),
-          _item(context, vm, '5 phút', const Duration(minutes: 5)),
-          _item(context, vm, '10 phút', const Duration(minutes: 10)),
-          _item(context, vm, '15 phút', const Duration(minutes: 15)),
-          _item(context, vm, '30 phút', const Duration(minutes: 30)),
-          _item(context, vm, '1 giờ', const Duration(hours: 1)),
+          _item(context, vm, l10n.minutes5, const Duration(minutes: 5)),
+          _item(context, vm, l10n.minutes10, const Duration(minutes: 10)),
+          _item(context, vm, l10n.minutes15, const Duration(minutes: 15)),
+          _item(context, vm, l10n.minutes30, const Duration(minutes: 30)),
+          _item(context, vm, l10n.hour1, const Duration(hours: 1)),
           ListTile(
-            title: const Text('Hủy', style: TextStyle(color: Colors.red)),
+            title: Text(l10n.cancel, style: const TextStyle(color: Colors.red)),
             onTap: () => Navigator.pop(context),
           ),
           const SizedBox(height: 8),

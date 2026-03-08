@@ -27,6 +27,41 @@
   "languageOption": "Ngôn ngữ",
   "startingUp": "Đang khởi động...",
   "loadingMusic": "Đang tải nhạc...",
-  "feelTheMusic": "Cảm nhận giai điệu"
+  "feelTheMusic": "Cảm nhận giai điệu",
+  "nowPlaying": "Đang phát",
+  "noSongPlaying": "Không có bài hát nào",
+  "sleepTimer": "Hẹn giờ tắt",
+  "addToFavorites": "Thêm vào yêu thích",
+  "delete": "Xóa",
+  "cancel": "Hủy",
+  "minutes5": "5 phút",
+  "minutes10": "10 phút",
+  "minutes15": "15 phút",
+  "minutes30": "30 phút",
+  "hour1": "1 giờ",
+  "searchSongs": "Tìm kiếm bài hát...",
+  "voiceSearch": "Tìm kiếm bằng giọng nói",
+  "searchFavoriteSong": "Tìm kiếm bài hát yêu thích",
+  "typeToSearch": "Nhập tên bài hát để bắt đầu tìm kiếm",
+  "suggestionsForYou": "🎵 Gợi ý cho bạn",
+  "noResultsFound": "Không tìm thấy kết quả",
+  "noMatchingSongs": "Không tìm thấy bài hát phù hợp với \"{query}\"",
+  "@noMatchingSongs": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchAgain": "Tìm kiếm khác",
+  "foundResults": "Tìm thấy {count} kết quả",
+  "@foundResults": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceSearchComingSoon": "Tìm kiếm bằng giọng nói (Sắp ra mắt)"
 }
 

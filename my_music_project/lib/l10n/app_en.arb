@@ -27,6 +27,41 @@
   "languageOption": "Language",
   "startingUp": "Starting up...",
   "loadingMusic": "Loading music...",
-  "feelTheMusic": "Feel the music"
+  "feelTheMusic": "Feel the music",
+  "nowPlaying": "Now Playing",
+  "noSongPlaying": "No song playing",
+  "sleepTimer": "Sleep Timer",
+  "addToFavorites": "Add to Favorites",
+  "delete": "Delete",
+  "cancel": "Cancel",
+  "minutes5": "5 minutes",
+  "minutes10": "10 minutes",
+  "minutes15": "15 minutes",
+  "minutes30": "30 minutes",
+  "hour1": "1 hour",
+  "searchSongs": "Search songs...",
+  "voiceSearch": "Voice search",
+  "searchFavoriteSong": "Search for your favorite song",
+  "typeToSearch": "Type song name to start searching",
+  "suggestionsForYou": "🎵 Suggestions for you",
+  "noResultsFound": "No results found",
+  "noMatchingSongs": "No songs found matching \"{query}\"",
+  "@noMatchingSongs": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchAgain": "Search again",
+  "foundResults": "Found {count} result(s)",
+  "@foundResults": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceSearchComingSoon": "Voice search (Coming soon)"
 }
 

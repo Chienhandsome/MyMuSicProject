@@ -96,4 +96,71 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get feelTheMusic => 'Cảm nhận giai điệu';
+
+  @override
+  String get nowPlaying => 'Đang phát';
+
+  @override
+  String get noSongPlaying => 'Không có bài hát nào';
+
+  @override
+  String get sleepTimer => 'Hẹn giờ tắt';
+
+  @override
+  String get addToFavorites => 'Thêm vào yêu thích';
+
+  @override
+  String get delete => 'Xóa';
+
+  @override
+  String get cancel => 'Hủy';
+
+  @override
+  String get minutes5 => '5 phút';
+
+  @override
+  String get minutes10 => '10 phút';
+
+  @override
+  String get minutes15 => '15 phút';
+
+  @override
+  String get minutes30 => '30 phút';
+
+  @override
+  String get hour1 => '1 giờ';
+
+  @override
+  String get searchSongs => 'Tìm kiếm bài hát...';
+
+  @override
+  String get voiceSearch => 'Tìm kiếm bằng giọng nói';
+
+  @override
+  String get searchFavoriteSong => 'Tìm kiếm bài hát yêu thích';
+
+  @override
+  String get typeToSearch => 'Nhập tên bài hát để bắt đầu tìm kiếm';
+
+  @override
+  String get suggestionsForYou => '🎵 Gợi ý cho bạn';
+
+  @override
+  String get noResultsFound => 'Không tìm thấy kết quả';
+
+  @override
+  String noMatchingSongs(String query) {
+    return 'Không tìm thấy bài hát phù hợp với \"$query\"';
+  }
+
+  @override
+  String get searchAgain => 'Tìm kiếm khác';
+
+  @override
+  String foundResults(String count) {
+    return 'Tìm thấy $count kết quả';
+  }
+
+  @override
+  String get voiceSearchComingSoon => 'Tìm kiếm bằng giọng nói (Sắp ra mắt)';
 }

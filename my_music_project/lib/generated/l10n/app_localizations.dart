@@ -271,6 +271,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Feel the music'**
   String get feelTheMusic;
+
+  /// No description provided for @nowPlaying.
+  ///
+  /// In en, this message translates to:
+  /// **'Now Playing'**
+  String get nowPlaying;
+
+  /// No description provided for @noSongPlaying.
+  ///
+  /// In en, this message translates to:
+  /// **'No song playing'**
+  String get noSongPlaying;
+
+  /// No description provided for @sleepTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep Timer'**
+  String get sleepTimer;
+
+  /// No description provided for @addToFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to Favorites'**
+  String get addToFavorites;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @minutes5.
+  ///
+  /// In en, this message translates to:
+  /// **'5 minutes'**
+  String get minutes5;
+
+  /// No description provided for @minutes10.
+  ///
+  /// In en, this message translates to:
+  /// **'10 minutes'**
+  String get minutes10;
+
+  /// No description provided for @minutes15.
+  ///
+  /// In en, this message translates to:
+  /// **'15 minutes'**
+  String get minutes15;
+
+  /// No description provided for @minutes30.
+  ///
+  /// In en, this message translates to:
+  /// **'30 minutes'**
+  String get minutes30;
+
+  /// No description provided for @hour1.
+  ///
+  /// In en, this message translates to:
+  /// **'1 hour'**
+  String get hour1;
+
+  /// No description provided for @searchSongs.
+  ///
+  /// In en, this message translates to:
+  /// **'Search songs...'**
+  String get searchSongs;
+
+  /// No description provided for @voiceSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice search'**
+  String get voiceSearch;
+
+  /// No description provided for @searchFavoriteSong.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for your favorite song'**
+  String get searchFavoriteSong;
+
+  /// No description provided for @typeToSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Type song name to start searching'**
+  String get typeToSearch;
+
+  /// No description provided for @suggestionsForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'🎵 Suggestions for you'**
+  String get suggestionsForYou;
+
+  /// No description provided for @noResultsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noResultsFound;
+
+  /// No description provided for @noMatchingSongs.
+  ///
+  /// In en, this message translates to:
+  /// **'No songs found matching \"{query}\"'**
+  String noMatchingSongs(String query);
+
+  /// No description provided for @searchAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Search again'**
+  String get searchAgain;
+
+  /// No description provided for @foundResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Found {count} result(s)'**
+  String foundResults(String count);
+
+  /// No description provided for @voiceSearchComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice search (Coming soon)'**
+  String get voiceSearchComingSoon;
 }
 
 class _AppLocalizationsDelegate

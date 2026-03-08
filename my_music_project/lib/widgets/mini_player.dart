@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:marquee/marquee.dart';
+import 'package:my_music_project/models/song_model.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/music_player_viewmodel.dart';
 import '../views/player/player_page.dart';
-
 
 class MiniPlayer extends StatelessWidget {
   const MiniPlayer({super.key});
@@ -35,37 +36,18 @@ class MiniPlayer extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF6A5AE0), Color(0xFF8F7CFF)],
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.music_note,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
+
+                  _buildMusicSymbol(),
+                  
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          currentSong.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+
+                        _buildCustomTitle(currentSong, viewModel),
+
                         const SizedBox(height: 2),
                         Text(
                           currentSong.durationText,
@@ -77,20 +59,77 @@ class MiniPlayer extends StatelessWidget {
                       ],
                     ),
                   ),
-                  IconButton(
-                    onPressed: viewModel.toggleMiniPlayerPause,
-                    icon: Icon(
-                      viewModel.isPlaying ? Icons.pause : Icons.play_arrow,
-                      color: Colors.white,
-                      size: 28,
-                    ),
-                  ),
+
+                  _buildControlButton(viewModel)
+
                 ],
               ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildControlButton(MusicPlayerViewModel viewModel) {
+    return IconButton(
+      onPressed: viewModel.toggleMiniPlayerPause,
+      icon: Icon(
+        viewModel.isPlaying ? Icons.pause : Icons.play_arrow,
+        color: Colors.white,
+        size: 28,
+      ),
+    );
+  }
+
+  Widget _buildCustomTitle(SongModel currentSong, MusicPlayerViewModel viewModel) {
+    return SizedBox(
+      height: 20,
+      child: viewModel.isPlaying
+          ? Marquee(
+        text: currentSong.title,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+        ),
+        scrollAxis: Axis.horizontal,
+        blankSpace: 40.0,
+        velocity: 30.0,
+        startPadding: 8.0,
+        fadingEdgeStartFraction: 0.1,
+        fadingEdgeEndFraction: 0.1,
+        showFadingOnlyWhenScrolling: false,
+      )
+          : Text(
+        currentSong.title,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  Widget _buildMusicSymbol() {
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF6A5AE0), Color(0xFF8F7CFF)],
+        ),
+      ),
+      child: const Icon(
+        Icons.music_note,
+        color: Colors.white,
+        size: 24,
+      ),
+
     );
   }
 }

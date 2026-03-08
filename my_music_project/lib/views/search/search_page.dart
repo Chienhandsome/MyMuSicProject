@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../viewmodels/music_player_viewmodel.dart';
 import '../../models/song_model.dart';
 import '../../widgets/song_item.dart';
+import '../../generated/l10n/app_localizations.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -91,6 +92,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<MusicPlayerViewModel>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
@@ -116,7 +118,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
             focusNode: _searchFocusNode,
             style: const TextStyle(color: Colors.white, fontSize: 16),
             decoration: InputDecoration(
-              hintText: 'Tìm kiếm bài hát...',
+              hintText: l10n.searchSongs,
               hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
               prefixIcon: const Icon(Icons.search, color: Colors.deepPurpleAccent, size: 22),
               suffixIcon: _searchQuery.isNotEmpty
@@ -135,7 +137,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
           IconButton(
             onPressed: _onMicClick,
             icon: const Icon(Icons.mic_outlined, color: Colors.deepPurpleAccent),
-            tooltip: 'Tìm kiếm bằng giọng nói',
+            tooltip: l10n.voiceSearch,
           ),
         ],
       ),
@@ -166,6 +168,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
 
   Widget _buildEmptyState(MusicPlayerViewModel viewModel) {
     final recentSongs = viewModel.songs.take(5).toList();
+    final l10n = AppLocalizations.of(context)!;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -189,9 +192,9 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Tìm kiếm bài hát yêu thích',
-                  style: TextStyle(
+                Text(
+                  l10n.searchFavoriteSong,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -199,7 +202,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Nhập tên bài hát để bắt đầu tìm kiếm',
+                  l10n.typeToSearch,
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 14,
@@ -210,9 +213,9 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
           ),
           if (recentSongs.isNotEmpty) ...[
             const SizedBox(height: 40),
-            const Text(
-              '🎵 Gợi ý cho bạn',
-              style: TextStyle(
+            Text(
+              l10n.suggestionsForYou,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -238,6 +241,8 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
   }
 
   Widget _buildNoResults() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -255,9 +260,9 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Không tìm thấy kết quả',
-            style: TextStyle(
+          Text(
+            l10n.noResultsFound,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -267,7 +272,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 48),
             child: Text(
-              'Không tìm thấy bài hát phù hợp với "$_searchQuery"',
+              l10n.noMatchingSongs(_searchQuery),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.6),
@@ -279,9 +284,9 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
           TextButton.icon(
             onPressed: _clearSearch,
             icon: const Icon(Icons.refresh, color: Colors.deepPurpleAccent),
-            label: const Text(
-              'Tìm kiếm khác',
-              style: TextStyle(color: Colors.deepPurpleAccent),
+            label: Text(
+              l10n.searchAgain,
+              style: const TextStyle(color: Colors.deepPurpleAccent),
             ),
           ),
         ],
@@ -290,6 +295,8 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
   }
 
   Widget _buildSearchResults(MusicPlayerViewModel viewModel) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -300,7 +307,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
               const Icon(Icons.search, color: Colors.deepPurpleAccent, size: 20),
               const SizedBox(width: 8),
               Text(
-                'Tìm thấy ${_searchResults.length} kết quả',
+                l10n.foundResults('${_searchResults.length}'),
                 style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 14,
@@ -344,18 +351,20 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
   }
 
   void _onMicClick() {
+    final l10n = AppLocalizations.of(context)!;
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Row(
           children: [
-            Icon(Icons.mic, color: Colors.white),
-            SizedBox(width: 12),
-            Text('Tìm kiếm bằng giọng nói (Sắp ra mắt)'),
+            const Icon(Icons.mic, color: Colors.white),
+            const SizedBox(width: 12),
+            Text(l10n.voiceSearchComingSoon),
           ],
         ),
-        backgroundColor: Color(0xFF2A2A3D),
+        backgroundColor: const Color(0xFF2A2A3D),
         behavior: SnackBarBehavior.floating,
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
