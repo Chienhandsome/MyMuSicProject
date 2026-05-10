@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_music_project/core/constants/language_keys.dart';
-import '../../../data/models/shared_preferences_helper.dart';
+import '../../core/constants/language_keys.dart';
+import '../../data/services/shared_preferences_service.dart';
 
 class LocaleProvider extends ChangeNotifier {
   Locale _locale = const Locale(LanguageKeys.vietnameseCode); // Default locale
@@ -12,7 +12,7 @@ class LocaleProvider extends ChangeNotifier {
   }
 
   Future<void> _loadLocale() async {
-    final languageCode = SharedPreferencesHelper.getString(LanguageKeys.languageCode) ?? LanguageKeys.vietnameseCode;
+    final languageCode = SharedPreferencesService.getString(LanguageKeys.languageCode) ?? LanguageKeys.vietnameseCode;
     _locale = Locale(languageCode);
     notifyListeners();
   }
@@ -21,7 +21,7 @@ class LocaleProvider extends ChangeNotifier {
     if (_locale == locale) return;
 
     _locale = locale;
-    await SharedPreferencesHelper.setString(LanguageKeys.vietnameseCode, locale.languageCode);
+    await SharedPreferencesService.setString(LanguageKeys.languageCode, locale.languageCode);
     notifyListeners();
   }
 

@@ -242,6 +242,18 @@ abstract class AppLocalizations {
   /// **'Permission denied. Please grant permission in settings.'**
   String get permissionDenied;
 
+  /// No description provided for @permissionDeniedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have previously denied storage permission. Please grant permission in app settings to use this app.'**
+  String get permissionDeniedMessage;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get openSettings;
+
   /// No description provided for @themeMode.
   ///
   /// In en, this message translates to:
@@ -269,7 +281,7 @@ abstract class AppLocalizations {
   /// No description provided for @feelTheMusic.
   ///
   /// In en, this message translates to:
-  /// **'Feel the music'**
+  /// **'Feel the melody'**
   String get feelTheMusic;
 
   /// No description provided for @nowPlaying.

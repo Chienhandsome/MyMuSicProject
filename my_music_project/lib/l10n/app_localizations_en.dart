@@ -83,6 +83,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Permission denied. Please grant permission in settings.';
 
   @override
+  String get permissionDeniedMessage =>
+      'You have previously denied storage permission. Please grant permission in app settings to use this app.';
+
+  @override
+  String get openSettings => 'Open Settings';
+
+  @override
   String get themeMode => 'Theme Mode';
 
   @override
@@ -95,7 +102,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadingMusic => 'Loading music...';
 
   @override
-  String get feelTheMusic => 'Feel the music';
+  String get feelTheMusic => 'Feel the melody';
 
   @override
   String get nowPlaying => 'Now Playing';

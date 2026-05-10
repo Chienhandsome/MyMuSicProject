@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/music_player_viewmodel.dart';
-import '../widgets/progress_slider.dart';
-import '../widgets/player_controls.dart';
-import '../../l10n/app_localizations.dart';
-import '../widgets/scrolling_title.dart';
+import '../../widgets/progress_slider.dart';
+import '../../widgets/player_controls.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../widgets/scrolling_title.dart';
 
 class PlayerPage extends StatelessWidget {
   const PlayerPage({super.key});

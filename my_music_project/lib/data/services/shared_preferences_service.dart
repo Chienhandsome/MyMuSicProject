@@ -15,7 +15,7 @@ enum UIMode {
 }
 
 
-class SharedPreferencesHelper {
+class SharedPreferencesService {
   static SharedPreferences? _prefs;
 
   ///is repeat - bool
@@ -41,7 +41,7 @@ class SharedPreferencesHelper {
   static SharedPreferences get instance {
     if (_prefs == null) {
       throw Exception(
-        'SharedPreferencesHelper not initialized. Call init() first.',
+        'SharedPreferencesService not initialized. Call init() first.',
       );
     }
     return _prefs!;

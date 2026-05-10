@@ -1,0 +1,55 @@
+.
+├─ core
+│  ├─ constants
+│  │  ├─ language_keys.dart
+│  │  └─ media_keys.dart
+│  └─ utils
+│     ├─ duration_formatter.dart
+│     ├─ file_name_handler.dart
+│     └─ result.dart
+├─ data
+│  ├─ models
+│  │  ├─ shared_preferences_helper.dart
+│  │  └─ song_model.dart
+│  ├─ repositories
+│  │  ├─ audio_repository.dart
+│  │  ├─ music_repository.dart
+│  │  └─ permission_repository.dart
+│  └─ services
+│     ├─ audio_player_service.dart
+│     ├─ music_query_service.dart
+│     └─ permission_service.dart
+├─ l10n
+│  ├─ app_en.arb
+│  ├─ app_localizations_en.dart
+│  ├─ app_localizations_vi.dart
+│  ├─ app_localizations.dart
+│  └─ app_vi.arb
+├─ presentation
+│  ├─ pages
+│  │  ├─ more
+│  │  │  └─ more_page.dart
+│  │  ├─ player
+│  │  │  └─ player_page.dart
+│  │  ├─ search
+│  │  │  └─ search_page.dart
+│  │  ├─ songs
+│  │  │  └─ songs_page.dart
+│  │  └─ splash
+│  │     ├─ splash_background.dart
+│  │     ├─ splash_content.dart
+│  │     ├─ splash_logo.dart
+│  │     └─ splash_page.dart
+│  ├─ viewmodels
+│  │  ├─ locale_provider.dart
+│  │  ├─ music_player_viewmodel.dart
+│  │  └─ permission_viewmodel.dart
+│  └─ widgets
+│     ├─ app_scaffold.dart
+│     ├─ mini_player.dart
+│     ├─ player_controls.dart
+│     ├─ progress_slider.dart
+│     ├─ scrolling_title.dart
+│     └─ song_item.dart
+├─ home_page.dart
+└─ main.dart

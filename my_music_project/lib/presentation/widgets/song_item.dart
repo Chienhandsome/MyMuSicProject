@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../viewmodels/music_player_viewmodel.dart';
-import '../player/player_page.dart';
+import '../viewmodels/music_player_viewmodel.dart';
+import '../pages/player/player_page.dart';
 
 class SongItem extends StatelessWidget {
   final MusicPlayerViewModel viewModel;

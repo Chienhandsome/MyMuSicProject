@@ -83,6 +83,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Quyền truy cập bị từ chối. Vui lòng cấp quyền trong cài đặt.';
 
   @override
+  String get permissionDeniedMessage =>
+      'Bạn đã từ chối quyền truy cập bộ nhớ trước đó. Vui lòng cấp quyền trong cài đặt ứng dụng để sử dụng ứng dụng này.';
+
+  @override
+  String get openSettings => 'Mở Cài Đặt';
+
+  @override
   String get themeMode => 'Chế độ giao diện';
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import '../../viewmodels/music_player_viewmodel.dart';
+import 'package:my_music_project/core/constants/media_keys.dart';
+import '../viewmodels/music_player_viewmodel.dart';
 
 class PlayerControls extends StatelessWidget {
   final MusicPlayerViewModel viewModel;
@@ -41,12 +42,15 @@ class _PlayModeButton extends StatelessWidget {
 
   Icon _mapModeToIcon(String mode) {
     switch (mode) {
-      case 'repeat':
+      case MediaKeys.repeatMode:
         return const Icon(Icons.repeat_one, size: 30);
-      case 'sequential':
+
+      case MediaKeys.sequentialMode:
         return const Icon(Icons.arrow_forward, size: 30);
-      case 'shuffle':
+
+      case MediaKeys.shuffleMode:
         return const Icon(Icons.shuffle, size: 30);
+
       default:
         return const Icon(Icons.skip_next, size: 30);
     }
