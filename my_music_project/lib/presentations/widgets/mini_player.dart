@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
-import 'package:my_music_project/models/song_model.dart';
+import 'package:my_music_project/data/models/song_model.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/music_player_viewmodel.dart';
-import '../views/player/player_page.dart';
+import '../../viewmodels/music_player_viewmodel.dart';
+import '../player/player_page.dart';
 
 class MiniPlayer extends StatelessWidget {
   const MiniPlayer({super.key});

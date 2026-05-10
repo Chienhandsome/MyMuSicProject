@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:my_music_project/constants/prefs_keys.dart';
-import 'package:my_music_project/models/shared_preferences_helper.dart';
+import 'package:my_music_project/core/constants/media_keys.dart';
+import 'package:my_music_project/data/models/shared_preferences_helper.dart';
 import '../models/song_model.dart';
 
 enum PlayMode { sequential, repeat, shuffle }
@@ -46,7 +46,7 @@ class AudioPlayerService {
 
   Future<void> _restoreLastSong() async {
     String lastSongPath =
-        SharedPreferencesHelper.instance.getString(PrefsKeys.lastSongPath) ?? '';
+        SharedPreferencesHelper.instance.getString(MediaKeys.lastSongPath) ?? '';
 
     if (_currentIndex == -1 && lastSongPath.isNotEmpty) {
       final index = _playlist.indexWhere((song) => song.path == lastSongPath);
@@ -117,7 +117,7 @@ class AudioPlayerService {
       await _audioPlayer.play();
 
       await SharedPreferencesHelper.instance.setString(
-          PrefsKeys.lastSongPath,
+          MediaKeys.lastSongPath,
           _playlist[_currentIndex].path
       );
     } catch (e) {
@@ -129,7 +129,7 @@ class AudioPlayerService {
     await _audioPlayer.play();
 
     await SharedPreferencesHelper.instance.setString(
-        PrefsKeys.lastSongPath,
+        MediaKeys.lastSongPath,
         _playlist[_currentIndex].path
     );
   }

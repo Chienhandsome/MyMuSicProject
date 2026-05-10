@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:my_music_project/splash/splash_background.dart';
-import 'package:my_music_project/splash/splash_content.dart';
-import 'package:my_music_project/splash/splash_logo.dart';
+import 'package:my_music_project/presentations/splash/splash_background.dart';
+import 'package:my_music_project/presentations/splash/splash_content.dart';
+import 'package:my_music_project/presentations/splash/splash_logo.dart';
+
 import 'package:provider/provider.dart';
-import '../viewmodels/music_player_viewmodel.dart';
-import '../home_page.dart';
-import '../generated/l10n/app_localizations.dart';
+
+import '../../l10n/app_localizations.dart';
+import '../../home_page.dart';
+import '../../viewmodels/music_player_viewmodel.dart';
+
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});

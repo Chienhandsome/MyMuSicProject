@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import '../models/song_model.dart';
-import '../services/audio_player_service.dart';
-import '../services/permission_service.dart';
-import '../services/music_query_service.dart';
+import '../data/models/song_model.dart';
+import '../data/services/audio_player_service.dart';
+import '../data/services/permission_service.dart';
+import '../data/services/music_query_service.dart';
 
 class MusicPlayerViewModel extends ChangeNotifier {
   final AudioPlayerService _audioService = AudioPlayerService();

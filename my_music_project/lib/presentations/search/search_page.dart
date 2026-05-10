@@ -2,9 +2,9 @@ import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/music_player_viewmodel.dart';
-import '../../models/song_model.dart';
-import '../../widgets/song_item.dart';
-import '../../generated/l10n/app_localizations.dart';
+import '../../data/models/song_model.dart';
+import '../widgets/song_item.dart';
+import '../../l10n/app_localizations.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});

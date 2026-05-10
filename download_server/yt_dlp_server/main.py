@@ -9,6 +9,10 @@ app = FastAPI()
 DOWNLOAD_DIR = "downloads"
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
+# Optional overrides for yt-dlp
+COOKIES_BROWSER = os.getenv("YTDLP_COOKIES_BROWSER")
+JS_RUNTIME = os.getenv("YTDLP_JS_RUNTIME")
+
 
 @app.get("/mp3")
 def download_mp3(url: str = Query(...)):
@@ -22,6 +26,12 @@ def download_mp3(url: str = Query(...)):
         "-o", output_path,
         url
     ]
+
+    if COOKIES_BROWSER:
+        cmd.extend(["--cookies-from-browser", COOKIES_BROWSER])
+
+    if JS_RUNTIME:
+        cmd.extend(["--js-runtimes", JS_RUNTIME])
 
     try:
         subprocess.run(cmd, check=True)

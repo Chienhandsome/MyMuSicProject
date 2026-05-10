@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:my_music_project/views/search/search_page.dart';
+
 import 'package:provider/provider.dart';
 import '../../viewmodels/music_player_viewmodel.dart';
-import '../../widgets/app_scaffold.dart';
-import '../../widgets/song_item.dart';
-import '../../generated/l10n/app_localizations.dart';
+import '../widgets/app_scaffold.dart';
+import '../widgets/song_item.dart';
+import '../../l10n/app_localizations.dart';
+import '../search/search_page.dart';
 
 
 class SongsPage extends StatelessWidget {

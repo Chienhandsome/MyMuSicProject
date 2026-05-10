@@ -1,11 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'views/songs/songs_page.dart';
-import 'views/more/more_page.dart';
-import 'widgets/mini_player.dart';
-import 'viewmodels/music_player_viewmodel.dart';
-import 'generated/l10n/app_localizations.dart';
+import 'presentations/songs/songs_page.dart';
+import 'presentations/more/page/more_page.dart';
+import 'presentations/widgets/mini_player.dart';
+import 'l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -43,30 +41,28 @@ class _HomePageState extends State<HomePage> {
             child: MiniPlayer(),
           ),
 
-          Container(
-            child: SafeArea(
-              top: false,
-              child: BottomNavigationBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                currentIndex: _currentIndex,
-                onTap: (index) {
-                  setState(() => _currentIndex = index);
-                },
-                selectedItemColor: Colors.deepPurpleAccent,
-                unselectedItemColor: Colors.white54,
-                type: BottomNavigationBarType.fixed,
-                items: [
-                  BottomNavigationBarItem(
-                    icon: const Icon(Icons.music_note),
-                    label: l10n.songs,
-                  ),
-                  BottomNavigationBarItem(
-                    icon: const Icon(Icons.more_horiz),
-                    label: l10n.more,
-                  ),
-                ],
-              ),
+          SafeArea(
+            top: false,
+            child: BottomNavigationBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                setState(() => _currentIndex = index);
+              },
+              selectedItemColor: Colors.deepPurpleAccent,
+              unselectedItemColor: Colors.white54,
+              type: BottomNavigationBarType.fixed,
+              items: [
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.music_note),
+                  label: l10n.songs,
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.more_horiz),
+                  label: l10n.more,
+                ),
+              ],
             ),
           ),
         ],

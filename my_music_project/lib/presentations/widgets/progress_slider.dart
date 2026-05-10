@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../viewmodels/music_player_viewmodel.dart';
-import '../utils/duration_formatter.dart';
+import '../../viewmodels/music_player_viewmodel.dart';
+import '../../core/utils/duration_formatter.dart';
 
 class ProgressSlider extends StatefulWidget {
   final MusicPlayerViewModel viewModel;
