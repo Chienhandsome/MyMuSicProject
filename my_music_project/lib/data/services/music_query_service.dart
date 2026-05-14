@@ -1,14 +1,22 @@
 import 'package:flutter/foundation.dart';
 import 'package:on_audio_query/on_audio_query.dart' hide SongModel;
 import '../models/song_model.dart';
+import 'dart:io';
 
 class MusicQueryService {
   final OnAudioQuery _audioQuery = OnAudioQuery();
 
-  /// Các thư mục được phép quét
-  static const List<String> allowedFolders = [
+  /// Android folders allowed to scan.
+  static const List<String> allowedFoldersAndroid = [
     '/storage/emulated/0/Music',
     '/storage/emulated/0/Download',
+  ];
+
+  /// iOS folders allowed to scan (sandboxed media paths).
+  static const List<String> allowedFoldersIOS = [
+    '/private/var/mobile/Media/Music',
+    '/private/var/mobile/Media/iTunes_Control/Music',
+    '/private/var/mobile/Media/Downloads',
   ];
 
   Future<List<SongModel>> loadSongs() async {
@@ -24,6 +32,10 @@ class MusicQueryService {
       // Yield one microtask so the framework can render a frame before
       // the synchronous filter+map runs on the main isolate.
       await Future.microtask(() {});
+
+      final allowedFolders = Platform.isIOS
+          ? allowedFoldersIOS
+          : allowedFoldersAndroid;
 
       return songs
           .where((song) {
