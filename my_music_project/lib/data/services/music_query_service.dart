@@ -6,13 +6,14 @@ class MusicQueryService {
   final OnAudioQuery _audioQuery = OnAudioQuery();
 
   /// Các thư mục được phép quét
-  final List<String> allowedFolders = [
+  static const List<String> allowedFolders = [
     '/storage/emulated/0/Music',
     '/storage/emulated/0/Download',
   ];
 
   Future<List<SongModel>> loadSongs() async {
     try {
+      // querySongs() runs via platform channel — already off the main thread.
       final songs = await _audioQuery.querySongs(
         sortType: null,
         orderType: OrderType.ASC_OR_SMALLER,
@@ -20,19 +21,22 @@ class MusicQueryService {
         ignoreCase: true,
       );
 
-      final filtered = songs.where((song) {
-        final path = song.data;
-        if (path.isEmpty) return false;
-        return allowedFolders.any((folder) => path.startsWith(folder));
-      }).toList();
+      // Yield one microtask so the framework can render a frame before
+      // the synchronous filter+map runs on the main isolate.
+      await Future.microtask(() {});
 
-      return filtered
+      return songs
+          .where((song) {
+            final path = song.data;
+            if (path.isEmpty) return false;
+            return allowedFolders.any((folder) => path.startsWith(folder));
+          })
           .map((song) => SongModel(
-        id: song.id.toString(),
-        title: song.title,
-        path: song.data,
-        duration: song.duration ?? 0,
-      ))
+                id: song.id.toString(),
+                title: song.title,
+                path: song.data,
+                duration: song.duration ?? 0,
+              ))
           .toList();
     } catch (e) {
       debugPrint('Error loading songs: $e');
