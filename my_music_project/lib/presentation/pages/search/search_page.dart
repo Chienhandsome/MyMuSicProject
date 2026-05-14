@@ -1,19 +1,20 @@
 import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../viewmodels/music_player_viewmodel.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/music_provider.dart';
+import '../../providers/audio_provider.dart';
 import '../../../data/models/song_model.dart';
 import '../../widgets/song_item.dart';
 import '../../../../l10n/app_localizations.dart';
 
-class SearchPage extends StatefulWidget {
+class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _SearchPageState();
+  ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateMixin {
+class _SearchPageState extends ConsumerState<SearchPage> with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   late AnimationController _animationController;
@@ -56,7 +57,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
       _isSearching = true;
     });
 
-    final viewModel = context.read<MusicPlayerViewModel>();
+    final songs = ref.read(musicProvider).songs;
 
     if (_searchQuery.isEmpty) {
       setState(() {
@@ -66,12 +67,10 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
       return;
     }
 
-    // Filter songs based on query
-    final results = viewModel.songs.where((song) {
+    final results = songs.where((song) {
       final title = removeDiacritics(song.title.toLowerCase());
-      final query = removeDiacritics(_searchQuery.toLowerCase());
-
-      return title.contains(query);
+      final q = removeDiacritics(_searchQuery.toLowerCase());
+      return title.contains(q);
     }).toList();
 
     setState(() {
@@ -91,7 +90,6 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<MusicPlayerViewModel>();
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -143,12 +141,12 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
       ),
       body: FadeTransition(
         opacity: _fadeAnimation,
-        child: _buildBody(viewModel),
+        child: _buildBody(),
       ),
     );
   }
 
-  Widget _buildBody(MusicPlayerViewModel viewModel) {
+  Widget _buildBody() {
     if (_isSearching) {
       return const Center(
         child: CircularProgressIndicator(color: Colors.deepPurpleAccent),
@@ -156,18 +154,20 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
     }
 
     if (_searchQuery.isEmpty) {
-      return _buildEmptyState(viewModel);
+      return _buildEmptyState();
     }
 
     if (_searchResults.isEmpty) {
       return _buildNoResults();
     }
 
-    return _buildSearchResults(viewModel);
+    return _buildSearchResults();
   }
 
-  Widget _buildEmptyState(MusicPlayerViewModel viewModel) {
-    final recentSongs = viewModel.songs.take(5).toList();
+  Widget _buildEmptyState() {
+    final songs = ref.read(musicProvider).songs;
+    final audioState = ref.read(audioProvider);
+    final recentSongs = songs.take(5).toList();
     final l10n = AppLocalizations.of(context)!;
 
     return SingleChildScrollView(
@@ -228,9 +228,9 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
               itemCount: recentSongs.length,
               itemBuilder: (context, index) {
                 return SongItem(
-                  viewModel: viewModel,
-                  index: viewModel.songs.indexOf(recentSongs[index]),
+                  index: songs.indexOf(recentSongs[index]),
                   song: recentSongs[index],
+                  currentIndex: audioState.currentIndex,
                 );
               },
             ),
@@ -294,7 +294,9 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildSearchResults(MusicPlayerViewModel viewModel) {
+  Widget _buildSearchResults() {
+    final songs = ref.read(musicProvider).songs;
+    final audioState = ref.read(audioProvider);
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
@@ -323,7 +325,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
             itemCount: _searchResults.length,
             itemBuilder: (context, index) {
               final song = _searchResults[index];
-              final originalIndex = viewModel.songs.indexOf(song);
+              final originalIndex = songs.indexOf(song);
 
               return TweenAnimationBuilder<double>(
                 duration: Duration(milliseconds: 200 + (index * 50)),
@@ -338,9 +340,9 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                   );
                 },
                 child: SongItem(
-                  viewModel: viewModel,
                   index: originalIndex,
                   song: song,
+                  currentIndex: audioState.currentIndex,
                 ),
               );
             },

@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../viewmodels/locale_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/locale_provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/app_scaffold.dart';
 
-class MorePage extends StatefulWidget {
+class MorePage extends ConsumerWidget {
   const MorePage({super.key});
 
   @override
-  State<MorePage> createState() => _MorePageState();
-}
-
-class _MorePageState extends State<MorePage> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final localeProvider = context.watch<LocaleProvider>();
-    final currentLanguage = localeProvider.locale.languageCode == 'en'
-        ? 'English'
-        : 'Tiếng Việt';
+    final locale = ref.watch(localeProvider);
+    final currentLanguage = locale.languageCode == 'en' ? 'English' : 'Tiếng Việt';
 
     return AppScaffold(
       title: l10n.settings,
@@ -29,7 +22,7 @@ class _MorePageState extends State<MorePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle(l10n.language),
-            _buildLanguageOption(l10n, currentLanguage, localeProvider),
+            _buildLanguageOption(context, l10n, currentLanguage, ref),
           ],
         ),
       ),
@@ -52,9 +45,10 @@ class _MorePageState extends State<MorePage> {
   }
 
   Widget _buildLanguageOption(
+    BuildContext context,
     AppLocalizations l10n,
     String currentLanguage,
-    LocaleProvider localeProvider
+    WidgetRef ref,
   ) {
     return Container(
       decoration: BoxDecoration(
@@ -126,7 +120,7 @@ class _MorePageState extends State<MorePage> {
                 final newLocale = newValue == 'English'
                     ? const Locale('en')
                     : const Locale('vi');
-                localeProvider.setLocale(newLocale);
+                ref.read(localeProvider.notifier).setLocale(newLocale);
               }
             },
           ),

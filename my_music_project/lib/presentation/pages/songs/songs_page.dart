@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../viewmodels/music_player_viewmodel.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/music_provider.dart';
+import '../../providers/audio_provider.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/song_item.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../search/search_page.dart';
 
 
-class SongsPage extends StatelessWidget {
+class SongsPage extends ConsumerWidget {
   const SongsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
 
     return AppScaffold(
@@ -20,7 +21,7 @@ class SongsPage extends StatelessWidget {
       actions: [
         IconButton(
           icon: const Icon(Icons.refresh, color: Colors.white70),
-          onPressed: () => context.read<MusicPlayerViewModel>().loadSongs(),
+          onPressed: () => ref.read(musicProvider.notifier).loadSongs(),
         ),
         IconButton(
           icon: const Icon(
@@ -37,27 +38,26 @@ class SongsPage extends StatelessWidget {
           onPressed: () => onMoreEvent(context),
         )
       ],
-      body: Consumer<MusicPlayerViewModel>(
-        builder: (context, viewModel, _) {
+      body: Consumer(builder: (context, ref, _) {
+        final musicState = ref.watch(musicProvider);
 
-          if (viewModel.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.white),
-            );
-          }
+        if (musicState.isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.white),
+          );
+        }
 
-          if (viewModel.songs.isEmpty) {
-            return Center(
-              child: Text(
-                l10n.noSongs,
-                style: const TextStyle(color: Colors.white),
-              ),
-            );
-          }
+        if (musicState.songs.isEmpty) {
+          return Center(
+            child: Text(
+              l10n.noSongs,
+              style: const TextStyle(color: Colors.white),
+            ),
+          );
+        }
 
-          return _SongsList(viewModel: viewModel);
-        },
-      ),
+        return _SongsList(songs: musicState.songs);
+      }),
     );
   }
 
@@ -74,21 +74,22 @@ class SongsPage extends StatelessWidget {
 
 }
 
-class _SongsList extends StatelessWidget {
-  final MusicPlayerViewModel viewModel;
+class _SongsList extends ConsumerWidget {
+  final List songs;
 
-  const _SongsList({required this.viewModel});
+  const _SongsList({required this.songs});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final audioState = ref.watch(audioProvider);
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16),
-      itemCount: viewModel.songs.length,
+      itemCount: songs.length,
       itemBuilder: (context, index) {
-        final song = viewModel.songs[index];
-        return SongItem(viewModel: viewModel, index: index, song: song);
+        final song = songs[index];
+        return SongItem(index: index, song: song, currentIndex: audioState.currentIndex);
       },
     );
   }

@@ -1,34 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:my_music_project/core/constants/media_keys.dart';
-import '../viewmodels/music_player_viewmodel.dart';
+import '../providers/audio_provider.dart';
 
-class PlayerControls extends StatelessWidget {
-  final MusicPlayerViewModel viewModel;
-
-  const PlayerControls({super.key, required this.viewModel});
+class PlayerControls extends ConsumerWidget {
+  const PlayerControls({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final audioState = ref.watch(audioProvider);
+    final notifier = ref.read(audioProvider.notifier);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _PlayModeButton(viewModel: viewModel),
+        _PlayModeButton(playModeKey: notifier.getPlayModeKey(), onPressed: notifier.togglePlayMode),
 
         _SkipButton(
           icon: Icons.skip_previous,
-          onPressed: viewModel.playPrevious,
+          onPressed: notifier.playPrevious,
         ),
-        _PlayPauseButton(viewModel: viewModel),
+        _PlayPauseButton(audioPlayer: notifier.audioPlayer, notifier: notifier),
 
         _SkipButton(
           icon: Icons.skip_next,
-          onPressed: viewModel.playNext,
+          onPressed: notifier.playNext,
         ),
 
         _ContinuePlayButton(
-          icon: viewModel.getIsContinuePlay() ? Icons.repeat_on_rounded : Icons.repeat,
-          onPressed: viewModel.toggleContinuePlay,
+          icon: audioState.isContinuePlay ? Icons.repeat_on_rounded : Icons.repeat,
+          onPressed: notifier.toggleContinuePlay,
         ),
       ],
     );
@@ -36,21 +38,19 @@ class PlayerControls extends StatelessWidget {
 }
 
 class _PlayModeButton extends StatelessWidget {
-  final MusicPlayerViewModel viewModel;
+  final String playModeKey;
+  final VoidCallback onPressed;
 
-  const _PlayModeButton({required this.viewModel});
+  const _PlayModeButton({required this.playModeKey, required this.onPressed});
 
   Icon _mapModeToIcon(String mode) {
     switch (mode) {
       case MediaKeys.repeatMode:
         return const Icon(Icons.repeat_one, size: 30);
-
       case MediaKeys.sequentialMode:
         return const Icon(Icons.arrow_forward, size: 30);
-
       case MediaKeys.shuffleMode:
         return const Icon(Icons.shuffle, size: 30);
-
       default:
         return const Icon(Icons.skip_next, size: 30);
     }
@@ -59,8 +59,8 @@ class _PlayModeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: _mapModeToIcon(viewModel.getPlayMode()),
-      onPressed: viewModel.togglePlayMode,
+      icon: _mapModeToIcon(playModeKey),
+      onPressed: onPressed,
     );
   }
 }
@@ -104,14 +104,15 @@ class _ContinuePlayButton extends StatelessWidget{
 }
 
 class _PlayPauseButton extends StatelessWidget {
-  final MusicPlayerViewModel viewModel;
+  final AudioPlayer audioPlayer;
+  final AudioNotifier notifier;
 
-  const _PlayPauseButton({required this.viewModel});
+  const _PlayPauseButton({required this.audioPlayer, required this.notifier});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<PlayerState>(
-      stream: viewModel.audioPlayer.playerStateStream,
+      stream: audioPlayer.playerStateStream,
       builder: (context, snapshot) {
         final isPlaying = snapshot.data?.playing ?? false;
 
@@ -120,7 +121,7 @@ class _PlayPauseButton extends StatelessWidget {
             isPlaying ? Icons.pause_circle : Icons.play_circle,
             size: 64,
           ),
-          onPressed: isPlaying ? viewModel.pause : viewModel.play,
+          onPressed: isPlaying ? notifier.pause : notifier.play,
         );
       },
     );

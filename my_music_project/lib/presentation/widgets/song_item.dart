@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import '../viewmodels/music_player_viewmodel.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/audio_provider.dart';
 import '../pages/player/player_page.dart';
 
-class SongItem extends StatelessWidget {
-  final MusicPlayerViewModel viewModel;
+class SongItem extends ConsumerWidget {
   final int index;
   final dynamic song;
+  final int currentIndex;
 
   const SongItem({
-    required this.viewModel,
     required this.index,
     required this.song,
+    required this.currentIndex,
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final isPlaying = viewModel.currentIndex == index;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isPlaying = currentIndex == index;
 
     return Card(
       elevation: isPlaying ? 6 : 1,
@@ -44,16 +45,15 @@ class SongItem extends StatelessWidget {
           style: const TextStyle(color: Colors.white54),
         ),
         trailing: IconButton(
-            onPressed: () => _onMoreEvent(context),
+            onPressed: () => _onMoreEvent(context, ref),
             icon: const Icon(Icons.more_vert)
         ),
-        onTap: () => _playSong(context),
+        onTap: () => _playSong(context, ref),
       ),
     );
   }
 
-  Future<void> _playSong(BuildContext context) async {
-    // Close keyboard before navigating
+  Future<void> _playSong(BuildContext context, WidgetRef ref) async {
     FocusScope.of(context).unfocus();
 
     if (context.mounted) {
@@ -63,10 +63,10 @@ class SongItem extends StatelessWidget {
       );
     }
 
-    await viewModel.playSongAt(index);
+    await ref.read(audioProvider.notifier).playSongAt(index);
   }
 
-  void _onMoreEvent(BuildContext context) {
+  void _onMoreEvent(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF121212),
@@ -83,7 +83,6 @@ class SongItem extends StatelessWidget {
                 title: const Text('Play', style: TextStyle(color: Colors.white)),
                 onTap: () async {
                   Navigator.pop(ctx);
-                  // Close keyboard before navigating
                   FocusScope.of(context).unfocus();
                   if (context.mounted) {
                     Navigator.push(
@@ -91,7 +90,7 @@ class SongItem extends StatelessWidget {
                       MaterialPageRoute(builder: (_) => const PlayerPage()),
                     );
                   }
-                  await viewModel.playSongAt(index);
+                  await ref.read(audioProvider.notifier).playSongAt(index);
                 },
               ),
               ListTile(

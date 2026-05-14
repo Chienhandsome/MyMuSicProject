@@ -2,14 +2,13 @@
 ├─ core
 │  ├─ constants
 │  │  ├─ language_keys.dart
-│  │  └─ media_keys.dart
+│  │  ├─ media_keys.dart
+│  │  └─ permission_keys.dart
 │  └─ utils
 │     ├─ duration_formatter.dart
-│     ├─ file_name_handler.dart
 │     └─ result.dart
 ├─ data
 │  ├─ models
-│  │  ├─ shared_preferences_helper.dart
 │  │  └─ song_model.dart
 │  ├─ repositories
 │  │  ├─ audio_repository.dart
@@ -18,15 +17,16 @@
 │  └─ services
 │     ├─ audio_player_service.dart
 │     ├─ music_query_service.dart
-│     └─ permission_service.dart
-├─ l10n
-│  ├─ app_en.arb
-│  ├─ app_localizations_en.dart
-│  ├─ app_localizations_vi.dart
-│  ├─ app_localizations.dart
-│  └─ app_vi.arb
+│     ├─ permission_service.dart
+│     └─ shared_preferences_service.dart
+├─ domain
+│  └─ usecases
+│     ├─ check_permission_usecase.dart
+│     ├─ load_songs_usecase.dart
+│     └─ request_permission_usecase.dart
 ├─ presentation
 │  ├─ pages
+│  │  ├─ home_page.dart
 │  │  ├─ more
 │  │  │  └─ more_page.dart
 │  │  ├─ player
@@ -40,10 +40,11 @@
 │  │     ├─ splash_content.dart
 │  │     ├─ splash_logo.dart
 │  │     └─ splash_page.dart
-│  ├─ viewmodels
+│  ├─ providers
+│  │  ├─ audio_provider.dart
 │  │  ├─ locale_provider.dart
-│  │  ├─ music_player_viewmodel.dart
-│  │  └─ permission_viewmodel.dart
+│  │  ├─ music_provider.dart
+│  │  └─ permission_provider.dart
 │  └─ widgets
 │     ├─ app_scaffold.dart
 │     ├─ mini_player.dart
@@ -51,5 +52,11 @@
 │     ├─ progress_slider.dart
 │     ├─ scrolling_title.dart
 │     └─ song_item.dart
-├─ home_page.dart
-└─ main.dart
+├─ l10n
+│  ├─ app_en.arb
+│  ├─ app_localizations_en.dart
+│  ├─ app_localizations_vi.dart
+│  ├─ app_localizations.dart
+│  └─ app_vi.arb
+├─ main.dart
+└─ structure.txt

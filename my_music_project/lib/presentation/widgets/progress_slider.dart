@@ -1,29 +1,30 @@
 import 'package:flutter/material.dart';
-import '../viewmodels/music_player_viewmodel.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/audio_provider.dart';
 import '../../core/utils/duration_formatter.dart';
 
-class ProgressSlider extends StatefulWidget {
-  final MusicPlayerViewModel viewModel;
-
-  const ProgressSlider({super.key, required this.viewModel});
+class ProgressSlider extends ConsumerStatefulWidget {
+  const ProgressSlider({super.key});
 
   @override
-  State<ProgressSlider> createState() => _ProgressSliderState();
+  ConsumerState<ProgressSlider> createState() => _ProgressSliderState();
 }
 
-class _ProgressSliderState extends State<ProgressSlider> {
+class _ProgressSliderState extends ConsumerState<ProgressSlider> {
   double? _localDragValue;
 
   @override
   Widget build(BuildContext context) {
-    final currentSong = widget.viewModel.currentSong;
+    final audioState = ref.watch(audioProvider);
+    final currentSong = audioState.currentSong;
     if (currentSong == null) return const SizedBox.shrink();
 
     final duration = Duration(milliseconds: currentSong.duration);
     final maxValue = duration.inMilliseconds.toDouble();
+    final audioPlayer = ref.read(audioProvider.notifier).audioPlayer;
 
     return StreamBuilder<Duration>(
-      stream: widget.viewModel.audioPlayer.positionStream,
+      stream: audioPlayer.positionStream,
       builder: (context, snapshot) {
         final position = snapshot.data ?? Duration.zero;
         final currentValue = _localDragValue ??
@@ -52,7 +53,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
                   setState(() => _localDragValue = value);
                 },
                 onChangeEnd: (value) {
-                  widget.viewModel.seek(Duration(milliseconds: value.toInt()));
+                  ref.read(audioProvider.notifier).seek(Duration(milliseconds: value.toInt()));
                   setState(() => _localDragValue = null);
                 },
               ),

@@ -1,38 +1,40 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../splash/splash_background.dart';
 import '../splash/splash_content.dart';
 import '../splash/splash_logo.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../home_page.dart';
-import '../../viewmodels/music_player_viewmodel.dart';
-import '../../viewmodels/permission_viewmodel.dart';
+import '../../providers/music_provider.dart';
+import '../../providers/permission_provider.dart';
 
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  ConsumerState<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage>
-  with TickerProviderStateMixin{
+class _SplashPageState extends ConsumerState<SplashPage>
+  with TickerProviderStateMixin, WidgetsBindingObserver {
 
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
-  bool _showPermissionRequest = false;
 
   // Pre-built HomePage để chuyển đổi mượt mà
   Widget? _preloadedHomePage;
 
+  bool _waitingForSettings = false;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _setupAnimations();
     _initializeApp();
   }
@@ -68,38 +70,30 @@ class _SplashPageState extends State<SplashPage>
 
     if (!mounted) return;
 
-    final permissionViewModel = context.read<PermissionViewModel>();
-    
+    final permissionNotifier = ref.read(permissionProvider.notifier);
+
     try {
       // Load trạng thái permission denied trước
-      await permissionViewModel.loadPermissionDeniedStatus();
+      await permissionNotifier.loadDeniedStatus();
 
       if (!mounted) return;
 
-      // Nếu chưa từng từ chối quyền, request luôn
-      if (!permissionViewModel.hasPermanentlyDenied) {
-        await _requestPermission();
-      } else {
-        // Nếu đã từng từ chối, check permission trước rồi show dialog phù hợp
-        await permissionViewModel.checkPermission();
-        
-        if (!mounted) return;
+      // Luôn kiểm tra quyền hiện tại trước
+      await permissionNotifier.checkPermission();
 
-        if (permissionViewModel.hasPermission) {
-          await _prepareHomePage();
-        } else {
-          setState(() {
-            _showPermissionRequest = true;
-          });
-        }
+      if (!mounted) return;
+
+      if (ref.read(permissionProvider).hasPermission) {
+        await _prepareHomePage();
+        return;
       }
+
+      // Luôn dùng system dialog để xin quyền
+      await _requestPermission();
     } catch (e) {
-      // Nếu có lỗi bất kỳ, hiển thị dialog permission request
       developer.log('Error in _initializeApp: $e');
       if (mounted) {
-        setState(() {
-          _showPermissionRequest = true;
-        });
+        await _requestPermission();
       }
     }
   }
@@ -115,13 +109,11 @@ class _SplashPageState extends State<SplashPage>
   Future<void> _prepareHomePage() async {
     if (!mounted) return;
 
-    final viewModel = context.read<MusicPlayerViewModel>();
-
     // Tạo HomePage widget trước
     _preloadedHomePage = const HomePage();
 
-    // Khởi tạo ViewModel (load songs, etc.)
-    await viewModel.init();
+    // Load songs thông qua musicProvider
+    await ref.read(musicProvider.notifier).loadSongs();
 
     if (!mounted) return;
 
@@ -150,40 +142,74 @@ class _SplashPageState extends State<SplashPage>
   }
 
   Future<void> _requestPermission() async {
-    final permissionViewModel = context.read<PermissionViewModel>();
-    await permissionViewModel.requestPermission();
+    await ref.read(permissionProvider.notifier).requestPermission();
 
     if (!mounted) return;
 
-    if (permissionViewModel.hasPermission) {
-      // Khởi tạo HomePage sau khi có quyền
+    if (ref.read(permissionProvider).hasPermission) {
       await _prepareHomePage();
     } else {
+      // Bị từ chối: hiện system AlertDialog hỏi mở Settings
       if (mounted) {
-        setState(() {
-          // Giữ nguyên trạng thái show permission request
-          // UI sẽ tự động cập nhật để hiển thị dialog với 2 nút
-        });
+        await _showPermissionDeniedDialog();
       }
     }
   }
 
+  Future<void> _showPermissionDeniedDialog() async {
+    final l10n = AppLocalizations.of(context)!;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.permissionRequired),
+        content: Text(l10n.permissionDeniedMessage),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              _exitApp();
+            },
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+              _waitingForSettings = true;
+              await _openAppSettings();
+            },
+            child: Text(l10n.openSettings),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _checkPermissionAfterSettings() async {
-    final permissionViewModel = context.read<PermissionViewModel>();
-    await permissionViewModel.checkPermission();
+    final notifier = ref.read(permissionProvider.notifier);
+    await notifier.checkPermission();
 
     if (!mounted) return;
 
-    if (permissionViewModel.hasPermission) {
+    if (ref.read(permissionProvider).hasPermission) {
       // Reset trạng thái denied
-      await permissionViewModel.resetPermissionDeniedStatus();
+      await notifier.resetDeniedStatus();
       // Khởi tạo HomePage sau khi có quyền
       await _prepareHomePage();
     }
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _waitingForSettings) {
+      _waitingForSettings = false;
+      _checkPermissionAfterSettings();
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
     super.dispose();
   }
@@ -195,18 +221,11 @@ class _SplashPageState extends State<SplashPage>
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, child) {
-            return Stack(
-              children: [
-                Center(
-                  child: SplashContent(
-                    fadeAnimation: _fadeAnimation,
-                    logo: SplashLogo(scaleAnimation: _scaleAnimation),
-                  ),
-                ),
-                // Hiển thị permission request dialog khi cần
-                if (_showPermissionRequest)
-                  _buildPermissionRequest(),
-              ],
+            return Center(
+              child: SplashContent(
+                fadeAnimation: _fadeAnimation,
+                logo: SplashLogo(scaleAnimation: _scaleAnimation),
+              ),
             );
           },
         ),
@@ -214,96 +233,4 @@ class _SplashPageState extends State<SplashPage>
     );
   }
 
-  Widget _buildPermissionRequest() {
-    return Consumer<PermissionViewModel>(
-      builder: (context, permissionViewModel, _) {
-        final l10n = AppLocalizations.of(context)!;
-        final hasPermanentlyDenied = permissionViewModel.hasPermanentlyDenied;
-
-        return Center(
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 150),
-                Icon(
-                  hasPermanentlyDenied ? Icons.settings_suggest : Icons.lock,
-                  size: 64,
-                  color: Colors.white70,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  hasPermanentlyDenied 
-                      ? l10n.permissionRequired 
-                      : l10n.permissionRequired,
-                  style: const TextStyle(color: Colors.white, fontSize: 18),
-                ),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Text(
-                    hasPermanentlyDenied
-                        ? l10n.permissionDeniedMessage
-                        : l10n.permissionMessage,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                if (hasPermanentlyDenied) ...[
-                  // Hiển thị 2 nút khi đã từng từ chối
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: _exitApp,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                        ),
-                        child: Text(
-                          l10n.cancel,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      ElevatedButton(
-                        onPressed: () async {
-                          await _openAppSettings();
-                          // Khi user quay lại từ settings, kiểm tra lại permission
-                          await _checkPermissionAfterSettings();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurpleAccent,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                        ),
-                        child: Text(
-                          l10n.openSettings,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-                ] else ...[
-                  // Hiển thị 1 nút khi chưa từng từ chối
-                  ElevatedButton(
-                    onPressed: _requestPermission,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurpleAccent,
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                    ),
-                    child: Text(
-                      l10n.grantPermission,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 }
