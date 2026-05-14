@@ -138,6 +138,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hour1 => '1 giờ';
 
   @override
+  String get hour2 => '2 giờ';
+
+  @override
   String get searchSongs => 'Tìm kiếm bài hát...';
 
   @override

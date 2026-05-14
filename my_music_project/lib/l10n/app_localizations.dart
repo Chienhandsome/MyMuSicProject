@@ -350,6 +350,12 @@ abstract class AppLocalizations {
   /// **'1 hour'**
   String get hour1;
 
+  /// No description provided for @hour2.
+  ///
+  /// In en, this message translates to:
+  /// **'2 hour'**
+  String get hour2;
+
   /// No description provided for @searchSongs.
   ///
   /// In en, this message translates to:

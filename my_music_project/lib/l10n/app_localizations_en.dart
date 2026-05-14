@@ -138,6 +138,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hour1 => '1 hour';
 
   @override
+  String get hour2 => '2 hour';
+
+  @override
   String get searchSongs => 'Search songs...';
 
   @override

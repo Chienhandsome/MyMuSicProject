@@ -23,7 +23,6 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
 
   // Pre-built HomePage để chuyển đổi mượt mà
   Widget? _preloadedHomePage;
@@ -52,7 +51,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
       curve: const Interval(0.0, 0.6, curve: Curves.easeInOut),
     ));
 
-    _scaleAnimation = Tween<double>(
+    Tween<double>(
       begin: 0.8,
       end: 1.0,
     ).animate(CurvedAnimation(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -53,7 +54,7 @@ class PlayerPage extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Column(
                     children: [
-                      const Spacer(),
+                      const _SleepTimerCountdown(),
                       Container(
                         width: 260,
                         height: 260,
@@ -89,11 +90,75 @@ class PlayerPage extends ConsumerWidget {
                       const SizedBox(height: 32),
                       const PlayerControls(),
                       const Spacer(),
+
                     ],
                   ),
                 ),
               ),
             ),
+    );
+  }
+}
+
+class _SleepTimerCountdown extends ConsumerStatefulWidget {
+  const _SleepTimerCountdown();
+
+  @override
+  ConsumerState<_SleepTimerCountdown> createState() => _SleepTimerCountdownState();
+}
+
+class _SleepTimerCountdownState extends ConsumerState<_SleepTimerCountdown> {
+  Timer? _ticker;
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final sleepTimerEnd = ref.watch(audioProvider).sleepTimerEnd;
+
+    if (sleepTimerEnd == null) return const Spacer();
+
+    final remaining = sleepTimerEnd.difference(DateTime.now());
+    if (remaining.isNegative) return const Spacer();
+
+    final minutes = remaining.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = remaining.inSeconds.remainder(60).toString().padLeft(2, '0');
+
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            '$minutes:$seconds',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w300,
+              letterSpacing: 4,
+            ),
+          ),
+          const SizedBox(height: 4),
+          TextButton(
+            onPressed: () => ref.read(audioProvider.notifier).cancelSleepTimer(),
+            child: const Text(
+              'Huỷ hẹn giờ',
+              style: TextStyle(color: Colors.white38, fontSize: 12),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -168,6 +233,7 @@ class _SleepTimerSheet extends StatelessWidget {
           _item(context, l10n.minutes15, const Duration(minutes: 15)),
           _item(context, l10n.minutes30, const Duration(minutes: 30)),
           _item(context, l10n.hour1, const Duration(hours: 1)),
+          _item(context, l10n.hour2, const Duration(hours: 2)),
           ListTile(
             title: Text(l10n.cancel, style: const TextStyle(color: Colors.red)),
             onTap: () => Navigator.pop(context),
