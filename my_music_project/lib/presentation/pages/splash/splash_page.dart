@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../splash/splash_background.dart';
 import '../splash/splash_content.dart';
-import '../splash/splash_logo.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../home_page.dart';
 import '../../providers/music_provider.dart';
@@ -224,7 +223,14 @@ class _SplashPageState extends ConsumerState<SplashPage>
             return Center(
               child: SplashContent(
                 fadeAnimation: _fadeAnimation,
-                logo: SplashLogo(scaleAnimation: _scaleAnimation),
+                logo: ClipRRect(
+                  borderRadius: BorderRadius.circular(32),
+                  child: Image.asset(
+                    'assets/icon/ic_my_melody.png',
+                    width: 128,
+                    height: 128,
+                  ),
+                ),
               ),
             );
           },
