@@ -64,6 +64,11 @@
       }
     }
   },
-  "voiceSearchComingSoon": "Tìm kiếm bằng giọng nói (Sắp ra mắt)"
+  "voiceSearchComingSoon": "Tìm kiếm bằng giọng nói (Sắp ra mắt)",
+  "playModeRepeat": "Lặp lại một bài",
+  "playModeSequential": "Phát tuần tự",
+  "playModeShuffle": "Phát ngẫu nhiên",
+  "continuePlayOn": "Phát tiếp: Bật",
+  "continuePlayOff": "Phát tiếp: Tắt"
 }
 

@@ -170,4 +170,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get voiceSearchComingSoon => 'Voice search (Coming soon)';
+
+  @override
+  String get playModeRepeat => 'Repeat one';
+
+  @override
+  String get playModeSequential => 'Sequential';
+
+  @override
+  String get playModeShuffle => 'Shuffle';
+
+  @override
+  String get continuePlayOn => 'Continue play: On';
+
+  @override
+  String get continuePlayOff => 'Continue play: Off';
 }

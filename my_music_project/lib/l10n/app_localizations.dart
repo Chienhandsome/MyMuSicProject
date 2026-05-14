@@ -409,6 +409,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Voice search (Coming soon)'**
   String get voiceSearchComingSoon;
+
+  /// No description provided for @playModeRepeat.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat one'**
+  String get playModeRepeat;
+
+  /// No description provided for @playModeSequential.
+  ///
+  /// In en, this message translates to:
+  /// **'Sequential'**
+  String get playModeSequential;
+
+  /// No description provided for @playModeShuffle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffle'**
+  String get playModeShuffle;
+
+  /// No description provided for @continuePlayOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue play: On'**
+  String get continuePlayOn;
+
+  /// No description provided for @continuePlayOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue play: Off'**
+  String get continuePlayOff;
 }
 
 class _AppLocalizationsDelegate

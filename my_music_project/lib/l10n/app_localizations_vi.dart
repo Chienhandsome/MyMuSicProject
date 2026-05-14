@@ -170,4 +170,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get voiceSearchComingSoon => 'Tìm kiếm bằng giọng nói (Sắp ra mắt)';
+
+  @override
+  String get playModeRepeat => 'Lặp lại một bài';
+
+  @override
+  String get playModeSequential => 'Phát tuần tự';
+
+  @override
+  String get playModeShuffle => 'Phát ngẫu nhiên';
+
+  @override
+  String get continuePlayOn => 'Phát tiếp: Bật';
+
+  @override
+  String get continuePlayOff => 'Phát tiếp: Tắt';
 }

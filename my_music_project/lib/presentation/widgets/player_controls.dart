@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:my_music_project/core/constants/media_keys.dart';
 import '../providers/audio_provider.dart';
+import '../../data/services/audio_player_service.dart';
+import '../../../l10n/app_localizations.dart';
 
 class PlayerControls extends ConsumerWidget {
   const PlayerControls({super.key});
@@ -12,10 +14,43 @@ class PlayerControls extends ConsumerWidget {
     final audioState = ref.watch(audioProvider);
     final notifier = ref.read(audioProvider.notifier);
 
+    final l10n = AppLocalizations.of(context)!;
+
+    void showToast(String message) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color(0xFF2A2A3D),
+        ),
+      );
+    }
+
+    String nextPlayModeLabel() {
+      const modes = PlayMode.values;
+      final next = modes[(modes.indexOf(audioState.playMode) + 1) % modes.length];
+      switch (next) {
+        case PlayMode.repeat:
+          return l10n.playModeRepeat;
+        case PlayMode.sequential:
+          return l10n.playModeSequential;
+        case PlayMode.shuffle:
+          return l10n.playModeShuffle;
+      }
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _PlayModeButton(playModeKey: notifier.getPlayModeKey(), onPressed: notifier.togglePlayMode),
+        _PlayModeButton(
+          playModeKey: notifier.getPlayModeKey(),
+          onPressed: () {
+            notifier.togglePlayMode();
+            showToast(nextPlayModeLabel());
+          },
+        ),
 
         _SkipButton(
           icon: Icons.skip_previous,
@@ -30,7 +65,10 @@ class PlayerControls extends ConsumerWidget {
 
         _ContinuePlayButton(
           icon: audioState.isContinuePlay ? Icons.repeat_on_rounded : Icons.repeat,
-          onPressed: notifier.toggleContinuePlay,
+          onPressed: () {
+            notifier.toggleContinuePlay();
+            showToast(audioState.isContinuePlay ? l10n.continuePlayOff : l10n.continuePlayOn);
+          },
         ),
       ],
     );

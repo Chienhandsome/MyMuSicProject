@@ -64,6 +64,11 @@
       }
     }
   },
-  "voiceSearchComingSoon": "Voice search (Coming soon)"
+  "voiceSearchComingSoon": "Voice search (Coming soon)",
+  "playModeRepeat": "Repeat one",
+  "playModeSequential": "Sequential",
+  "playModeShuffle": "Shuffle",
+  "continuePlayOn": "Continue play: On",
+  "continuePlayOff": "Continue play: Off"
 }
 
