@@ -188,4 +188,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get continuePlayOff => 'Continue play: Off';
+
+  @override
+  String get addToQueue => 'Add to queue';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get addToQueueNotImplemented => 'Add to queue: not implemented';
+
+  @override
+  String get shareNotImplemented => 'Share: not implemented';
+
+  @override
+  String get pathLabel => 'Path';
+
+  @override
+  String get durationLabel => 'Duration';
+
+  @override
+  String get close => 'Close';
 }

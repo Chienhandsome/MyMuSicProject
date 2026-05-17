@@ -70,6 +70,13 @@
   "playModeSequential": "Phát tuần tự",
   "playModeShuffle": "Phát ngẫu nhiên",
   "continuePlayOn": "Phát tiếp: Bật",
-  "continuePlayOff": "Phát tiếp: Tắt"
+  "continuePlayOff": "Phát tiếp: Tắt",
+  "addToQueue": "Thêm vào hàng chờ",
+  "details": "Chi tiết",
+  "share": "Chia sẻ",
+  "addToQueueNotImplemented": "Thêm vào hàng chờ: Chưa hỗ trợ",
+  "shareNotImplemented": "Chia sẻ: Chưa hỗ trợ",
+  "pathLabel": "Đường dẫn",
+  "durationLabel": "Thời lượng",
+  "close": "Đóng"
 }
-

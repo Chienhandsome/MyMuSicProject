@@ -188,4 +188,28 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get continuePlayOff => 'Phát tiếp: Tắt';
+
+  @override
+  String get addToQueue => 'Thêm vào hàng chờ';
+
+  @override
+  String get details => 'Chi tiết';
+
+  @override
+  String get share => 'Chia sẻ';
+
+  @override
+  String get addToQueueNotImplemented => 'Thêm vào hàng chờ: Chưa hỗ trợ';
+
+  @override
+  String get shareNotImplemented => 'Chia sẻ: Chưa hỗ trợ';
+
+  @override
+  String get pathLabel => 'Đường dẫn';
+
+  @override
+  String get durationLabel => 'Thời lượng';
+
+  @override
+  String get close => 'Đóng';
 }

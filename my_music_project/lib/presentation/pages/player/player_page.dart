@@ -181,6 +181,14 @@ class _PlayerMoreMenu extends ConsumerWidget {
           value: 'favourite',
           child: Text(l10n.addToFavorites),
         ),
+        const PopupMenuItem(
+          value: 'share',
+          child: Text('share'),
+        ),
+        const PopupMenuItem(
+          value: 'details',
+          child: Text('details'),
+        ),
         PopupMenuItem(
           value: 'delete',
           child: Text(
@@ -205,6 +213,62 @@ class _PlayerMoreMenu extends ConsumerWidget {
         ),
       );
     }
+
+    if (value == 'share') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('not implemented')),
+      );
+    }
+
+    if (value == 'details') {
+      _showDetails(context, ref);
+    }
+
+    if (value == 'favourite') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('not implemented')),
+      );
+    }
+
+    if (value == 'delete') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('not implemented')),
+      );
+    }
+  }
+
+  void _showDetails(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final currentSong = ref.read(audioProvider).currentSong;
+
+    if (currentSong == null) {
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1C1C2E),
+          title: Text(currentSong.title, style: const TextStyle(color: Colors.white)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${l10n.pathLabel}: ${currentSong.path}', style: const TextStyle(color: Colors.white70)),
+              const SizedBox(height: 8),
+              Text('${l10n.durationLabel}: ${currentSong.durationText}', style: const TextStyle(color: Colors.white70)),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(l10n.close, style: const TextStyle(color: Colors.white70)),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -254,7 +318,3 @@ class _SleepTimerSheet extends StatelessWidget {
     );
   }
 }
-
-
-
-

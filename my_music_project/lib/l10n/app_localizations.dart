@@ -445,6 +445,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue play: Off'**
   String get continuePlayOff;
+
+  /// No description provided for @addToQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to queue'**
+  String get addToQueue;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @addToQueueNotImplemented.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to queue: not implemented'**
+  String get addToQueueNotImplemented;
+
+  /// No description provided for @shareNotImplemented.
+  ///
+  /// In en, this message translates to:
+  /// **'Share: not implemented'**
+  String get shareNotImplemented;
+
+  /// No description provided for @pathLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Path'**
+  String get pathLabel;
+
+  /// No description provided for @durationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get durationLabel;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
 }
 
 class _AppLocalizationsDelegate

@@ -70,6 +70,13 @@
   "playModeSequential": "Sequential",
   "playModeShuffle": "Shuffle",
   "continuePlayOn": "Continue play: On",
-  "continuePlayOff": "Continue play: Off"
+  "continuePlayOff": "Continue play: Off",
+  "addToQueue": "Add to queue",
+  "details": "Details",
+  "share": "Share",
+  "addToQueueNotImplemented": "Add to queue: not implemented",
+  "shareNotImplemented": "Share: not implemented",
+  "pathLabel": "Path",
+  "durationLabel": "Duration",
+  "close": "Close"
 }
-

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../l10n/app_localizations.dart';
 import '../providers/audio_provider.dart';
 import '../pages/player/player_page.dart';
 
@@ -67,6 +68,8 @@ class SongItem extends ConsumerWidget {
   }
 
   void _onMoreEvent(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xFF121212),
@@ -80,7 +83,7 @@ class SongItem extends ConsumerWidget {
             children: [
               ListTile(
                 leading: const Icon(Icons.play_arrow, color: Colors.white),
-                title: const Text('Play', style: TextStyle(color: Colors.white)),
+                title: Text(l10n.play, style: const TextStyle(color: Colors.white)),
                 onTap: () async {
                   Navigator.pop(ctx);
                   FocusScope.of(context).unfocus();
@@ -94,18 +97,18 @@ class SongItem extends ConsumerWidget {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.queue_music, color: Colors.white),
-                title: const Text('Add to queue', style: TextStyle(color: Colors.white)),
+                leading: const Icon(Icons.favorite, color: Colors.white),
+                title: const Text('Add to favorite', style: TextStyle(color: Colors.white)),
                 onTap: () {
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Add to queue: not implemented')),
+                    const SnackBar(content: Text('not implemented')),
                   );
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.info_outline, color: Colors.white),
-                title: const Text('Details', style: TextStyle(color: Colors.white)),
+                title: Text(l10n.details, style: const TextStyle(color: Colors.white)),
                 onTap: () {
                   Navigator.pop(ctx);
                   _showDetails(context);
@@ -113,17 +116,17 @@ class SongItem extends ConsumerWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.share, color: Colors.white),
-                title: const Text('Share', style: TextStyle(color: Colors.white)),
+                title: Text(l10n.share, style: const TextStyle(color: Colors.white)),
                 onTap: () {
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Share: not implemented')),
+                    SnackBar(content: Text(l10n.shareNotImplemented)),
                   );
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.close, color: Colors.white70),
-                title: const Text('Cancel', style: TextStyle(color: Colors.white70)),
+                title: Text(l10n.cancel, style: const TextStyle(color: Colors.white70)),
                 onTap: () => Navigator.pop(ctx),
               ),
             ],
@@ -134,6 +137,8 @@ class SongItem extends ConsumerWidget {
   }
 
   void _showDetails(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
       builder: (ctx) {
@@ -144,15 +149,15 @@ class SongItem extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Path: ${song.path}', style: const TextStyle(color: Colors.white70)),
+              Text('${l10n.pathLabel}: ${song.path}', style: const TextStyle(color: Colors.white70)),
               const SizedBox(height: 8),
-              Text('Duration: ${song.durationText}', style: const TextStyle(color: Colors.white70)),
+              Text('${l10n.durationLabel}: ${song.durationText}', style: const TextStyle(color: Colors.white70)),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Close', style: TextStyle(color: Colors.white70)),
+              child: Text(l10n.close, style: const TextStyle(color: Colors.white70)),
             ),
           ],
         );
@@ -160,4 +165,3 @@ class SongItem extends ConsumerWidget {
     );
   }
 }
-
