@@ -4,13 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/constants/language_keys.dart';
 import 'presentation/pages/splash/splash_page.dart';
 import 'presentation/providers/locale_provider.dart';
-import 'data/services/shared_preferences_service.dart';
+import 'data/services/hive_storage_service.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await SharedPreferencesService.init();
+  await HiveStorageService.init();
 
   runApp(const ProviderScope(child: MyApp()));
 }
