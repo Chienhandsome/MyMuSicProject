@@ -3,12 +3,14 @@ class Song {
   final String title;
   final String path;
   final int duration;
+  final String? lyric;
 
   const Song({
     required this.id,
     required this.title,
     required this.path,
     required this.duration,
+    this.lyric,
   });
 
   String get durationText {

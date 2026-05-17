@@ -6,6 +6,7 @@ class SongModel extends Song {
     required super.title,
     required super.path,
     required super.duration,
+    super.lyric,
   });
 }
 
