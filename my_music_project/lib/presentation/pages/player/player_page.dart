@@ -144,17 +144,25 @@ class _SleepTimerCountdownState extends ConsumerState<_SleepTimerCountdown> {
             '$minutes:$seconds',
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w300,
-              letterSpacing: 4,
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 2,
             ),
           ),
           const SizedBox(height: 4),
           TextButton(
             onPressed: () => ref.read(audioProvider.notifier).cancelSleepTimer(),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.redAccent,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
             child: const Text(
               'Huỷ hẹn giờ',
-              style: TextStyle(color: Colors.white38, fontSize: 12),
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 0.2),
             ),
           ),
         ],
