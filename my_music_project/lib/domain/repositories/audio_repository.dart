@@ -18,9 +18,9 @@ abstract class AudioRepository {
 
   Future<void> seek(Duration position);
 
-  void setPlayMode(PlayMode mode);
+  Future<void> setPlayMode(PlayMode mode);
 
-  void setContinuePlay(bool isContinuePlay);
+  Future<void> setContinuePlay(bool isContinuePlay);
 
   Song? get currentSong;
 

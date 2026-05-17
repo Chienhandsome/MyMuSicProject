@@ -7,12 +7,14 @@ import 'package:just_audio/just_audio.dart';
 import '../../domain/entities/play_mode.dart';
 import '../../domain/entities/song.dart';
 import '../../domain/repositories/audio_repository.dart';
+import '../../domain/repositories/play_config_repository.dart';
 import '../../domain/repositories/preferences_repository.dart';
 import '../services/audio_player_service.dart';
 
 class AudioRepositoryImpl implements AudioRepository {
   final AudioPlayerService _audioService;
   final PreferencesRepository _preferencesRepository;
+  final PlayConfigRepository _playConfigRepository;
   final Random _random = Random();
   final StreamController<Song?> _currentSongController =
       StreamController<Song?>.broadcast();
@@ -23,7 +25,14 @@ class AudioRepositoryImpl implements AudioRepository {
   PlayMode _playMode = PlayMode.sequential;
   bool _isContinuePlay = false;
 
-  AudioRepositoryImpl(this._audioService, this._preferencesRepository) {
+  AudioRepositoryImpl(
+    this._audioService,
+    this._preferencesRepository,
+    this._playConfigRepository,
+  ) {
+    _playMode = _playConfigRepository.getPlayMode();
+    _isContinuePlay = _playConfigRepository.getContinuePlay();
+
     _playerStateSubscription =
         _audioService.audioPlayer.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
@@ -87,13 +96,15 @@ class AudioRepositoryImpl implements AudioRepository {
   }
 
   @override
-  void setPlayMode(PlayMode mode) {
+  Future<void> setPlayMode(PlayMode mode) async {
     _playMode = mode;
+    await _playConfigRepository.setPlayMode(mode);
   }
 
   @override
-  void setContinuePlay(bool isContinuePlay) {
+  Future<void> setContinuePlay(bool isContinuePlay) async {
     _isContinuePlay = isContinuePlay;
+    await _playConfigRepository.setContinuePlay(isContinuePlay);
   }
 
   Future<void> _restoreLastSong() async {

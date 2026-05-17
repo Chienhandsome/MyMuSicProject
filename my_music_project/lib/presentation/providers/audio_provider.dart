@@ -8,6 +8,7 @@ import '../../data/services/audio_player_service.dart';
 import '../../domain/entities/play_mode.dart';
 import '../../domain/entities/song.dart';
 import '../../domain/repositories/audio_repository.dart';
+import 'play_config_provider.dart';
 import 'preferences_provider.dart';
 
 class AudioState {
@@ -54,7 +55,12 @@ class AudioNotifier extends StateNotifier<AudioState> {
   late final StreamSubscription<PlayerState> _playerStateSubscription;
   Timer? _sleepTimer;
 
-  AudioNotifier(this._repository) : super(const AudioState()) {
+  AudioNotifier(AudioRepository repository)
+      : _repository = repository,
+        super(AudioState(
+          playMode: repository.playMode,
+          isContinuePlay: repository.continuePlay,
+        )) {
     _playerStateSubscription =
         _repository.audioPlayer.playerStateStream.listen((playerState) {
       state = state.copyWith(isPlaying: playerState.playing);
@@ -126,10 +132,10 @@ class AudioNotifier extends StateNotifier<AudioState> {
     await _repository.seek(position);
   }
 
-  void togglePlayMode() {
+  Future<void> togglePlayMode() async {
     const modes = PlayMode.values;
     final next = modes[(modes.indexOf(state.playMode) + 1) % modes.length];
-    _repository.setPlayMode(next);
+    await _repository.setPlayMode(next);
     state = state.copyWith(playMode: next);
   }
 
@@ -144,9 +150,9 @@ class AudioNotifier extends StateNotifier<AudioState> {
     }
   }
 
-  void toggleContinuePlay() {
+  Future<void> toggleContinuePlay() async {
     final next = !state.isContinuePlay;
-    _repository.setContinuePlay(next);
+    await _repository.setContinuePlay(next);
     state = state.copyWith(isContinuePlay: next);
   }
 
@@ -204,6 +210,7 @@ final audioRepositoryProvider = Provider<AudioRepository>((ref) {
   return AudioRepositoryImpl(
     ref.watch(audioServiceProvider),
     ref.watch(preferencesRepositoryProvider),
+    ref.watch(playConfigRepositoryProvider),
   );
 });
 

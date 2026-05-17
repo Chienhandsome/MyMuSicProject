@@ -30,7 +30,8 @@ class PlayerControls extends ConsumerWidget {
 
     String nextPlayModeLabel() {
       const modes = PlayMode.values;
-      final next = modes[(modes.indexOf(audioState.playMode) + 1) % modes.length];
+      final next =
+          modes[(modes.indexOf(audioState.playMode) + 1) % modes.length];
       switch (next) {
         case PlayMode.repeat:
           return l10n.playModeRepeat;
@@ -46,8 +47,8 @@ class PlayerControls extends ConsumerWidget {
       children: [
         _PlayModeButton(
           playModeKey: notifier.getPlayModeKey(),
-          onPressed: () {
-            notifier.togglePlayMode();
+          onPressed: () async {
+            await notifier.togglePlayMode();
             showToast(nextPlayModeLabel());
           },
         ),
@@ -64,10 +65,15 @@ class PlayerControls extends ConsumerWidget {
         ),
 
         _ContinuePlayButton(
-          icon: audioState.isContinuePlay ? Icons.repeat_on_rounded : Icons.repeat,
-          onPressed: () {
-            notifier.toggleContinuePlay();
-            showToast(audioState.isContinuePlay ? l10n.continuePlayOff : l10n.continuePlayOn);
+          icon:
+              audioState.isContinuePlay ? Icons.repeat_on_rounded : Icons.repeat,
+          onPressed: () async {
+            await notifier.toggleContinuePlay();
+            showToast(
+              audioState.isContinuePlay
+                  ? l10n.continuePlayOff
+                  : l10n.continuePlayOn,
+            );
           },
         ),
       ],
@@ -121,23 +127,15 @@ class _SkipButton extends StatelessWidget {
   }
 }
 
-class _ContinuePlayButton extends StatelessWidget{
-
+class _ContinuePlayButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onPressed;
 
-
-  const _ContinuePlayButton({
-    required this.icon,
-    required this.onPressed
-  });
+  const _ContinuePlayButton({required this.icon, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-        onPressed: onPressed,
-        icon: Icon(icon, size: 30)
-    );
+    return IconButton(onPressed: onPressed, icon: Icon(icon, size: 30));
   }
 }
 
