@@ -4,8 +4,6 @@ import '../../data/services/permission_service.dart';
 import '../../domain/entities/storage_permission_status.dart';
 import '../../domain/repositories/permission_repository.dart';
 import '../../domain/repositories/preferences_repository.dart';
-import '../../domain/usecases/check_permission_usecase.dart';
-import '../../domain/usecases/request_permission_usecase.dart';
 import 'preferences_provider.dart';
 
 class PermissionState {
@@ -37,13 +35,11 @@ class PermissionState {
 }
 
 class PermissionNotifier extends StateNotifier<PermissionState> {
-  final CheckPermissionUseCase _checkPermission;
-  final RequestPermissionUseCase _requestPermission;
+  final PermissionRepository _permissionRepository;
   final PreferencesRepository _preferencesRepository;
 
   PermissionNotifier(
-    this._checkPermission,
-    this._requestPermission,
+    this._permissionRepository,
     this._preferencesRepository,
   )
       : super(const PermissionState());
@@ -55,7 +51,7 @@ class PermissionNotifier extends StateNotifier<PermissionState> {
 
   Future<void> checkPermission() async {
     state = state.copyWith(isLoading: true);
-    final status = await _checkPermission();
+    final status = await _permissionRepository.checkStoragePermission();
     state = state.copyWith(
       hasPermission: status == StoragePermissionStatus.granted,
       isPermanentlyDenied: status == StoragePermissionStatus.permanentlyDenied,
@@ -65,7 +61,7 @@ class PermissionNotifier extends StateNotifier<PermissionState> {
 
   Future<void> requestPermission() async {
     state = state.copyWith(isLoading: true);
-    final status = await _requestPermission();
+    final status = await _permissionRepository.requestStoragePermission();
     if (status == StoragePermissionStatus.granted) {
       await _preferencesRepository.setPermissionDenied(false);
       state = state.copyWith(
@@ -94,20 +90,10 @@ final permissionRepositoryProvider = Provider<PermissionRepository>((ref) {
   return PermissionRepositoryImpl(PermissionService());
 });
 
-final checkPermissionUseCaseProvider = Provider<CheckPermissionUseCase>((ref) {
-  return CheckPermissionUseCase(ref.watch(permissionRepositoryProvider));
-});
-
-final requestPermissionUseCaseProvider =
-    Provider<RequestPermissionUseCase>((ref) {
-  return RequestPermissionUseCase(ref.watch(permissionRepositoryProvider));
-});
-
 final permissionProvider =
     StateNotifierProvider<PermissionNotifier, PermissionState>((ref) {
   return PermissionNotifier(
-    ref.watch(checkPermissionUseCaseProvider),
-    ref.watch(requestPermissionUseCaseProvider),
+    ref.watch(permissionRepositoryProvider),
     ref.watch(preferencesRepositoryProvider),
   );
 });
