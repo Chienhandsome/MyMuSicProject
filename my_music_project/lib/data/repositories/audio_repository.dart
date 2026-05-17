@@ -1,80 +1,62 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
-import '../models/song_model.dart';
+
+import '../../domain/entities/play_mode.dart';
+import '../../domain/entities/song.dart';
+import '../../domain/repositories/audio_repository.dart';
+import '../../domain/repositories/preferences_repository.dart';
 import '../services/audio_player_service.dart';
 
-/// Repository interface for audio player operations
-abstract class AudioRepository {
-  /// Set the playlist for the audio player
-  Future<void> setPlaylist(List<SongModel> songs);
-  
-  /// Play a song at specific index
-  Future<void> playSongAt(int index);
-  
-  /// Play current song
-  Future<void> play();
-  
-  /// Pause current song
-  Future<void> pause();
-  
-  /// Play next song
-  Future<void> playNext();
-  
-  /// Play previous song
-  Future<void> playPrevious();
-  
-  /// Seek to specific position
-  Future<void> seek(Duration position);
-  
-  /// Toggle continue play mode
-  Future<void> toggleContinuePlay();
-  
-  /// Get continue play status
-  bool getContinuePlay();
-  
-  /// Toggle play mode (sequential, repeat, shuffle)
-  void togglePlayMode();
-  
-  /// Get current play mode as string
-  String getPlayMode();
-  
-  /// Get current song
-  SongModel? get currentSong;
-  
-  /// Get current index
-  int get currentIndex;
-  
-  /// Get play mode enum
-  PlayMode get playMode;
-  
-  /// Check if player is playing
-  bool get isPlaying;
-  
-  /// Get the audio player instance for UI binding
-  AudioPlayer get audioPlayer;
-  
-  /// Dispose resources
-  void dispose();
-}
-
-/// Implementation of AudioRepository
 class AudioRepositoryImpl implements AudioRepository {
   final AudioPlayerService _audioService;
+  final PreferencesRepository _preferencesRepository;
+  final Random _random = Random();
+  final StreamController<Song?> _currentSongController =
+      StreamController<Song?>.broadcast();
+  late final StreamSubscription<PlayerState> _playerStateSubscription;
 
-  AudioRepositoryImpl(this._audioService);
+  List<Song> _playlist = [];
+  int _currentIndex = -1;
+  PlayMode _playMode = PlayMode.sequential;
+  bool _isContinuePlay = false;
+
+  AudioRepositoryImpl(this._audioService, this._preferencesRepository) {
+    _playerStateSubscription =
+        _audioService.audioPlayer.playerStateStream.listen((state) {
+      if (state.processingState == ProcessingState.completed) {
+        _handleSongComplete();
+      }
+    });
+  }
 
   @override
-  Future<void> setPlaylist(List<SongModel> songs) async {
-    await _audioService.setPlaylist(songs);
+  Future<void> setPlaylist(List<Song> songs) async {
+    _playlist = songs;
+    await _restoreLastSong();
   }
 
   @override
   Future<void> playSongAt(int index) async {
-    await _audioService.playSongAt(index);
+    if (index < 0 || index >= _playlist.length) return;
+
+    _currentIndex = index;
+    final song = _playlist[index];
+
+    await _audioService.setFilePath(song.path);
+    await _audioService.play();
+    await _preferencesRepository.setLastSongPath(song.path);
+    _currentSongController.add(currentSong);
   }
 
   @override
   Future<void> play() async {
+    if (currentSong == null) return;
+
     await _audioService.play();
+    await _preferencesRepository.setLastSongPath(currentSong!.path);
   }
 
   @override
@@ -84,12 +66,19 @@ class AudioRepositoryImpl implements AudioRepository {
 
   @override
   Future<void> playNext() async {
-    await _audioService.playNext();
+    if (_playlist.isEmpty) return;
+
+    final nextIndex = (_currentIndex + 1) % _playlist.length;
+    await playSongAt(nextIndex);
   }
 
   @override
   Future<void> playPrevious() async {
-    await _audioService.playPrevious();
+    if (_playlist.isEmpty) return;
+
+    final previousIndex =
+        (_currentIndex - 1 + _playlist.length) % _playlist.length;
+    await playSongAt(previousIndex);
   }
 
   @override
@@ -98,53 +87,91 @@ class AudioRepositoryImpl implements AudioRepository {
   }
 
   @override
-  Future<void> toggleContinuePlay() async {
-    final current = _audioService.getContinuePlay();
-    _audioService.setContinuePlay(!current);
+  void setPlayMode(PlayMode mode) {
+    _playMode = mode;
   }
 
   @override
-  bool getContinuePlay() {
-    return _audioService.getContinuePlay();
+  void setContinuePlay(bool isContinuePlay) {
+    _isContinuePlay = isContinuePlay;
   }
 
-  @override
-  void togglePlayMode() {
-    const modes = PlayMode.values;
-    final currentModeIndex = modes.indexOf(_audioService.playMode);
-    final nextMode = modes[(currentModeIndex + 1) % modes.length];
-    _audioService.setPlayMode(nextMode);
+  Future<void> _restoreLastSong() async {
+    final lastSongPath = _preferencesRepository.getLastSongPath();
+    if (_currentIndex != -1 || lastSongPath == null || lastSongPath.isEmpty) {
+      return;
+    }
+
+    final index = _playlist.indexWhere((song) => song.path == lastSongPath);
+    if (index == -1) return;
+
+    _currentIndex = index;
+    await _audioService.setFilePath(_playlist[index].path);
+    _currentSongController.add(currentSong);
   }
 
-  @override
-  String getPlayMode() {
-    switch (_audioService.playMode) {
+  Future<void> _handleSongComplete() async {
+    if (!_isContinuePlay) {
+      debugPrint('Continue play disabled: not advancing to next song.');
+      await seek(Duration.zero);
+      await pause();
+      return;
+    }
+
+    switch (_playMode) {
       case PlayMode.repeat:
-        return 'repeat';
-      case PlayMode.sequential:
-        return 'sequential';
+        await seek(Duration.zero);
+        await play();
+        break;
       case PlayMode.shuffle:
-        return 'shuffle';
+        await _playRandomSong();
+        break;
+      case PlayMode.sequential:
+        await playNext();
+        break;
     }
   }
 
-  @override
-  SongModel? get currentSong => _audioService.currentSong;
+  Future<void> _playRandomSong() async {
+    if (_playlist.isEmpty) return;
+
+    int newIndex;
+    if (_playlist.length == 1) {
+      newIndex = 0;
+    } else {
+      do {
+        newIndex = _random.nextInt(_playlist.length);
+      } while (newIndex == _currentIndex);
+    }
+
+    await playSongAt(newIndex);
+  }
 
   @override
-  int get currentIndex => _audioService.currentIndex;
+  Song? get currentSong =>
+      _currentIndex >= 0 && _currentIndex < _playlist.length
+          ? _playlist[_currentIndex]
+          : null;
 
   @override
-  PlayMode get playMode => _audioService.playMode;
+  Stream<Song?> get currentSongStream => _currentSongController.stream;
 
   @override
-  bool get isPlaying => _audioService.audioPlayer.playing;
+  int get currentIndex => _currentIndex;
+
+  @override
+  PlayMode get playMode => _playMode;
+
+  @override
+  bool get continuePlay => _isContinuePlay;
 
   @override
   AudioPlayer get audioPlayer => _audioService.audioPlayer;
 
   @override
   void dispose() {
+    _playerStateSubscription.cancel();
+    _currentSongController.close();
     _audioService.dispose();
   }
 }

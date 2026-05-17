@@ -2,35 +2,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Helper class for managing SharedPreferences operations
 /// Provides type-safe methods for storing and retrieving data
-///
-enum RepeatMode {
-  repeat,
-  sequential,
-  shuffle,
-}
-
-enum UIMode {
-  light,
-  dark,
-}
-
-
 class SharedPreferencesService {
   static SharedPreferences? _prefs;
-
-  ///is repeat - bool
-  final String _isRepeat = 'isRepeat';
-
-  ///repeat mode - enum
-  final String _repeatMode = 'repeatMode';
-
-  ///mini player last played song
-  final String _lastPlayedSong = 'lastPlayedSong';
-
-  ///UI mode
-  final String _uiMode = 'uiMode';
-
-  final String _lastPlayedSongPath = 'lastPlayedSongPath';
 
   /// Initialize SharedPreferences instance
   static Future<void> init() async {

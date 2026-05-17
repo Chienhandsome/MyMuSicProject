@@ -1,5 +1,5 @@
 /// Result class for handling operations that can fail
-class Result<T> {
+class Result<T extends Object> {
   final T? data;
   final String? error;
   final bool isSuccess;
@@ -38,7 +38,7 @@ class Result<T> {
   }
 
   /// Map the data if successful
-  Result<R> map<R>(R Function(T data) mapper) {
+  Result<R> map<R extends Object>(R Function(T data) mapper) {
     if (isFailure) {
       return Result.failure(error ?? 'Unknown error');
     }

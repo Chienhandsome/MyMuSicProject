@@ -1,13 +1,8 @@
-import '../services/permission_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-/// Repository interface for permission-related operations
-abstract class PermissionRepository {
-  /// Request storage permission
-  Future<bool> requestStoragePermission();
-  
-  /// Check if storage permission is granted
-  Future<bool> hasStoragePermission();
-}
+import '../../domain/entities/storage_permission_status.dart';
+import '../../domain/repositories/permission_repository.dart';
+import '../services/permission_service.dart';
 
 /// Implementation of PermissionRepository
 class PermissionRepositoryImpl implements PermissionRepository {
@@ -16,12 +11,24 @@ class PermissionRepositoryImpl implements PermissionRepository {
   PermissionRepositoryImpl(this._permissionService);
 
   @override
-  Future<bool> requestStoragePermission() async {
-    return await _permissionService.requestStoragePermission();
+  Future<StoragePermissionStatus> requestStoragePermission() async {
+    final status = await _permissionService.requestStoragePermission();
+    return _mapStatus(status);
   }
 
   @override
-  Future<bool> hasStoragePermission() async {
-    return await _permissionService.hasStoragePermission();
+  Future<StoragePermissionStatus> checkStoragePermission() async {
+    final status = await _permissionService.checkStoragePermission();
+    return _mapStatus(status);
+  }
+
+  StoragePermissionStatus _mapStatus(PermissionStatus status) {
+    if (status.isGranted || status.isLimited) {
+      return StoragePermissionStatus.granted;
+    }
+    if (status.isPermanentlyDenied) {
+      return StoragePermissionStatus.permanentlyDenied;
+    }
+    return StoragePermissionStatus.denied;
   }
 }

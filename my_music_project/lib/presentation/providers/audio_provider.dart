@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../core/constants/media_keys.dart';
-import '../../data/models/song_model.dart';
+import '../../data/repositories/audio_repository.dart';
 import '../../data/services/audio_player_service.dart';
+import '../../domain/entities/play_mode.dart';
+import '../../domain/entities/song.dart';
+import '../../domain/repositories/audio_repository.dart';
+import 'preferences_provider.dart';
 
 class AudioState {
-  final SongModel? currentSong;
+  final Song? currentSong;
   final int currentIndex;
   final bool isPlaying;
   final PlayMode playMode;
@@ -24,7 +28,7 @@ class AudioState {
   });
 
   AudioState copyWith({
-    SongModel? currentSong,
+    Song? currentSong,
     int? currentIndex,
     bool? isPlaying,
     PlayMode? playMode,
@@ -38,47 +42,57 @@ class AudioState {
       isPlaying: isPlaying ?? this.isPlaying,
       playMode: playMode ?? this.playMode,
       isContinuePlay: isContinuePlay ?? this.isContinuePlay,
-      sleepTimerEnd: clearSleepTimer ? null : (sleepTimerEnd ?? this.sleepTimerEnd),
+      sleepTimerEnd:
+          clearSleepTimer ? null : (sleepTimerEnd ?? this.sleepTimerEnd),
     );
   }
 }
 
 class AudioNotifier extends StateNotifier<AudioState> {
-  final AudioPlayerService _service;
+  final AudioRepository _repository;
+  late final StreamSubscription<Song?> _currentSongSubscription;
+  late final StreamSubscription<PlayerState> _playerStateSubscription;
   Timer? _sleepTimer;
 
-  AudioNotifier(this._service) : super(const AudioState()) {
-    _service.audioPlayer.playerStateStream.listen((playerState) {
+  AudioNotifier(this._repository) : super(const AudioState()) {
+    _playerStateSubscription =
+        _repository.audioPlayer.playerStateStream.listen((playerState) {
       state = state.copyWith(isPlaying: playerState.playing);
+    });
+    _currentSongSubscription = _repository.currentSongStream.listen((song) {
+      state = state.copyWith(
+        currentSong: song,
+        currentIndex: _repository.currentIndex,
+      );
     });
   }
 
-  AudioPlayer get audioPlayer => _service.audioPlayer;
+  AudioPlayer get audioPlayer => _repository.audioPlayer;
 
-  Future<void> setPlaylist(List<SongModel> songs) async {
-    await _service.setPlaylist(songs);
+  Future<void> setPlaylist(List<Song> songs) async {
+    await _repository.setPlaylist(songs);
     state = state.copyWith(
-      currentSong: _service.currentSong,
-      currentIndex: _service.currentIndex,
+      currentSong: _repository.currentSong,
+      currentIndex: _repository.currentIndex,
     );
   }
 
   Future<void> playSongAt(int index) async {
-    await _service.playSongAt(index);
+    await _repository.playSongAt(index);
     state = state.copyWith(
-      currentSong: _service.currentSong,
-      currentIndex: _service.currentIndex,
+      currentSong: _repository.currentSong,
+      currentIndex: _repository.currentIndex,
       isPlaying: true,
     );
   }
 
   Future<void> play() async {
-    await _service.play();
+    await _repository.play();
     state = state.copyWith(isPlaying: true);
   }
 
   Future<void> pause() async {
-    await _service.pause();
+    await _repository.pause();
     state = state.copyWith(isPlaying: false);
   }
 
@@ -91,31 +105,31 @@ class AudioNotifier extends StateNotifier<AudioState> {
   }
 
   Future<void> playNext() async {
-    await _service.playNext();
+    await _repository.playNext();
     state = state.copyWith(
-      currentSong: _service.currentSong,
-      currentIndex: _service.currentIndex,
+      currentSong: _repository.currentSong,
+      currentIndex: _repository.currentIndex,
       isPlaying: true,
     );
   }
 
   Future<void> playPrevious() async {
-    await _service.playPrevious();
+    await _repository.playPrevious();
     state = state.copyWith(
-      currentSong: _service.currentSong,
-      currentIndex: _service.currentIndex,
+      currentSong: _repository.currentSong,
+      currentIndex: _repository.currentIndex,
       isPlaying: true,
     );
   }
 
   Future<void> seek(Duration position) async {
-    await _service.seek(position);
+    await _repository.seek(position);
   }
 
   void togglePlayMode() {
     const modes = PlayMode.values;
     final next = modes[(modes.indexOf(state.playMode) + 1) % modes.length];
-    _service.setPlayMode(next);
+    _repository.setPlayMode(next);
     state = state.copyWith(playMode: next);
   }
 
@@ -132,7 +146,7 @@ class AudioNotifier extends StateNotifier<AudioState> {
 
   void toggleContinuePlay() {
     final next = !state.isContinuePlay;
-    _service.setContinuePlay(next);
+    _repository.setContinuePlay(next);
     state = state.copyWith(isContinuePlay: next);
   }
 
@@ -175,18 +189,25 @@ class AudioNotifier extends StateNotifier<AudioState> {
   @override
   void dispose() {
     _sleepTimer?.cancel();
-    _service.dispose();
+    _playerStateSubscription.cancel();
+    _currentSongSubscription.cancel();
+    _repository.dispose();
     super.dispose();
   }
 }
 
 final audioServiceProvider = Provider<AudioPlayerService>((ref) {
-  final service = AudioPlayerService();
-  ref.onDispose(service.dispose);
-  return service;
+  return AudioPlayerService();
+});
+
+final audioRepositoryProvider = Provider<AudioRepository>((ref) {
+  return AudioRepositoryImpl(
+    ref.watch(audioServiceProvider),
+    ref.watch(preferencesRepositoryProvider),
+  );
 });
 
 final audioProvider = StateNotifierProvider<AudioNotifier, AudioState>((ref) {
-  final service = ref.watch(audioServiceProvider);
-  return AudioNotifier(service);
+  final repository = ref.watch(audioRepositoryProvider);
+  return AudioNotifier(repository);
 });

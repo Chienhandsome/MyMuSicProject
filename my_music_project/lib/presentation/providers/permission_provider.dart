@@ -1,30 +1,36 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/constants/permission_keys.dart';
 import '../../data/repositories/permission_repository.dart';
 import '../../data/services/permission_service.dart';
-import '../../data/services/shared_preferences_service.dart';
+import '../../domain/entities/storage_permission_status.dart';
+import '../../domain/repositories/permission_repository.dart';
+import '../../domain/repositories/preferences_repository.dart';
 import '../../domain/usecases/check_permission_usecase.dart';
 import '../../domain/usecases/request_permission_usecase.dart';
+import 'preferences_provider.dart';
 
 class PermissionState {
   final bool hasPermission;
-  final bool hasPermanentlyDenied;
+  final bool hasDeniedBefore;
+  final bool isPermanentlyDenied;
   final bool isLoading;
 
   const PermissionState({
     this.hasPermission = false,
-    this.hasPermanentlyDenied = false,
+    this.hasDeniedBefore = false,
+    this.isPermanentlyDenied = false,
     this.isLoading = false,
   });
 
   PermissionState copyWith({
     bool? hasPermission,
-    bool? hasPermanentlyDenied,
+    bool? hasDeniedBefore,
+    bool? isPermanentlyDenied,
     bool? isLoading,
   }) {
     return PermissionState(
       hasPermission: hasPermission ?? this.hasPermission,
-      hasPermanentlyDenied: hasPermanentlyDenied ?? this.hasPermanentlyDenied,
+      hasDeniedBefore: hasDeniedBefore ?? this.hasDeniedBefore,
+      isPermanentlyDenied: isPermanentlyDenied ?? this.isPermanentlyDenied,
       isLoading: isLoading ?? this.isLoading,
     );
   }
@@ -33,47 +39,54 @@ class PermissionState {
 class PermissionNotifier extends StateNotifier<PermissionState> {
   final CheckPermissionUseCase _checkPermission;
   final RequestPermissionUseCase _requestPermission;
+  final PreferencesRepository _preferencesRepository;
 
-  PermissionNotifier(this._checkPermission, this._requestPermission)
+  PermissionNotifier(
+    this._checkPermission,
+    this._requestPermission,
+    this._preferencesRepository,
+  )
       : super(const PermissionState());
 
   Future<void> loadDeniedStatus() async {
-    final denied =
-        SharedPreferencesService.getBool(PermissionKeys.permissionDenied) ??
-            false;
-    state = state.copyWith(hasPermanentlyDenied: denied);
+    final denied = _preferencesRepository.getPermissionDenied();
+    state = state.copyWith(hasDeniedBefore: denied);
   }
 
   Future<void> checkPermission() async {
     state = state.copyWith(isLoading: true);
-    final granted = await _checkPermission();
-    state = state.copyWith(hasPermission: granted, isLoading: false);
+    final status = await _checkPermission();
+    state = state.copyWith(
+      hasPermission: status == StoragePermissionStatus.granted,
+      isPermanentlyDenied: status == StoragePermissionStatus.permanentlyDenied,
+      isLoading: false,
+    );
   }
 
   Future<void> requestPermission() async {
     state = state.copyWith(isLoading: true);
-    final granted = await _requestPermission();
-    if (granted) {
-      await SharedPreferencesService.setBool(
-          PermissionKeys.permissionDenied, false);
+    final status = await _requestPermission();
+    if (status == StoragePermissionStatus.granted) {
+      await _preferencesRepository.setPermissionDenied(false);
       state = state.copyWith(
           hasPermission: true,
-          hasPermanentlyDenied: false,
+          hasDeniedBefore: false,
+          isPermanentlyDenied: false,
           isLoading: false);
     } else {
-      await SharedPreferencesService.setBool(
-          PermissionKeys.permissionDenied, true);
+      await _preferencesRepository.setPermissionDenied(true);
       state = state.copyWith(
           hasPermission: false,
-          hasPermanentlyDenied: true,
+          hasDeniedBefore: true,
+          isPermanentlyDenied:
+              status == StoragePermissionStatus.permanentlyDenied,
           isLoading: false);
     }
   }
 
   Future<void> resetDeniedStatus() async {
-    await SharedPreferencesService.setBool(
-        PermissionKeys.permissionDenied, false);
-    state = state.copyWith(hasPermanentlyDenied: false);
+    await _preferencesRepository.setPermissionDenied(false);
+    state = state.copyWith(hasDeniedBefore: false, isPermanentlyDenied: false);
   }
 }
 
@@ -95,5 +108,6 @@ final permissionProvider =
   return PermissionNotifier(
     ref.watch(checkPermissionUseCaseProvider),
     ref.watch(requestPermissionUseCaseProvider),
+    ref.watch(preferencesRepositoryProvider),
   );
 });

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:marquee/marquee.dart';
-import '../../data/models/song_model.dart';
+import '../../domain/entities/song.dart';
 import '../providers/audio_provider.dart';
 import '../pages/player/player_page.dart';
 
@@ -74,35 +74,35 @@ class MiniPlayer extends ConsumerWidget {
     );
   }
 
-  Widget _buildCustomTitle(SongModel currentSong, bool isPlaying) {
+  Widget _buildCustomTitle(Song currentSong, bool isPlaying) {
     return SizedBox(
       height: 20,
       child: isPlaying
           ? Marquee(
-        text: currentSong.title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-        ),
-        scrollAxis: Axis.horizontal,
-        blankSpace: 40.0,
-        velocity: 30.0,
-        startPadding: 8.0,
-        fadingEdgeStartFraction: 0.1,
-        fadingEdgeEndFraction: 0.1,
-        showFadingOnlyWhenScrolling: false,
-      )
+              text: currentSong.title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+              scrollAxis: Axis.horizontal,
+              blankSpace: 40.0,
+              velocity: 30.0,
+              startPadding: 8.0,
+              fadingEdgeStartFraction: 0.1,
+              fadingEdgeEndFraction: 0.1,
+              showFadingOnlyWhenScrolling: false,
+            )
           : Text(
-        currentSong.title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
+              currentSong.title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
     );
   }
 
@@ -121,7 +121,6 @@ class MiniPlayer extends ConsumerWidget {
         color: Colors.white,
         size: 24,
       ),
-
     );
   }
 }

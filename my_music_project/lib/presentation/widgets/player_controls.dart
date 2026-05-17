@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:my_music_project/core/constants/media_keys.dart';
+import 'package:my_music_project/domain/entities/play_mode.dart';
 import '../providers/audio_provider.dart';
-import '../../data/services/audio_player_service.dart';
 import '../../../l10n/app_localizations.dart';
 
 class PlayerControls extends ConsumerWidget {

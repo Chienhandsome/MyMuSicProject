@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/music_provider.dart';
 import '../../providers/audio_provider.dart';
-import '../../../data/models/song_model.dart';
+import '../../../domain/entities/song.dart';
 import '../../widgets/song_item.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -20,7 +20,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with SingleTickerProvid
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
-  List<SongModel> _searchResults = [];
+  List<Song> _searchResults = [];
   bool _isSearching = false;
   String _searchQuery = '';
 

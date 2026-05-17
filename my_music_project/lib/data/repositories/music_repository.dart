@@ -1,14 +1,6 @@
-import '../models/song_model.dart';
+import '../../domain/entities/song.dart';
+import '../../domain/repositories/music_repository.dart';
 import '../services/music_query_service.dart';
-
-/// Repository interface for music-related operations
-abstract class MusicRepository {
-  /// Load all songs from device storage
-  Future<List<SongModel>> loadSongs();
-  
-  /// Get songs filtered by specific criteria
-  Future<List<SongModel>> searchSongs(String query);
-}
 
 /// Implementation of MusicRepository
 class MusicRepositoryImpl implements MusicRepository {
@@ -17,12 +9,12 @@ class MusicRepositoryImpl implements MusicRepository {
   MusicRepositoryImpl(this._musicQueryService);
 
   @override
-  Future<List<SongModel>> loadSongs() async {
+  Future<List<Song>> loadSongs() async {
     return await _musicQueryService.loadSongs();
   }
 
   @override
-  Future<List<SongModel>> searchSongs(String query) async {
+  Future<List<Song>> searchSongs(String query) async {
     final allSongs = await _musicQueryService.loadSongs();
     
     if (query.isEmpty) {

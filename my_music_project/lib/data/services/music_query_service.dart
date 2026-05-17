@@ -12,12 +12,6 @@ class MusicQueryService {
     '/storage/emulated/0/Download',
   ];
 
-  /// iOS folders allowed to scan (sandboxed media paths).
-  static const List<String> allowedFoldersIOS = [
-    '/private/var/mobile/Media/Music',
-    '/private/var/mobile/Media/iTunes_Control/Music',
-    '/private/var/mobile/Media/Downloads',
-  ];
 
   Future<List<SongModel>> loadSongs() async {
     try {
@@ -33,9 +27,8 @@ class MusicQueryService {
       // the synchronous filter+map runs on the main isolate.
       await Future.microtask(() {});
 
-      final allowedFolders = Platform.isIOS
-          ? allowedFoldersIOS
-          : allowedFoldersAndroid;
+      //TODO: Handle IOS later
+      const allowedFolders = allowedFoldersAndroid;
 
       return songs
           .where((song) {

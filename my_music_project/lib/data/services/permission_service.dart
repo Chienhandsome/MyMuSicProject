@@ -1,23 +1,31 @@
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionService {
-  Future<bool> requestStoragePermission() async {
+  Future<PermissionStatus> requestStoragePermission() async {
     if (await Permission.storage.isGranted ||
         await Permission.audio.isGranted) {
-      return true;
+      return PermissionStatus.granted;
     }
 
     final storageStatus = await Permission.storage.request();
-    if (storageStatus.isDenied) {
-      final audioStatus = await Permission.audio.request();
-      return audioStatus.isGranted;
+    if (storageStatus.isGranted || storageStatus.isPermanentlyDenied) {
+      return storageStatus;
     }
 
-    return storageStatus.isGranted;
+    return Permission.audio.request();
   }
 
-  Future<bool> hasStoragePermission() async {
-    return await Permission.storage.isGranted ||
-        await Permission.audio.isGranted;
+  Future<PermissionStatus> checkStoragePermission() async {
+    final storageStatus = await Permission.storage.status;
+    if (storageStatus.isGranted || storageStatus.isPermanentlyDenied) {
+      return storageStatus;
+    }
+
+    final audioStatus = await Permission.audio.status;
+    if (audioStatus.isGranted || audioStatus.isPermanentlyDenied) {
+      return audioStatus;
+    }
+
+    return storageStatus;
   }
 }

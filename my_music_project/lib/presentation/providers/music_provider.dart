@@ -1,12 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/models/song_model.dart';
 import '../../data/repositories/music_repository.dart';
 import '../../data/services/music_query_service.dart';
+import '../../domain/entities/song.dart';
+import '../../domain/repositories/music_repository.dart';
 import '../../domain/usecases/load_songs_usecase.dart';
 import 'audio_provider.dart';
 
 class MusicState {
-  final List<SongModel> songs;
+  final List<Song> songs;
   final bool isLoading;
   final String? errorMessage;
 
@@ -17,14 +18,15 @@ class MusicState {
   });
 
   MusicState copyWith({
-    List<SongModel>? songs,
+    List<Song>? songs,
     bool? isLoading,
     String? errorMessage,
+    bool clearError = false,
   }) {
     return MusicState(
       songs: songs ?? this.songs,
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
 }
@@ -37,11 +39,11 @@ class MusicNotifier extends StateNotifier<MusicState> {
       : super(const MusicState());
 
   Future<void> loadSongs() async {
-    state = state.copyWith(isLoading: true, errorMessage: null);
+    state = state.copyWith(isLoading: true, clearError: true);
     try {
       final songs = await _loadSongsUseCase();
       await _audioNotifier.setPlaylist(songs);
-      state = state.copyWith(songs: songs, isLoading: false);
+      state = state.copyWith(songs: songs, isLoading: false, clearError: true);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,

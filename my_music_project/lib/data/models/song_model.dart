@@ -1,20 +1,11 @@
-class SongModel {
-  final String id;
-  final String title;
-  final String path;
-  final int duration; // milliseconds
+import '../../domain/entities/song.dart';
 
-  SongModel({
-    required this.id,
-    required this.title,
-    required this.path,
-    required this.duration,
+class SongModel extends Song {
+  const SongModel({
+    required super.id,
+    required super.title,
+    required super.path,
+    required super.duration,
   });
-
-  String get durationText {
-    final minutes = (duration / 60000).floor();
-    final seconds = ((duration % 60000) / 1000).floor();
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
 }
 
