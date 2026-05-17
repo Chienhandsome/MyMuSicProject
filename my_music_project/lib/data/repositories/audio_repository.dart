@@ -55,17 +55,25 @@ class AudioRepositoryImpl implements AudioRepository {
     final song = _playlist[index];
 
     await _audioService.setFilePath(song.path);
-    await _audioService.play();
     await _preferencesRepository.setLastSongPath(song.path);
     _currentSongController.add(currentSong);
+    _startPlayback();
   }
 
   @override
   Future<void> play() async {
     if (currentSong == null) return;
 
-    await _audioService.play();
     await _preferencesRepository.setLastSongPath(currentSong!.path);
+    _startPlayback();
+  }
+
+  void _startPlayback() {
+    unawaited(
+      _audioService.play().catchError((Object error, StackTrace stackTrace) {
+        debugPrint('Error starting audio playback: $error');
+      }),
+    );
   }
 
   @override

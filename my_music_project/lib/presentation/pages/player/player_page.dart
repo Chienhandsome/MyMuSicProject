@@ -266,6 +266,8 @@ class _PlayerMoreMenu extends ConsumerWidget {
               Text('${l10n.pathLabel}: ${currentSong.path}', style: const TextStyle(color: Colors.white70)),
               const SizedBox(height: 8),
               Text('${l10n.durationLabel}: ${currentSong.durationText}', style: const TextStyle(color: Colors.white70)),
+              const SizedBox(height: 8),
+              Text('Size: ${currentSong.size}', style: const TextStyle(color: Colors.white70)),
             ],
           ),
           actions: [
@@ -300,6 +302,7 @@ class _SleepTimerSheet extends StatelessWidget {
           const SizedBox(height: 8),
           Text(l10n.sleepTimer, style: const TextStyle(fontWeight: FontWeight.bold)),
           const Divider(),
+          _item(context, '10s', const Duration(seconds: 10)),
           _item(context, l10n.minutes5, const Duration(minutes: 5)),
           _item(context, l10n.minutes10, const Duration(minutes: 10)),
           _item(context, l10n.minutes15, const Duration(minutes: 15)),

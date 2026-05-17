@@ -46,8 +46,8 @@ class SongItem extends ConsumerWidget {
           style: const TextStyle(color: Colors.white54),
         ),
         trailing: IconButton(
-            onPressed: () => _onMoreEvent(context, ref),
-            icon: const Icon(Icons.more_vert)
+          onPressed: () => _onMoreEvent(context, ref),
+          icon: const Icon(Icons.more_vert),
         ),
         onTap: () => _playSong(context, ref),
       ),
@@ -57,14 +57,31 @@ class SongItem extends ConsumerWidget {
   Future<void> _playSong(BuildContext context, WidgetRef ref) async {
     FocusScope.of(context).unfocus();
 
-    if (context.mounted) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const PlayerPage()),
-      );
+    try {
+      await ref.read(audioProvider.notifier).playSongAt(index);
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.noSongPlaying)),
+        );
+      }
+      return;
     }
 
-    await ref.read(audioProvider.notifier).playSongAt(index);
+    if (!context.mounted) return;
+
+    final audioState = ref.read(audioProvider);
+    if (audioState.currentSong == null || audioState.currentIndex != index) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.noSongPlaying)),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const PlayerPage()),
+    );
   }
 
   void _onMoreEvent(BuildContext context, WidgetRef ref) {
@@ -83,22 +100,21 @@ class SongItem extends ConsumerWidget {
             children: [
               ListTile(
                 leading: const Icon(Icons.play_arrow, color: Colors.white),
-                title: Text(l10n.play, style: const TextStyle(color: Colors.white)),
+                title: Text(
+                  l10n.play,
+                  style: const TextStyle(color: Colors.white),
+                ),
                 onTap: () async {
                   Navigator.pop(ctx);
-                  FocusScope.of(context).unfocus();
-                  if (context.mounted) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const PlayerPage()),
-                    );
-                  }
-                  await ref.read(audioProvider.notifier).playSongAt(index);
+                  await _playSong(context, ref);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.favorite, color: Colors.white),
-                title: const Text('Add to favorite', style: TextStyle(color: Colors.white)),
+                title: const Text(
+                  'Add to favorite',
+                  style: TextStyle(color: Colors.white),
+                ),
                 onTap: () {
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -108,7 +124,10 @@ class SongItem extends ConsumerWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.info_outline, color: Colors.white),
-                title: Text(l10n.details, style: const TextStyle(color: Colors.white)),
+                title: Text(
+                  l10n.details,
+                  style: const TextStyle(color: Colors.white),
+                ),
                 onTap: () {
                   Navigator.pop(ctx);
                   _showDetails(context);
@@ -116,7 +135,10 @@ class SongItem extends ConsumerWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.share, color: Colors.white),
-                title: Text(l10n.share, style: const TextStyle(color: Colors.white)),
+                title: Text(
+                  l10n.share,
+                  style: const TextStyle(color: Colors.white),
+                ),
                 onTap: () {
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -126,7 +148,10 @@ class SongItem extends ConsumerWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.close, color: Colors.white70),
-                title: Text(l10n.cancel, style: const TextStyle(color: Colors.white70)),
+                title: Text(
+                  l10n.cancel,
+                  style: const TextStyle(color: Colors.white70),
+                ),
                 onTap: () => Navigator.pop(ctx),
               ),
             ],
@@ -149,9 +174,20 @@ class SongItem extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${l10n.pathLabel}: ${song.path}', style: const TextStyle(color: Colors.white70)),
+              Text(
+                '${l10n.pathLabel}: ${song.path}',
+                style: const TextStyle(color: Colors.white70),
+              ),
               const SizedBox(height: 8),
-              Text('${l10n.durationLabel}: ${song.durationText}', style: const TextStyle(color: Colors.white70)),
+              Text(
+                '${l10n.durationLabel}: ${song.durationText}',
+                style: const TextStyle(color: Colors.white70),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Size: ${song.size}',
+                style: const TextStyle(color: Colors.white70),
+              ),
             ],
           ),
           actions: [

@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:on_audio_query/on_audio_query.dart' hide SongModel;
 import '../models/song_model.dart';
-import 'dart:io';
 
 class MusicQueryService {
   final OnAudioQuery _audioQuery = OnAudioQuery();
@@ -41,6 +40,7 @@ class MusicQueryService {
                 title: song.title,
                 path: song.data,
                 duration: song.duration ?? 0,
+                size: song.size,
               ))
           .toList();
     } catch (e) {

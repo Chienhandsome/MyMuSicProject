@@ -1,21 +1,27 @@
 class Song {
   final String id;
-  final String title;
+  String title;
   final String path;
   final int duration;
   final String? lyric;
+  final int? size;
 
-  const Song({
+  Song({
     required this.id,
     required this.title,
     required this.path,
     required this.duration,
     this.lyric,
+    this.size,
   });
 
   String get durationText {
     final minutes = (duration / 60000).floor();
     final seconds = ((duration % 60000) / 1000).floor();
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  void setTitle(String newTitle) {
+    title = newTitle;
   }
 }
