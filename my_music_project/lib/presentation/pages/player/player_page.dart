@@ -154,15 +154,18 @@ class _SleepTimerCountdownState extends ConsumerState<_SleepTimerCountdown> {
             onPressed: () => ref.read(audioProvider.notifier).cancelSleepTimer(),
             style: TextButton.styleFrom(
               foregroundColor: Colors.white,
-              backgroundColor: Colors.redAccent,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              backgroundColor: const Color(0xFF6A5AE0),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(18),
+                side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
               ),
+              elevation: 2,
+              shadowColor: Colors.black.withValues(alpha: 0.25),
             ),
             child: const Text(
               'Huỷ hẹn giờ',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 0.2),
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.2),
             ),
           ),
         ],
@@ -188,6 +191,10 @@ class _PlayerMoreMenu extends ConsumerWidget {
         PopupMenuItem(
           value: 'favourite',
           child: Text(l10n.addToFavorites),
+        ),
+        PopupMenuItem(
+          value: 'speed',
+          child: Text(l10n.speed),
         ),
         const PopupMenuItem(
           value: 'share',
@@ -243,6 +250,82 @@ class _PlayerMoreMenu extends ConsumerWidget {
         const SnackBar(content: Text('not implemented')),
       );
     }
+
+    if (value == 'speed') {
+      _showSpeedDialog(context, ref);
+    }
+  }
+
+  void _showSpeedDialog(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final currentSpeed = ref.read(audioProvider.notifier).audioPlayer.speed;
+    double speed = currentSpeed.clamp(0.5, 2.0);
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) {
+        return StatefulBuilder(
+          builder: (ctx, setState) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFF1C1C2E),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: Text(l10n.playbackSpeed, style: const TextStyle(color: Colors.white)),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${speed.toStringAsFixed(1)}x',
+                    style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
+                  ),
+                  const SizedBox(height: 6),
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      activeTrackColor: const Color(0xFF8F7CFF),
+                      inactiveTrackColor: Colors.white.withValues(alpha: 0.2),
+                      thumbColor: const Color(0xFF6A5AE0),
+                      overlayColor: const Color(0xFF6A5AE0).withValues(alpha: 0.2),
+                      valueIndicatorColor: const Color(0xFF6A5AE0),
+                      valueIndicatorTextStyle: const TextStyle(color: Colors.white),
+                    ),
+                    child: Slider(
+                      value: speed,
+                      min: 0.5,
+                      max: 2.0,
+                      divisions: 10,
+                      label: '${speed.toStringAsFixed(2)}x',
+                      onChanged: (value) => setState(() => speed = value),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white70,
+                  ),
+                  child: Text(l10n.cancel),
+                ),
+                FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF6A5AE0),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: () async {
+                    await ref.read(audioProvider.notifier).setSpeed(speed);
+                    if (context.mounted) {
+                      Navigator.pop(ctx);
+                    }
+                  },
+                  child: Text(l10n.ok),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   void _showDetails(BuildContext context, WidgetRef ref) {
@@ -258,6 +341,7 @@ class _PlayerMoreMenu extends ConsumerWidget {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: const Color(0xFF1C1C2E),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(currentSong.title, style: const TextStyle(color: Colors.white)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -273,7 +357,8 @@ class _PlayerMoreMenu extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(l10n.close, style: const TextStyle(color: Colors.white70)),
+              style: TextButton.styleFrom(foregroundColor: Colors.white70),
+              child: Text(l10n.close),
             ),
           ],
         );
@@ -293,15 +378,34 @@ class _SleepTimerSheet extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+        color: const Color(0xFF1C1C2E),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.35),
+            blurRadius: 16,
+            offset: const Offset(0, -6),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 8),
-          Text(l10n.sleepTimer, style: const TextStyle(fontWeight: FontWeight.bold)),
-          const Divider(),
+          const SizedBox(height: 10),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            l10n.sleepTimer,
+            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          Divider(color: Colors.white.withValues(alpha: 0.12)),
           _item(context, '10s', const Duration(seconds: 10)),
           _item(context, l10n.minutes5, const Duration(minutes: 5)),
           _item(context, l10n.minutes10, const Duration(minutes: 10)),
@@ -310,10 +414,10 @@ class _SleepTimerSheet extends StatelessWidget {
           _item(context, l10n.hour1, const Duration(hours: 1)),
           _item(context, l10n.hour2, const Duration(hours: 2)),
           ListTile(
-            title: Text(l10n.cancel, style: const TextStyle(color: Colors.red)),
+            title: Text(l10n.cancel, style: const TextStyle(color: Colors.redAccent)),
             onTap: () => Navigator.pop(context),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
         ],
       ),
     );
@@ -321,7 +425,8 @@ class _SleepTimerSheet extends StatelessWidget {
 
   Widget _item(BuildContext context, String text, Duration d) {
     return ListTile(
-      title: Text(text),
+      title: Text(text, style: const TextStyle(color: Colors.white)),
+      trailing: const Icon(Icons.chevron_right, color: Colors.white70),
       onTap: () {
         Navigator.pop(context);
         ref.read(audioProvider.notifier).startSleepTimer(context, d);

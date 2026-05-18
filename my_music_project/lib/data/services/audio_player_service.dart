@@ -27,6 +27,10 @@ class AudioPlayerService {
     await _audioPlayer.seek(position);
   }
 
+  Future<void> setSpeed(double speed) async {
+    await _audioPlayer.setSpeed(speed);
+  }
+
   void dispose() {
     _audioPlayer.dispose();
   }

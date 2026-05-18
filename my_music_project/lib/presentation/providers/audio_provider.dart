@@ -192,6 +192,10 @@ class AudioNotifier extends StateNotifier<AudioState> {
     state = state.copyWith(clearSleepTimer: true);
   }
 
+  Future<void> setSpeed(double speed) async {
+    await _repository.setSpeed(speed);
+  }
+
   @override
   void dispose() {
     _sleepTimer?.cancel();

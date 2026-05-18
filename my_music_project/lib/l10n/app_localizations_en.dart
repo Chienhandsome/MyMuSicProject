@@ -212,4 +212,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get close => 'Close';
+
+  @override
+  String get speed => 'Speed';
+
+  @override
+  String get playbackSpeed => 'Playback speed';
+
+  @override
+  String get ok => 'OK';
 }

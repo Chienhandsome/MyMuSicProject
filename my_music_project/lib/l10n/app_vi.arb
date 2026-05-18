@@ -78,5 +78,8 @@
   "shareNotImplemented": "Chia sẻ: Chưa hỗ trợ",
   "pathLabel": "Đường dẫn",
   "durationLabel": "Thời lượng",
-  "close": "Đóng"
+  "close": "Đóng",
+  "speed": "Tốc độ",
+  "playbackSpeed": "Tốc độ phát",
+  "ok": "OK"
 }

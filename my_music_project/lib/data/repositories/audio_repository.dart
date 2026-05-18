@@ -193,4 +193,9 @@ class AudioRepositoryImpl implements AudioRepository {
     _currentSongController.close();
     _audioService.dispose();
   }
+
+  @override
+  Future<void> setSpeed(double speed) {
+    return _audioService.setSpeed(speed);
+  }
 }

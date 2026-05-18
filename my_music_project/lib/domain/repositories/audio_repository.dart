@@ -18,6 +18,8 @@ abstract class AudioRepository {
 
   Future<void> seek(Duration position);
 
+  Future<void> setSpeed(double speed);
+
   Future<void> setPlayMode(PlayMode mode);
 
   Future<void> setContinuePlay(bool isContinuePlay);

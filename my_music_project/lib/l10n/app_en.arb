@@ -78,5 +78,8 @@
   "shareNotImplemented": "Share: not implemented",
   "pathLabel": "Path",
   "durationLabel": "Duration",
-  "close": "Close"
+  "close": "Close",
+  "speed": "Speed",
+  "playbackSpeed": "Playback speed",
+  "ok": "OK"
 }

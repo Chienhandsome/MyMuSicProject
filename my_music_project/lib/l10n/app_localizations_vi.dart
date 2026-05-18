@@ -212,4 +212,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get close => 'Đóng';
+
+  @override
+  String get speed => 'Tốc độ';
+
+  @override
+  String get playbackSpeed => 'Tốc độ phát';
+
+  @override
+  String get ok => 'OK';
 }
