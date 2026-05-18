@@ -1,10 +1,15 @@
 class Song {
-  final String id;
+  final int id;
   String title;
-  final String path;
-  final int duration;
   final String? lyric;
+  final String? artist;
+  final String path;
+  final String? uri;
+  final int duration;
   final int? size;
+  final String? extension;
+  final int? dateAddedMs;
+  final int? dateModifiedMs;
   int? lastPlay;
   int? numberOfTimesPlayed;
 
@@ -14,7 +19,12 @@ class Song {
     required this.path,
     required this.duration,
     this.lyric,
+    this.artist,
+    this.uri,
     this.size,
+    this.extension,
+    this.dateAddedMs,
+    this.dateModifiedMs,
     this.lastPlay,
     this.numberOfTimesPlayed,
   });

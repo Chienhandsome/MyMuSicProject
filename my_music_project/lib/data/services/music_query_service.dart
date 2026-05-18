@@ -36,11 +36,16 @@ class MusicQueryService {
             return allowedFolders.any((folder) => path.startsWith(folder));
           })
           .map((song) => SongModel(
-                id: song.id.toString(),
+                id: song.id,
                 title: song.title,
+                artist: song.artist,
                 path: song.data,
+                uri: song.uri,
                 duration: song.duration ?? 0,
                 size: song.size,
+                extension: song.fileExtension,
+                dateAddedMs: song.dateAdded,
+                dateModifiedMs: song.dateModified,
               ))
           .toList();
     } catch (e) {
