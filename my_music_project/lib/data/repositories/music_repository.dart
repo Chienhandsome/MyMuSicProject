@@ -12,11 +12,6 @@ class MusicRepositoryImpl implements MusicRepository {
   MusicRepositoryImpl(this._musicQueryService, this._songCacheService);
 
   @override
-  Future<List<Song>> loadSongs() async {
-    return scanDeviceSongs();
-  }
-
-  @override
   Future<List<Song>> loadCachedSongs() async {
     return _songCacheService.getCachedSongs();
   }

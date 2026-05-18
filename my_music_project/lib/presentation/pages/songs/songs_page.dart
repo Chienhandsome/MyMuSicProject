@@ -7,7 +7,6 @@ import '../../widgets/song_item.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../search/search_page.dart';
 
-
 class SongsPage extends ConsumerWidget {
   const SongsPage({super.key});
 
@@ -95,6 +94,7 @@ class SongsPage extends ConsumerWidget {
                 color: Colors.deepPurpleAccent,
                 backgroundColor: Colors.transparent,
               ),
+            _buildFilterBar(musicState.songs.length),
             _SongsList(songs: musicState.songs),
           ],
         );
@@ -104,15 +104,30 @@ class SongsPage extends ConsumerWidget {
 
   void onSearchEvent(BuildContext context) {
     Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const SearchPage())
-    );
+        context, MaterialPageRoute(builder: (_) => const SearchPage()));
   }
 
   void onMoreEvent(BuildContext context) {
     // More actions menu - to be implemented
   }
 
+  _buildFilterBar(int numberOfSong) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Text('$numberOfSong bài hát',
+            style: const TextStyle(color: Colors.white)),
+        TextButton.icon(
+          onPressed: () {
+            
+          },
+          icon: const Icon(Icons.sort, color: Colors.white70),
+          label: const Text('Sắp xếp',
+              style: TextStyle(color: Colors.white70)),
+        )
+      ]),
+    );
+  }
 }
 
 class _SongsList extends ConsumerWidget {
@@ -130,7 +145,8 @@ class _SongsList extends ConsumerWidget {
       itemCount: songs.length,
       itemBuilder: (context, index) {
         final song = songs[index];
-        return SongItem(index: index, song: song, currentIndex: audioState.currentIndex);
+        return SongItem(
+            index: index, song: song, currentIndex: audioState.currentIndex);
       },
     );
   }
