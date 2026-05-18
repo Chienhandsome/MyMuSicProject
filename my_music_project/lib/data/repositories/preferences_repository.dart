@@ -1,42 +1,39 @@
-import 'package:hive_flutter/hive_flutter.dart';
-
 import '../../core/constants/settings_box_keys.dart';
 import '../../domain/repositories/preferences_repository.dart';
-import '../services/hive_storage_service.dart';
+import '../services/app_settings_service.dart';
 
 class PreferencesRepositoryImpl implements PreferencesRepository {
-  Box<dynamic> get _settingsBox => HiveStorageService.settingsBox;
+  final AppSettingsService _settingsService;
+
+  PreferencesRepositoryImpl(this._settingsService);
 
   @override
   String? getLanguageCode() {
-    return _settingsBox.get(SettingsBoxKeys.languageCode) as String?;
+    return _settingsService.getString(SettingsBoxKeys.languageCode);
   }
 
   @override
   Future<void> setLanguageCode(String code) async {
-    await _settingsBox.put(SettingsBoxKeys.languageCode, code);
+    await _settingsService.setString(SettingsBoxKeys.languageCode, code);
   }
 
   @override
   String? getLastSongPath() {
-    return _settingsBox.get(SettingsBoxKeys.lastSongPath) as String?;
+    return _settingsService.getString(SettingsBoxKeys.lastSongPath);
   }
 
   @override
   Future<void> setLastSongPath(String path) async {
-    await _settingsBox.put(SettingsBoxKeys.lastSongPath, path);
+    await _settingsService.setString(SettingsBoxKeys.lastSongPath, path);
   }
 
   @override
   bool getPermissionDenied() {
-    return _settingsBox.get(
-          SettingsBoxKeys.permissionDenied,
-          defaultValue: false,
-        ) as bool;
+    return _settingsService.getBool(SettingsBoxKeys.permissionDenied);
   }
 
   @override
   Future<void> setPermissionDenied(bool value) async {
-    await _settingsBox.put(SettingsBoxKeys.permissionDenied, value);
+    await _settingsService.setBool(SettingsBoxKeys.permissionDenied, value);
   }
 }

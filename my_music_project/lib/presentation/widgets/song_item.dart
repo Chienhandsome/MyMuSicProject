@@ -185,7 +185,7 @@ class SongItem extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Size: ${song.size}',
+                'Size: ${(song.size/1024/1024).toStringAsFixed(1)}MB',
                 style: const TextStyle(color: Colors.white70),
               ),
             ],

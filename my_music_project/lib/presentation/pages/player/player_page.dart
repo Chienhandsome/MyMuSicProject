@@ -351,7 +351,7 @@ class _PlayerMoreMenu extends ConsumerWidget {
               const SizedBox(height: 8),
               Text('${l10n.durationLabel}: ${currentSong.durationText}', style: const TextStyle(color: Colors.white70)),
               const SizedBox(height: 8),
-              Text('Size: ${currentSong.size}', style: const TextStyle(color: Colors.white70)),
+              Text('Size: ${(currentSong.size!/1024/1024).toStringAsFixed(1)}MB', style: const TextStyle(color: Colors.white70)),
             ],
           ),
           actions: [

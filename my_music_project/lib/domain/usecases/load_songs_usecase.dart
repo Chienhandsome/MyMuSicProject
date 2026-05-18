@@ -6,7 +6,7 @@ class LoadSongsUseCase {
 
   LoadSongsUseCase(this._repository);
 
-  Future<List<Song>> call() => _repository.loadSongs();
+  //Future<List<Song>> call() => _repository.loadSongs();
 
   Future<List<Song>> loadCachedSongs() => _repository.loadCachedSongs();
 

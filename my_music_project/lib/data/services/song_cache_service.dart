@@ -1,44 +1,84 @@
-import 'package:flutter/foundation.dart';
+import 'package:isar/isar.dart';
 
-import '../../core/constants/songs_box_keys.dart';
+import '../models/cached_song_record.dart';
 import '../models/song_model.dart';
-import 'hive_storage_service.dart';
+import 'isar_storage_service.dart';
 
 class SongCacheService {
+  static const String _lastScanAtKey = 'last_scan_at';
+
   Future<List<SongModel>> getCachedSongs() async {
-    final rawSongs = HiveStorageService.songsBox.get(SongsBoxKeys.cachedSongs);
-    if (rawSongs is! List) {
-      return [];
-    }
-
-    final songs = <SongModel>[];
-    for (final rawSong in rawSongs) {
-      try {
-        if (rawSong is Map) {
-          songs.add(SongModel.fromMap(rawSong));
-        }
-      } catch (error) {
-        debugPrint('Skipping invalid cached song: $error');
-      }
-    }
-
-    return songs;
+    final records = await IsarStorageService.instance.cachedSongRecords
+        .where()
+        .sortByTitle()
+        .findAll();
+    return records.map(_recordToSongModel).toList();
   }
 
   Future<void> saveSongs(List<SongModel> songs) async {
-    final payload = songs.map((song) => song.toMap()).toList();
-    await HiveStorageService.songsBox.put(SongsBoxKeys.cachedSongs, payload);
+    final isar = IsarStorageService.instance;
+    await isar.writeTxn(() async {
+      await isar.cachedSongRecords.clear();
+      await isar.cachedSongRecords.putAll(songs.map(_songModelToRecord).toList());
+    });
   }
 
   Future<int?> getLastScanAt() async {
-    final value = HiveStorageService.songsBox.get(SongsBoxKeys.lastScanAt);
-    if (value is int) return value;
-    if (value is num) return value.toInt();
-    if (value is String) return int.tryParse(value);
-    return null;
+    final record = await IsarStorageService.instance.songCacheMetadataRecords
+        .filter()
+        .keyEqualTo(_lastScanAtKey)
+        .findFirst();
+    return record?.value;
   }
 
   Future<void> setLastScanAt(int value) async {
-    await HiveStorageService.songsBox.put(SongsBoxKeys.lastScanAt, value);
+    final isar = IsarStorageService.instance;
+    await isar.writeTxn(() async {
+      final existing = await isar.songCacheMetadataRecords
+          .filter()
+          .keyEqualTo(_lastScanAtKey)
+          .findFirst();
+      final record = existing ?? SongCacheMetadataRecord();
+      record
+        ..key = _lastScanAtKey
+        ..value = value;
+      await isar.songCacheMetadataRecords.put(record);
+    });
+  }
+
+  SongModel _recordToSongModel(CachedSongRecord record) {
+    return SongModel(
+      id: record.sourceId,
+      title: record.title,
+      lyric: record.lyric,
+      artist: record.artist,
+      path: record.path,
+      uri: record.uri,
+      duration: record.duration,
+      size: record.size,
+      extension: record.extension,
+      dateAddedMs: record.dateAddedMs,
+      dateModifiedMs: record.dateModifiedMs,
+      lastPlay: record.lastPlay,
+      numberOfTimesPlayed: record.numberOfTimesPlayed,
+    );
+  }
+
+  CachedSongRecord _songModelToRecord(SongModel song) {
+    return CachedSongRecord()
+      ..sourceId = song.id
+      ..title = song.title
+      ..lyric = song.lyric
+      ..artist = song.artist
+      ..path = song.path
+      ..uri = song.uri
+      ..duration = song.duration
+      ..size = song.size
+      ..extension = song.extension
+      ..dateAddedMs = song.dateAddedMs
+      ..dateModifiedMs = song.dateModifiedMs
+      ..lastPlay = song.lastPlay
+      ..numberOfTimesPlayed = song.numberOfTimesPlayed
+      ..schemaVersion = SongModel.currentSchemaVersion;
   }
 }
