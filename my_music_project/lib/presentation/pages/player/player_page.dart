@@ -235,19 +235,19 @@ class _PlayerMoreMenu extends ConsumerWidget {
             ],
           ),
         ),
-        PopupMenuItem(
-          value: 'delete',
-          child: Row(
-            children: [
-              const Icon(Icons.delete_outline, color: Colors.redAccent),
-              const SizedBox(width: 12),
-              Text(
-                l10n.delete,
-                style: const TextStyle(color: Colors.red),
-              ),
-            ],
-          ),
-        ),
+        // PopupMenuItem(
+        //   value: 'delete',
+        //   child: Row(
+        //     children: [
+        //       const Icon(Icons.delete_outline, color: Colors.redAccent),
+        //       const SizedBox(width: 12),
+        //       Text(
+        //         l10n.delete,
+        //         style: const TextStyle(color: Colors.red),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }
