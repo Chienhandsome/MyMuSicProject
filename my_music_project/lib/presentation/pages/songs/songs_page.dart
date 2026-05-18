@@ -87,7 +87,17 @@ class SongsPage extends ConsumerWidget {
           );
         }
 
-        return _SongsList(songs: musicState.songs);
+        return Column(
+          children: [
+            if (musicState.isScanning)
+              const LinearProgressIndicator(
+                minHeight: 2,
+                color: Colors.deepPurpleAccent,
+                backgroundColor: Colors.transparent,
+              ),
+            _SongsList(songs: musicState.songs),
+          ],
+        );
       }),
     );
   }
