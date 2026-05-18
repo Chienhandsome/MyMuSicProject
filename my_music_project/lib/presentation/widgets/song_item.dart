@@ -6,6 +6,8 @@ import '../providers/audio_provider.dart';
 import '../pages/player/player_page.dart';
 import '../../core/utils/song_share.dart';
 
+final _songItemTapLockProvider = StateProvider<bool>((ref) => false);
+
 class SongItem extends ConsumerWidget {
   final int index;
   final Song song;
@@ -21,6 +23,7 @@ class SongItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isPlaying = currentIndex == index;
+    final isTapLocked = ref.watch(_songItemTapLockProvider);
 
     return Card(
       elevation: isPlaying ? 6 : 1,
@@ -51,39 +54,48 @@ class SongItem extends ConsumerWidget {
           onPressed: () => _onMoreEvent(context, ref),
           icon: const Icon(Icons.more_vert),
         ),
-        onTap: () => _playSong(context, ref),
+        enabled: !isTapLocked,
+        onTap: isTapLocked ? null : () => _playSong(context, ref),
       ),
     );
   }
 
   Future<void> _playSong(BuildContext context, WidgetRef ref) async {
-    FocusScope.of(context).unfocus();
+    final tapLock = ref.read(_songItemTapLockProvider.notifier);
+    if (ref.read(_songItemTapLockProvider)) return;
 
+    tapLock.state = true;
     try {
-      await ref.read(audioProvider.notifier).playSongAt(index);
-    } catch (_) {
-      if (context.mounted) {
+      FocusScope.of(context).unfocus();
+
+      try {
+        await ref.read(audioProvider.notifier).playSongAt(index);
+      } catch (_) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context)!.noSongPlaying)),
+          );
+        }
+        return;
+      }
+
+      if (!context.mounted) return;
+
+      final audioState = ref.read(audioProvider);
+      if (audioState.currentSong == null || audioState.currentIndex != index) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.noSongPlaying)),
         );
+        return;
       }
-      return;
-    }
 
-    if (!context.mounted) return;
-
-    final audioState = ref.read(audioProvider);
-    if (audioState.currentSong == null || audioState.currentIndex != index) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.noSongPlaying)),
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PlayerPage()),
       );
-      return;
+    } finally {
+      tapLock.state = false;
     }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const PlayerPage()),
-    );
   }
 
   void _onMoreEvent(BuildContext context, WidgetRef ref) {
