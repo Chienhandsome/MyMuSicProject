@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 
+import '../../domain/entities/song.dart';
 import '../models/cached_song_record.dart';
 import '../models/song_model.dart';
 import 'isar_storage_service.dart';
@@ -46,6 +47,27 @@ class SongCacheService {
     });
   }
 
+  Future<void> updatePlaybackStats({
+    required Song song,
+    required int lastPlay,
+    required int numberOfTimesPlayed,
+  }) async {
+    final isar = IsarStorageService.instance;
+    await isar.writeTxn(() async {
+      final record = await isar.cachedSongRecords
+          .filter()
+          .pathEqualTo(song.path)
+          .findFirst();
+
+      final updatedRecord = record ?? _songToRecord(song);
+      updatedRecord
+        ..lastPlay = lastPlay
+        ..numberOfTimesPlayed = numberOfTimesPlayed;
+
+      await isar.cachedSongRecords.put(updatedRecord);
+    });
+  }
+
   SongModel _recordToSongModel(CachedSongRecord record) {
     return SongModel(
       id: record.sourceId,
@@ -65,6 +87,10 @@ class SongCacheService {
   }
 
   CachedSongRecord _songModelToRecord(SongModel song) {
+    return _songToRecord(song);
+  }
+
+  CachedSongRecord _songToRecord(Song song) {
     return CachedSongRecord()
       ..sourceId = song.id
       ..title = song.title

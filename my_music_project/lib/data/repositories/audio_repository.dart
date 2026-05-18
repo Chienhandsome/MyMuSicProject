@@ -10,11 +10,13 @@ import '../../domain/repositories/audio_repository.dart';
 import '../../domain/repositories/play_config_repository.dart';
 import '../../domain/repositories/preferences_repository.dart';
 import '../services/audio_player_service.dart';
+import '../services/song_cache_service.dart';
 
 class AudioRepositoryImpl implements AudioRepository {
   final AudioPlayerService _audioService;
   final PreferencesRepository _preferencesRepository;
   final PlayConfigRepository _playConfigRepository;
+  final SongCacheService _songCacheService;
   final Random _random = Random();
   final StreamController<Song?> _currentSongController =
       StreamController<Song?>.broadcast();
@@ -29,6 +31,7 @@ class AudioRepositoryImpl implements AudioRepository {
     this._audioService,
     this._preferencesRepository,
     this._playConfigRepository,
+    this._songCacheService,
   ) {
     _playMode = _playConfigRepository.getPlayMode();
     _isContinuePlay = _playConfigRepository.getContinuePlay();
@@ -56,6 +59,7 @@ class AudioRepositoryImpl implements AudioRepository {
 
     await _audioService.setFilePath(song.path);
     await _preferencesRepository.setLastSongPath(song.path);
+    await _recordPlayback(song);
     _currentSongController.add(currentSong);
     _startPlayback();
   }
@@ -64,7 +68,9 @@ class AudioRepositoryImpl implements AudioRepository {
   Future<void> play() async {
     if (currentSong == null) return;
 
-    await _preferencesRepository.setLastSongPath(currentSong!.path);
+    final song = currentSong!;
+    await _preferencesRepository.setLastSongPath(song.path);
+    await _recordPlayback(song);
     _startPlayback();
   }
 
@@ -74,6 +80,26 @@ class AudioRepositoryImpl implements AudioRepository {
         debugPrint('Error starting audio playback: $error');
       }),
     );
+  }
+
+  Future<void> _recordPlayback(Song song) async {
+    final lastPlay = DateTime.now().millisecondsSinceEpoch;
+    final numberOfTimesPlayed = (song.numberOfTimesPlayed ?? 0) + 1;
+
+    song
+      ..lastPlay = lastPlay
+      ..numberOfTimesPlayed = numberOfTimesPlayed;
+
+    try {
+      await _songCacheService.updatePlaybackStats(
+        song: song,
+        lastPlay: lastPlay,
+        numberOfTimesPlayed: numberOfTimesPlayed,
+      );
+    } catch (error, stackTrace) {
+      debugPrint('Error updating playback stats: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
   }
 
   @override

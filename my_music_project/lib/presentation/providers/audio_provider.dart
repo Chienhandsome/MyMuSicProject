@@ -5,6 +5,7 @@ import 'package:just_audio/just_audio.dart';
 import '../../core/constants/media_keys.dart';
 import '../../data/repositories/audio_repository.dart';
 import '../../data/services/audio_player_service.dart';
+import '../../data/services/song_cache_service.dart';
 import '../../domain/entities/play_mode.dart';
 import '../../domain/entities/song.dart';
 import '../../domain/repositories/audio_repository.dart';
@@ -215,6 +216,7 @@ final audioRepositoryProvider = Provider<AudioRepository>((ref) {
     ref.watch(audioServiceProvider),
     ref.watch(preferencesRepositoryProvider),
     ref.watch(playConfigRepositoryProvider),
+    SongCacheService(),
   );
 });
 
