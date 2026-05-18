@@ -7,6 +7,7 @@ import '../../widgets/progress_slider.dart';
 import '../../widgets/player_controls.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../widgets/scrolling_title.dart';
+import '../../../core/utils/song_share.dart';
 
 class PlayerPage extends ConsumerWidget {
   const PlayerPage({super.key});
@@ -185,37 +186,77 @@ class _PlayerMoreMenu extends ConsumerWidget {
       onSelected: (value) => _onMoreEvent(context, ref, value),
       itemBuilder: (ctx) => [
         PopupMenuItem(
-            value: 'timer',
-            child: Text(l10n.sleepTimer),
+          value: 'timer',
+          child: Row(
+            children: [
+              const Icon(Icons.timer, color: Colors.black),
+              const SizedBox(width: 12),
+              Text(l10n.sleepTimer),
+            ],
+          ),
         ),
         PopupMenuItem(
           value: 'favourite',
-          child: Text(l10n.addToFavorites),
+          child: Row(
+            children: [
+              const Icon(Icons.favorite, color: Colors.black),
+              const SizedBox(width: 12),
+              Text(l10n.addToFavorites),
+            ],
+          ),
         ),
         PopupMenuItem(
           value: 'speed',
-          child: Text(l10n.speed),
+          child: Row(
+            children: [
+              const Icon(Icons.speed, color: Colors.black),
+              const SizedBox(width: 12),
+              Text(l10n.speed),
+            ],
+          ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'share',
-          child: Text('share'),
+          child: Row(
+            children: [
+              const Icon(Icons.share, color: Colors.black),
+              const SizedBox(width: 12),
+              Text(l10n.share),
+            ],
+          ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'details',
-          child: Text('details'),
+          child: Row(
+            children: [
+              const Icon(Icons.info_outline, color: Colors.black),
+              const SizedBox(width: 12),
+              Text(l10n.details),
+            ],
+          ),
         ),
         PopupMenuItem(
           value: 'delete',
-          child: Text(
-              l10n.delete,
-            style: const TextStyle(color: Colors.red),
+          child: Row(
+            children: [
+              const Icon(Icons.delete_outline, color: Colors.redAccent),
+              const SizedBox(width: 12),
+              Text(
+                l10n.delete,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  void _onMoreEvent(BuildContext context, WidgetRef ref, String value) {
+  Future<void> _onMoreEvent(
+    BuildContext context,
+    WidgetRef ref,
+    String value,
+  ) async {
     if (value == 'timer') {
       showDialog(
         context: context,
@@ -230,9 +271,10 @@ class _PlayerMoreMenu extends ConsumerWidget {
     }
 
     if (value == 'share') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('not implemented')),
-      );
+      final currentSong = ref.read(audioProvider).currentSong;
+      if (currentSong == null) return;
+
+      await shareSongFile(context, currentSong);
     }
 
     if (value == 'details') {

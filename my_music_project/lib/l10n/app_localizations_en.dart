@@ -221,4 +221,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get sort => 'Sort';
+
+  @override
+  String get sortCriteria => 'Sort criteria';
+
+  @override
+  String get sortByName => 'Name';
+
+  @override
+  String get sortByDuration => 'Duration';
+
+  @override
+  String get sortByRecentlyAdded => 'Recently added';
+
+  @override
+  String get sortOrder => 'Order';
+
+  @override
+  String get sortAscending => 'Ascending';
+
+  @override
+  String get sortDescending => 'Descending';
 }

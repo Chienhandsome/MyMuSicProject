@@ -221,4 +221,28 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get sort => 'Sắp xếp';
+
+  @override
+  String get sortCriteria => 'Tiêu chí sắp xếp';
+
+  @override
+  String get sortByName => 'Tên';
+
+  @override
+  String get sortByDuration => 'Thời lượng';
+
+  @override
+  String get sortByRecentlyAdded => 'Thêm gần đây';
+
+  @override
+  String get sortOrder => 'Thứ tự';
+
+  @override
+  String get sortAscending => 'Tăng dần';
+
+  @override
+  String get sortDescending => 'Giảm dần';
 }

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../domain/entities/song.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/audio_provider.dart';
 import '../pages/player/player_page.dart';
+import '../../core/utils/song_share.dart';
 
 class SongItem extends ConsumerWidget {
   final int index;
-  final dynamic song;
+  final Song song;
   final int currentIndex;
 
   const SongItem({
@@ -139,11 +141,9 @@ class SongItem extends ConsumerWidget {
                   l10n.share,
                   style: const TextStyle(color: Colors.white),
                 ),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.shareNotImplemented)),
-                  );
+                  await shareSongFile(context, song);
                 },
               ),
               ListTile(
@@ -185,7 +185,7 @@ class SongItem extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Size: ${(song.size/1024/1024).toStringAsFixed(1)}MB',
+                'Size: ${(song.size!/1024/1024).toStringAsFixed(1)}MB',
                 style: const TextStyle(color: Colors.white70),
               ),
             ],

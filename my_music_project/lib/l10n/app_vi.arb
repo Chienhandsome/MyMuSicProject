@@ -81,5 +81,13 @@
   "close": "Đóng",
   "speed": "Tốc độ",
   "playbackSpeed": "Tốc độ phát",
-  "ok": "OK"
+  "ok": "OK",
+  "sort": "Sắp xếp",
+  "sortCriteria": "Tiêu chí sắp xếp",
+  "sortByName": "Tên",
+  "sortByDuration": "Thời lượng",
+  "sortByRecentlyAdded": "Thêm gần đây",
+  "sortOrder": "Thứ tự",
+  "sortAscending": "Tăng dần",
+  "sortDescending": "Giảm dần"
 }

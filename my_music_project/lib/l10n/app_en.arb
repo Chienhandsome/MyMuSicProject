@@ -81,5 +81,13 @@
   "close": "Close",
   "speed": "Speed",
   "playbackSpeed": "Playback speed",
-  "ok": "OK"
+  "ok": "OK",
+  "sort": "Sort",
+  "sortCriteria": "Sort criteria",
+  "sortByName": "Name",
+  "sortByDuration": "Duration",
+  "sortByRecentlyAdded": "Recently added",
+  "sortOrder": "Order",
+  "sortAscending": "Ascending",
+  "sortDescending": "Descending"
 }
