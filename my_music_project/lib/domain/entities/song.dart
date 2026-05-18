@@ -5,6 +5,8 @@ class Song {
   final int duration;
   final String? lyric;
   final int? size;
+  int? lastPlay;
+  int? numberOfTimesPlayed;
 
   Song({
     required this.id,
@@ -13,6 +15,8 @@ class Song {
     required this.duration,
     this.lyric,
     this.size,
+    this.lastPlay,
+    this.numberOfTimesPlayed,
   });
 
   String get durationText {
@@ -23,5 +27,21 @@ class Song {
 
   void setTitle(String newTitle) {
     title = newTitle;
+  }
+
+  int? getLastPlay() {
+    return lastPlay;
+  }
+
+  void setLastPlay(int? value) {
+    lastPlay = value;
+  }
+
+  int? getNumberOfTimesPlayed() {
+    return numberOfTimesPlayed;
+  }
+
+  void setNumberOfTimesPlayed(int? value) {
+    numberOfTimesPlayed = value;
   }
 }

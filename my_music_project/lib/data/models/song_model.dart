@@ -7,7 +7,8 @@ class SongModel extends Song {
     required super.path,
     required super.duration,
     super.lyric,
-    super.size
+    super.size,
+    super.lastPlay = 0,
+    super.numberOfTimesPlayed = 0,
   });
 }
-
