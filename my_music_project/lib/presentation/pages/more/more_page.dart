@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../providers/locale_provider.dart';
+import 'package:my_music_project/core/constants/privacy_policy.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../../l10n/app_localizations.dart';
+import '../../providers/locale_provider.dart';
 import '../../widgets/app_scaffold.dart';
+
+// const _privacyPolicyUrl = 'https://chienhandsome.github.io/MyMuSicProject/';
 
 class MorePage extends ConsumerWidget {
   const MorePage({super.key});
+
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final locale = ref.watch(localeProvider);
-    final currentLanguage = locale.languageCode == 'en' ? 'English' : 'Tiếng Việt';
+    final currentLanguage = locale.languageCode == 'en' ? 'English' : 'Vietnamese';
 
     return AppScaffold(
       title: l10n.settings,
@@ -21,24 +28,9 @@ class MorePage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle(l10n.language),
             _buildLanguageOption(context, l10n, currentLanguage, ref),
+            _buildPrivacyPolicy(context),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: Colors.white70,
-          letterSpacing: 0.5,
         ),
       ),
     );
@@ -51,28 +43,10 @@ class MorePage extends ConsumerWidget {
     WidgetRef ref,
   ) {
     return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E2E),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
-          width: 1,
-        ),
-      ),
+      decoration: _cardDecoration(),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        leading: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.deepPurpleAccent.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: const Icon(
-            Icons.language,
-            color: Colors.deepPurpleAccent,
-            size: 24,
-          ),
-        ),
+        leading: _buildLeadingIcon(Icons.language),
         title: Text(
           l10n.languageOption,
           style: const TextStyle(
@@ -83,14 +57,7 @@ class MorePage extends ConsumerWidget {
         ),
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color: Colors.deepPurpleAccent.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.deepPurpleAccent.withValues(alpha: 0.3),
-              width: 1,
-            ),
-          ),
+          decoration: _accentDecoration(),
           child: DropdownButton<String>(
             value: currentLanguage,
             icon: const Icon(
@@ -111,22 +78,126 @@ class MorePage extends ConsumerWidget {
                 child: Text(l10n.english),
               ),
               DropdownMenuItem(
-                value: 'Tiếng Việt',
+                value: 'Vietnamese',
                 child: Text(l10n.vietnamese),
               ),
             ],
             onChanged: (String? newValue) {
-              if (newValue != null) {
-                final newLocale = newValue == 'English'
-                    ? const Locale('en')
-                    : const Locale('vi');
-                ref.read(localeProvider.notifier).setLocale(newLocale);
+              if (newValue == null) {
+                return;
               }
+
+              final newLocale =
+                  newValue == 'English' ? const Locale('en') : const Locale('vi');
+              ref.read(localeProvider.notifier).setLocale(newLocale);
             },
           ),
         ),
       ),
     );
   }
-}
 
+  Widget _buildPrivacyPolicy(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 16),
+      decoration: _cardDecoration(),
+      child: ListTile(
+        onTap: () => _openPrivacyPolicy(context),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        leading: _buildLeadingIcon(Icons.policy_outlined),
+        title: const Text(
+          'Privacy Policy',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        trailing: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: _accentDecoration(),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Xem',
+                style: TextStyle(
+                  color: Colors.deepPurpleAccent,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(width: 6),
+              Icon(
+                Icons.open_in_new,
+                color: Colors.deepPurpleAccent,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLeadingIcon(IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.deepPurpleAccent.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(
+        icon,
+        color: Colors.deepPurpleAccent,
+        size: 24,
+      ),
+    );
+  }
+
+  BoxDecoration _cardDecoration() {
+    return BoxDecoration(
+      color: const Color(0xFF1E1E2E),
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(
+        color: Colors.white.withValues(alpha: 0.1),
+        width: 1,
+      ),
+    );
+  }
+
+  BoxDecoration _accentDecoration() {
+    return BoxDecoration(
+      color: Colors.deepPurpleAccent.withValues(alpha: 0.2),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: Colors.deepPurpleAccent.withValues(alpha: 0.3),
+        width: 1,
+      ),
+    );
+  }
+
+  Future<void> _openPrivacyPolicy(BuildContext context) async {
+    final uri = Uri.parse(PrivacyPolicy.privacyPolicyUrl);
+
+    try {
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+      if (!opened && context.mounted) {
+        _showOpenPolicyError(context);
+      }
+    } on PlatformException {
+      if (context.mounted) {
+        _showOpenPolicyError(context);
+      }
+    }
+  }
+
+  void _showOpenPolicyError(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Khong the mo chinh sach quyen rieng tu.'),
+      ),
+    );
+  }
+}
