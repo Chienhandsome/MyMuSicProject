@@ -89,5 +89,21 @@
   "sortByRecentlyAdded": "Recently added",
   "sortOrder": "Order",
   "sortAscending": "Ascending",
-  "sortDescending": "Descending"
+  "sortDescending": "Descending",
+  "notImplemented": "Not implemented",
+  "sizeText": "Size: {size}MB",
+  "cancelSleepTimer": "Cancel timer",
+  "seconds10": "10 seconds",
+  "privacyPolicy": "Privacy Policy",
+  "view": "View",
+  "privacyPolicyOpenError": "Unable to open privacy policy.",
+  "retry": "Retry",
+  "songsCount": "{count} songs",
+  "@songsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

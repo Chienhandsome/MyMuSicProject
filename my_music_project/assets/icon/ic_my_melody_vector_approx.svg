@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1254" height="1254" viewBox="0 0 1254 1254" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGrad" cx="22%" cy="16%" r="92%">
+      <stop offset="0%" stop-color="#7418ee"/>
+      <stop offset="34%" stop-color="#231045"/>
+      <stop offset="72%" stop-color="#070411"/>
+      <stop offset="100%" stop-color="#030208"/>
+    </radialGradient>
+
+    <linearGradient id="purpleGrad" x1="24%" y1="18%" x2="76%" y2="86%">
+      <stop offset="0%" stop-color="#ffd1ff"/>
+      <stop offset="45%" stop-color="#b52cff"/>
+      <stop offset="100%" stop-color="#5a18e9"/>
+    </linearGradient>
+
+    <linearGradient id="barGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e087ff"/>
+      <stop offset="55%" stop-color="#8d24f7"/>
+      <stop offset="100%" stop-color="#4e13c7"/>
+    </linearGradient>
+
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="12" result="blur"/>
+      <feOffset dx="0" dy="18" result="offsetBlur"/>
+      <feMerge>
+        <feMergeNode in="offsetBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="14" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="bigGlow" x="-70%" y="-70%" width="240%" height="240%">
+      <feGaussianBlur stdDeviation="24" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <clipPath id="roundedClip">
+      <rect x="0" y="0" width="1254" height="1254" rx="260" ry="260"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#roundedClip)">
+    <rect width="1254" height="1254" rx="260" ry="260" fill="url(#bgGrad)"/>
+    <circle cx="642" cy="612" r="456" fill="none" stroke="#8e35ff" stroke-opacity=".13" stroke-width="84"/>
+    <circle cx="642" cy="612" r="374" fill="none" stroke="#8a35ff" stroke-opacity=".16" stroke-width="5"/>
+    <circle cx="642" cy="612" r="491" fill="none" stroke="#a33cff" stroke-opacity=".10" stroke-width="3"/>
+
+    <path d="M640 226
+             A415 415 0 0 0 221 648"
+          fill="none" stroke="#d88aff" stroke-width="14" stroke-linecap="round" filter="url(#glow)"/>
+    <path d="M724 1045
+             A419 419 0 0 0 1026 711"
+          fill="none" stroke="#9d36ff" stroke-width="16" stroke-linecap="round" filter="url(#glow)"/>
+    <path d="M622 226
+             A407 407 0 0 0 218 678"
+          fill="none" stroke="#7b24f4" stroke-width="9" stroke-linecap="round" opacity=".7"/>
+    <path d="M706 1044
+             A407 407 0 0 0 1025 730"
+          fill="none" stroke="#6c22e6" stroke-width="9" stroke-linecap="round" opacity=".72"/>
+
+    <g filter="url(#glow)" opacity=".96">
+      <rect x="256" y="641" width="20" height="55" rx="10" fill="url(#barGrad)"/>
+      <rect x="296" y="610" width="24" height="113" rx="12" fill="url(#barGrad)"/>
+      <rect x="337" y="568" width="25" height="183" rx="13" fill="url(#barGrad)"/>
+      <rect x="382" y="516" width="24" height="276" rx="13" fill="url(#barGrad)"/>
+      <rect x="425" y="568" width="24" height="172" rx="13" fill="url(#barGrad)"/>
+      <rect x="470" y="599" width="24" height="107" rx="12" fill="url(#barGrad)"/>
+      <rect x="514" y="628" width="22" height="54" rx="11" fill="url(#barGrad)"/>
+
+      <rect x="773" y="628" width="21" height="70" rx="10" fill="url(#barGrad)" opacity=".68"/>
+      <rect x="812" y="646" width="21" height="58" rx="10" fill="url(#barGrad)" opacity=".62"/>
+      <rect x="851" y="641" width="22" height="91" rx="11" fill="url(#barGrad)" opacity=".8"/>
+      <rect x="891" y="607" width="24" height="184" rx="12" fill="url(#barGrad)"/>
+      <rect x="933" y="568" width="24" height="183" rx="12" fill="url(#barGrad)"/>
+      <rect x="976" y="623" width="23" height="95" rx="12" fill="url(#barGrad)" opacity=".82"/>
+      <rect x="1018" y="641" width="20" height="48" rx="10" fill="url(#barGrad)" opacity=".65"/>
+    </g>
+
+    <g filter="url(#bigGlow)">
+      <path fill="url(#purpleGrad)" stroke="#f0c2ff" stroke-width="5" stroke-linejoin="round"
+        d="M646 710
+           L646 384
+           C646 361 670 349 690 362
+           L806 431
+           C870 469 898 522 881 588
+           C874 615 862 640 845 665
+           C838 675 818 671 822 657
+           C840 588 811 543 754 518
+           L711 500
+           C700 496 695 503 695 516
+           L695 786
+           C695 874 633 928 551 925
+           C497 923 459 891 461 839
+           C464 779 519 723 587 711
+           C607 707 628 707 646 710 Z"/>
+      <ellipse cx="558" cy="821" rx="104" ry="82" transform="rotate(-24 558 821)" fill="url(#purpleGrad)" stroke="#f0c2ff" stroke-width="4"/>
+      <rect x="646" y="379" width="49" height="339" rx="24" fill="url(#purpleGrad)" opacity=".97"/>
+    </g>
+
+    <path d="M680 368
+             C735 396 786 429 828 456
+             C850 471 868 493 879 519"
+          fill="none" stroke="#ffdcff" stroke-opacity=".38" stroke-width="8" stroke-linecap="round"/>
+    <ellipse cx="535" cy="783" rx="96" ry="55" transform="rotate(-24 535 783)" fill="#ffffff" opacity=".12"/>
+  </g>
+</svg>

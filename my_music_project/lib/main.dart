@@ -4,13 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/constants/language_keys.dart';
 import 'presentation/pages/splash/splash_page.dart';
 import 'presentation/providers/locale_provider.dart';
-import 'data/services/isar_storage_service.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await IsarStorageService.init();
 
   runApp(const ProviderScope(child: MyApp()));
 }

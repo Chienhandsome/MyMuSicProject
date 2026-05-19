@@ -5,6 +5,10 @@ import 'isar_storage_service.dart';
 
 class AppSettingsService {
   String? getString(String key) {
+    if (!IsarStorageService.isReady) {
+      return null;
+    }
+
     return IsarStorageService.instance.appSettingRecords
         .filter()
         .keyEqualTo(key)
@@ -25,6 +29,10 @@ class AppSettingsService {
   }
 
   bool getBool(String key, {bool defaultValue = false}) {
+    if (!IsarStorageService.isReady) {
+      return defaultValue;
+    }
+
     return IsarStorageService.instance.appSettingRecords
             .filter()
             .keyEqualTo(key)
@@ -46,6 +54,10 @@ class AppSettingsService {
   }
 
   int? getInt(String key) {
+    if (!IsarStorageService.isReady) {
+      return null;
+    }
+
     return IsarStorageService.instance.appSettingRecords
         .filter()
         .keyEqualTo(key)

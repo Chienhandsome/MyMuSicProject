@@ -245,4 +245,36 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get sortDescending => 'Giảm dần';
+
+  @override
+  String get notImplemented => 'Chưa hỗ trợ';
+
+  @override
+  String sizeText(Object size) {
+    return 'Dung lượng: ${size}MB';
+  }
+
+  @override
+  String get cancelSleepTimer => 'Hủy hẹn giờ';
+
+  @override
+  String get seconds10 => '10 giây';
+
+  @override
+  String get privacyPolicy => 'Chính sách quyền riêng tư';
+
+  @override
+  String get view => 'Xem';
+
+  @override
+  String get privacyPolicyOpenError =>
+      'Không thể mở chính sách quyền riêng tư.';
+
+  @override
+  String get retry => 'Thử lại';
+
+  @override
+  String songsCount(String count) {
+    return '$count bài hát';
+  }
 }

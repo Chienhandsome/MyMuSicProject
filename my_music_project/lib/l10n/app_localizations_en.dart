@@ -245,4 +245,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sortDescending => 'Descending';
+
+  @override
+  String get notImplemented => 'Not implemented';
+
+  @override
+  String sizeText(Object size) {
+    return 'Size: ${size}MB';
+  }
+
+  @override
+  String get cancelSleepTimer => 'Cancel timer';
+
+  @override
+  String get seconds10 => '10 seconds';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get view => 'View';
+
+  @override
+  String get privacyPolicyOpenError => 'Unable to open privacy policy.';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String songsCount(String count) {
+    return '$count songs';
+  }
 }

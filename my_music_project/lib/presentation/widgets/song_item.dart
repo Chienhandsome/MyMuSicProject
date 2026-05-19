@@ -125,14 +125,14 @@ class SongItem extends ConsumerWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.favorite, color: Colors.white),
-                title: const Text(
-                  'Add to favorite',
-                  style: TextStyle(color: Colors.white),
+                title: Text(
+                  l10n.addToFavorites,
+                  style: const TextStyle(color: Colors.white),
                 ),
                 onTap: () {
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('not implemented')),
+                    SnackBar(content: Text(l10n.notImplemented)),
                   );
                 },
               ),
@@ -197,7 +197,7 @@ class SongItem extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Size: ${(song.size!/1024/1024).toStringAsFixed(1)}MB',
+                l10n.sizeText((song.size! / 1024 / 1024).toStringAsFixed(1)),
                 style: const TextStyle(color: Colors.white70),
               ),
             ],

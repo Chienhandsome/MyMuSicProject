@@ -6,7 +6,9 @@ import 'package:permission_handler/permission_handler.dart';
 import '../splash/splash_background.dart';
 import '../splash/splash_content.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../data/services/isar_storage_service.dart';
 import '../home_page.dart';
+import '../../providers/locale_provider.dart';
 import '../../providers/music_provider.dart';
 import '../../providers/permission_provider.dart';
 
@@ -71,6 +73,12 @@ class _SplashPageState extends ConsumerState<SplashPage>
     final permissionNotifier = ref.read(permissionProvider.notifier);
 
     try {
+      await IsarStorageService.init();
+      if (!mounted) return;
+
+      await ref.read(localeProvider.notifier).loadLocale();
+      if (!mounted) return;
+
       // Load trạng thái permission denied trước
       await permissionNotifier.loadDeniedStatus();
 

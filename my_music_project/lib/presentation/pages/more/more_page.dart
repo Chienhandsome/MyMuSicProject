@@ -29,7 +29,7 @@ class MorePage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildLanguageOption(context, l10n, currentLanguage, ref),
-            _buildPrivacyPolicy(context),
+            _buildPrivacyPolicy(context, l10n),
           ],
         ),
       ),
@@ -97,7 +97,7 @@ class MorePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildPrivacyPolicy(BuildContext context) {
+  Widget _buildPrivacyPolicy(BuildContext context, AppLocalizations l10n) {
     return Container(
       margin: const EdgeInsets.only(top: 16),
       decoration: _cardDecoration(),
@@ -105,9 +105,9 @@ class MorePage extends ConsumerWidget {
         onTap: () => _openPrivacyPolicy(context),
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         leading: _buildLeadingIcon(Icons.policy_outlined),
-        title: const Text(
-          'Privacy Policy',
-          style: TextStyle(
+        title: Text(
+          l10n.privacyPolicy,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -116,19 +116,19 @@ class MorePage extends ConsumerWidget {
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: _accentDecoration(),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Xem',
-                style: TextStyle(
+                l10n.view,
+                style: const TextStyle(
                   color: Colors.deepPurpleAccent,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              SizedBox(width: 6),
-              Icon(
+              const SizedBox(width: 6),
+              const Icon(
                 Icons.open_in_new,
                 color: Colors.deepPurpleAccent,
                 size: 16,
@@ -194,9 +194,10 @@ class MorePage extends ConsumerWidget {
   }
 
   void _showOpenPolicyError(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Khong the mo chinh sach quyen rieng tu.'),
+      SnackBar(
+        content: Text(l10n.privacyPolicyOpenError),
       ),
     );
   }

@@ -127,6 +127,7 @@ class _SleepTimerCountdownState extends ConsumerState<_SleepTimerCountdown> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final sleepTimerEnd = ref.watch(audioProvider).sleepTimerEnd;
 
     if (sleepTimerEnd == null) return const Spacer();
@@ -164,9 +165,9 @@ class _SleepTimerCountdownState extends ConsumerState<_SleepTimerCountdown> {
               elevation: 2,
               shadowColor: Colors.black.withValues(alpha: 0.25),
             ),
-            child: const Text(
-              'Huỷ hẹn giờ',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.2),
+            child: Text(
+              l10n.cancelSleepTimer,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.2),
             ),
           ),
         ],
@@ -257,6 +258,8 @@ class _PlayerMoreMenu extends ConsumerWidget {
     WidgetRef ref,
     String value,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (value == 'timer') {
       showDialog(
         context: context,
@@ -283,13 +286,13 @@ class _PlayerMoreMenu extends ConsumerWidget {
 
     if (value == 'favourite') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('not implemented')),
+        SnackBar(content: Text(l10n.notImplemented)),
       );
     }
 
     if (value == 'delete') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('not implemented')),
+        SnackBar(content: Text(l10n.notImplemented)),
       );
     }
 
@@ -333,7 +336,7 @@ class _PlayerMoreMenu extends ConsumerWidget {
                       value: speed,
                       min: 0.5,
                       max: 2.0,
-                      divisions: 10,
+                      divisions: 11,
                       label: '${speed.toStringAsFixed(2)}x',
                       onChanged: (value) => setState(() => speed = value),
                     ),
@@ -378,6 +381,8 @@ class _PlayerMoreMenu extends ConsumerWidget {
       return;
     }
 
+    final sizeMb = (currentSong.size! / 1024 / 1024).toStringAsFixed(1);
+
     showDialog(
       context: context,
       builder: (ctx) {
@@ -393,7 +398,7 @@ class _PlayerMoreMenu extends ConsumerWidget {
               const SizedBox(height: 8),
               Text('${l10n.durationLabel}: ${currentSong.durationText}', style: const TextStyle(color: Colors.white70)),
               const SizedBox(height: 8),
-              Text('Size: ${(currentSong.size!/1024/1024).toStringAsFixed(1)}MB', style: const TextStyle(color: Colors.white70)),
+              Text(l10n.sizeText(sizeMb), style: const TextStyle(color: Colors.white70)),
             ],
           ),
           actions: [
@@ -448,7 +453,7 @@ class _SleepTimerSheet extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
           Divider(color: Colors.white.withValues(alpha: 0.12)),
-          _item(context, '10s', const Duration(seconds: 10)),
+          _item(context, l10n.seconds10, const Duration(seconds: 10)),
           _item(context, l10n.minutes5, const Duration(minutes: 5)),
           _item(context, l10n.minutes10, const Duration(minutes: 10)),
           _item(context, l10n.minutes15, const Duration(minutes: 15)),

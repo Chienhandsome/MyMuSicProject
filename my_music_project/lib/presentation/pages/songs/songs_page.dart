@@ -102,7 +102,7 @@ class SongsPage extends ConsumerWidget {
                     onPressed: () =>
                         ref.read(musicProvider.notifier).loadSongs(),
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
+                    label: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -152,7 +152,7 @@ class SongsPage extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text('$numberOfSong bài hát',
+        Text(l10n.songsCount(numberOfSong.toString()),
             style: const TextStyle(color: Colors.white)),
         TextButton.icon(
           onPressed: () => _showSortSheet(context, ref),

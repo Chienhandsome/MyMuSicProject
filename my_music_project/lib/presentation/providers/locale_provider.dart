@@ -9,10 +9,10 @@ class LocaleNotifier extends StateNotifier<Locale> {
 
   LocaleNotifier(this._preferencesRepository)
       : super(const Locale(LanguageKeys.vietnameseCode)) {
-    _loadLocale();
+    loadLocale();
   }
 
-  Future<void> _loadLocale() async {
+  Future<void> loadLocale() async {
     final code = _preferencesRepository.getLanguageCode() ??
         LanguageKeys.vietnameseCode;
     state = Locale(code);

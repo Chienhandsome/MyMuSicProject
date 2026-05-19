@@ -559,6 +559,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Descending'**
   String get sortDescending;
+
+  /// No description provided for @notImplemented.
+  ///
+  /// In en, this message translates to:
+  /// **'Not implemented'**
+  String get notImplemented;
+
+  /// No description provided for @sizeText.
+  ///
+  /// In en, this message translates to:
+  /// **'Size: {size}MB'**
+  String sizeText(Object size);
+
+  /// No description provided for @cancelSleepTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel timer'**
+  String get cancelSleepTimer;
+
+  /// No description provided for @seconds10.
+  ///
+  /// In en, this message translates to:
+  /// **'10 seconds'**
+  String get seconds10;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @view.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get view;
+
+  /// No description provided for @privacyPolicyOpenError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open privacy policy.'**
+  String get privacyPolicyOpenError;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @songsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} songs'**
+  String songsCount(String count);
 }
 
 class _AppLocalizationsDelegate

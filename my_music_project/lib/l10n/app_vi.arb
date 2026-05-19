@@ -89,5 +89,21 @@
   "sortByRecentlyAdded": "Thêm gần đây",
   "sortOrder": "Thứ tự",
   "sortAscending": "Tăng dần",
-  "sortDescending": "Giảm dần"
+  "sortDescending": "Giảm dần",
+  "notImplemented": "Chưa hỗ trợ",
+  "sizeText": "Dung lượng: {size}MB",
+  "cancelSleepTimer": "Hủy hẹn giờ",
+  "seconds10": "10 giây",
+  "privacyPolicy": "Chính sách quyền riêng tư",
+  "view": "Xem",
+  "privacyPolicyOpenError": "Không thể mở chính sách quyền riêng tư.",
+  "retry": "Thử lại",
+  "songsCount": "{count} bài hát",
+  "@songsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

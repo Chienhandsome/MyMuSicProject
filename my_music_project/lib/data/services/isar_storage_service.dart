@@ -6,6 +6,8 @@ import '../models/cached_song_record.dart';
 class IsarStorageService {
   static Isar? _instance;
 
+  static bool get isReady => _instance?.isOpen ?? false;
+
   static Future<void> init() async {
     if (_instance != null && _instance!.isOpen) {
       return;
