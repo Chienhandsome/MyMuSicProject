@@ -12,9 +12,9 @@ void main() async {
 
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.example.my_music_project.audio',
-    androidNotificationChannelName: 'Music playback',
+    androidNotificationChannelName: 'My Music Project',
     androidNotificationChannelDescription: 'Music playback controls',
-    androidNotificationIcon: 'mipmap/ic_launcher',
+    androidNotificationIcon: 'drawable/ic_stat_music_note',
     androidNotificationOngoing: true,
   );
 

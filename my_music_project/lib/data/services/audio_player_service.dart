@@ -9,23 +9,43 @@ class AudioPlayerService {
 
   AudioPlayer get audioPlayer => _audioPlayer;
 
-  Future<void> setSong(Song song) async {
+  Future<void> setPlaylist(
+    List<Song> songs, {
+    int initialIndex = 0,
+  }) async {
+    if (songs.isEmpty) {
+      await _audioPlayer.setAudioSource(ConcatenatingAudioSource(children: []));
+      return;
+    }
+
     try {
+      final safeInitialIndex = initialIndex.clamp(0, songs.length - 1);
       await _audioPlayer.setAudioSource(
-        AudioSource.uri(
-          Uri.file(song.path),
-          tag: MediaItem(
-            id: song.path,
-            title: song.title,
-            artist: song.artist,
-            duration: Duration(milliseconds: song.duration),
-          ),
+        ConcatenatingAudioSource(
+          children: songs.map(_songToAudioSource).toList(),
         ),
+        initialIndex: safeInitialIndex,
       );
     } catch (e) {
-      debugPrint('Error setting audio file: $e');
+      debugPrint('Error setting audio playlist: $e');
       rethrow;
     }
+  }
+
+  Future<void> seekToIndex(int index) async {
+    await _audioPlayer.seek(Duration.zero, index: index);
+  }
+
+  AudioSource _songToAudioSource(Song song) {
+    return AudioSource.uri(
+      Uri.file(song.path),
+      tag: MediaItem(
+        id: song.path,
+        title: song.title,
+        artist: song.artist,
+        duration: Duration(milliseconds: song.duration),
+      ),
+    );
   }
 
   Future<void> play() async {

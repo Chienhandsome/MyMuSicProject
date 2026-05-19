@@ -21,11 +21,13 @@ class AudioRepositoryImpl implements AudioRepository {
   final StreamController<Song?> _currentSongController =
       StreamController<Song?>.broadcast();
   late final StreamSubscription<PlayerState> _playerStateSubscription;
+  late final StreamSubscription<int?> _currentIndexSubscription;
 
   List<Song> _playlist = [];
   int _currentIndex = -1;
   PlayMode _playMode = PlayMode.sequential;
   bool _isContinuePlay = false;
+  bool _isAudioPlaylistLoaded = false;
 
   AudioRepositoryImpl(
     this._audioService,
@@ -42,12 +44,32 @@ class AudioRepositoryImpl implements AudioRepository {
         _handleSongComplete();
       }
     });
+    _currentIndexSubscription =
+        _audioService.audioPlayer.currentIndexStream.listen((index) {
+      if (index == null || index < 0 || index >= _playlist.length) return;
+      if (index == _currentIndex) return;
+
+      _currentIndex = index;
+      _currentSongController.add(currentSong);
+      final song = currentSong;
+      if (song != null) {
+        unawaited(_preferencesRepository.setLastSongPath(song.path));
+      }
+    });
   }
 
   @override
   Future<void> setPlaylist(List<Song> songs) async {
     _playlist = songs;
+    _isAudioPlaylistLoaded = false;
     await _restoreLastSong();
+    if (_playlist.isNotEmpty && _currentIndex != -1) {
+      await _audioService.setPlaylist(
+        _playlist,
+        initialIndex: _currentIndex,
+      );
+      _isAudioPlaylistLoaded = true;
+    }
   }
 
   @override
@@ -57,7 +79,12 @@ class AudioRepositoryImpl implements AudioRepository {
     _currentIndex = index;
     final song = _playlist[index];
 
-    await _audioService.setSong(song);
+    if (_isAudioPlaylistLoaded) {
+      await _audioService.seekToIndex(index);
+    } else {
+      await _audioService.setPlaylist(_playlist, initialIndex: index);
+      _isAudioPlaylistLoaded = true;
+    }
     await _preferencesRepository.setLastSongPath(song.path);
     await _recordPlayback(song);
     _currentSongController.add(currentSong);
@@ -175,7 +202,6 @@ class AudioRepositoryImpl implements AudioRepository {
     if (index == -1) return;
 
     _currentIndex = index;
-    await _audioService.setSong(_playlist[index]);
     _currentSongController.add(currentSong);
   }
 
@@ -240,6 +266,7 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   void dispose() {
     _playerStateSubscription.cancel();
+    _currentIndexSubscription.cancel();
     _currentSongController.close();
     _audioService.dispose();
   }
