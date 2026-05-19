@@ -17,6 +17,7 @@ class SongModel extends Song {
     super.dateModifiedMs,
     super.lastPlay = 0,
     super.numberOfTimesPlayed = 0,
+    super.isFavorite = false,
   });
 
   factory SongModel.fromSong(Song song) {
@@ -34,6 +35,7 @@ class SongModel extends Song {
       dateModifiedMs: song.dateModifiedMs,
       lastPlay: song.lastPlay,
       numberOfTimesPlayed: song.numberOfTimesPlayed,
+      isFavorite: song.isFavorite,
     );
   }
 
@@ -52,6 +54,7 @@ class SongModel extends Song {
       dateModifiedMs: _readInt(map['date_modified_ms']),
       lastPlay: _readInt(map['last_play']),
       numberOfTimesPlayed: _readInt(map['number_of_times_played']),
+      isFavorite: map['is_favorite'] == true,
     );
   }
 
@@ -71,6 +74,7 @@ class SongModel extends Song {
       'date_modified_ms': dateModifiedMs,
       'last_play': lastPlay,
       'number_of_times_played': numberOfTimesPlayed,
+      'is_favorite': isFavorite,
     };
   }
 

@@ -153,7 +153,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get typeToSearch => 'Nhập tên bài hát để bắt đầu tìm kiếm';
 
   @override
-  String get suggestionsForYou => '🎵 Gợi ý cho bạn';
+  String get suggestionsForYou => 'Gợi ý cho bạn';
 
   @override
   String get noResultsFound => 'Không tìm thấy kết quả';

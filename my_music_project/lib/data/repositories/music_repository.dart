@@ -45,6 +45,7 @@ class MusicRepositoryImpl implements MusicRepository {
         dateModifiedMs: song.dateModifiedMs,
         lastPlay: cachedSong.lastPlay,
         numberOfTimesPlayed: cachedSong.numberOfTimesPlayed,
+        isFavorite: cachedSong.isFavorite,
       );
     }).toList();
   }

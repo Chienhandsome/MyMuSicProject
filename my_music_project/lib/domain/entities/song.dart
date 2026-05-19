@@ -12,6 +12,7 @@ class Song {
   final int? dateModifiedMs;
   int? lastPlay;
   int? numberOfTimesPlayed;
+  bool isFavorite;
 
   Song({
     required this.id,
@@ -27,6 +28,7 @@ class Song {
     this.dateModifiedMs,
     this.lastPlay,
     this.numberOfTimesPlayed,
+    this.isFavorite = false,
   });
 
   String get durationText {

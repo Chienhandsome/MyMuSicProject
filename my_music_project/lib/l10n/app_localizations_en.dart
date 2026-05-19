@@ -153,7 +153,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get typeToSearch => 'Type song name to start searching';
 
   @override
-  String get suggestionsForYou => '🎵 Suggestions for you';
+  String get suggestionsForYou => 'Suggestions for you';
 
   @override
   String get noResultsFound => 'No results found';

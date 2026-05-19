@@ -103,6 +103,11 @@ class AudioNotifier extends StateNotifier<AudioState> {
     state = state.copyWith(isPlaying: false);
   }
 
+  Future<void> stop() async {
+    await _repository.stop();
+    state = state.copyWith(isPlaying: false);
+  }
+
   Future<void> togglePlayPause() async {
     if (state.isPlaying) {
       await pause();
@@ -155,6 +160,14 @@ class AudioNotifier extends StateNotifier<AudioState> {
     final next = !state.isContinuePlay;
     await _repository.setContinuePlay(next);
     state = state.copyWith(isContinuePlay: next);
+  }
+
+  Future<void> toggleCurrentSongFavorite() async {
+    final song = state.currentSong;
+    if (song == null) return;
+
+    await _repository.toggleFavorite(song);
+    state = state.copyWith(currentSong: _repository.currentSong);
   }
 
   void startSleepTimer(BuildContext context, Duration duration) {

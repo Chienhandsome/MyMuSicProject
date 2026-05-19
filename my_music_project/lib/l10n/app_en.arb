@@ -46,7 +46,7 @@
   "voiceSearch": "Voice search",
   "searchFavoriteSong": "Search for your favorite song",
   "typeToSearch": "Type song name to start searching",
-  "suggestionsForYou": "🎵 Suggestions for you",
+  "suggestionsForYou": "Suggestions for you",
   "noResultsFound": "No results found",
   "noMatchingSongs": "No songs found matching \"{query}\"",
   "@noMatchingSongs": {

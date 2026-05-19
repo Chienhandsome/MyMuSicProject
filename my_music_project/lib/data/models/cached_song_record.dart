@@ -21,6 +21,7 @@ class CachedSongRecord {
   int? dateModifiedMs;
   int? lastPlay;
   int? numberOfTimesPlayed;
+  late bool isFavorite;
   late int schemaVersion;
 }
 

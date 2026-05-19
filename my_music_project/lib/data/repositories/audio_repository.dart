@@ -57,7 +57,7 @@ class AudioRepositoryImpl implements AudioRepository {
     _currentIndex = index;
     final song = _playlist[index];
 
-    await _audioService.setFilePath(song.path);
+    await _audioService.setSong(song);
     await _preferencesRepository.setLastSongPath(song.path);
     await _recordPlayback(song);
     _currentSongController.add(currentSong);
@@ -108,6 +108,11 @@ class AudioRepositoryImpl implements AudioRepository {
   }
 
   @override
+  Future<void> stop() async {
+    await _audioService.stop();
+  }
+
+  @override
   Future<void> playNext() async {
     if (_playlist.isEmpty) return;
 
@@ -141,6 +146,25 @@ class AudioRepositoryImpl implements AudioRepository {
     await _playConfigRepository.setContinuePlay(isContinuePlay);
   }
 
+  @override
+  Future<void> toggleFavorite(Song song) async {
+    final next = !song.isFavorite;
+    song.isFavorite = next;
+
+    try {
+      await _songCacheService.updateFavorite(
+        song: song,
+        isFavorite: next,
+      );
+      _currentSongController.add(currentSong);
+    } catch (error, stackTrace) {
+      song.isFavorite = !next;
+      debugPrint('Error updating favorite: $error');
+      debugPrintStack(stackTrace: stackTrace);
+      rethrow;
+    }
+  }
+
   Future<void> _restoreLastSong() async {
     final lastSongPath = _preferencesRepository.getLastSongPath();
     if (_currentIndex != -1 || lastSongPath == null || lastSongPath.isEmpty) {
@@ -151,7 +175,7 @@ class AudioRepositoryImpl implements AudioRepository {
     if (index == -1) return;
 
     _currentIndex = index;
-    await _audioService.setFilePath(_playlist[index].path);
+    await _audioService.setSong(_playlist[index]);
     _currentSongController.add(currentSong);
   }
 

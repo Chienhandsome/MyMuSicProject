@@ -42,48 +42,53 @@ const CachedSongRecordSchema = CollectionSchema(
       name: r'extension',
       type: IsarType.string,
     ),
-    r'lastPlay': PropertySchema(
+    r'isFavorite': PropertySchema(
       id: 5,
+      name: r'isFavorite',
+      type: IsarType.bool,
+    ),
+    r'lastPlay': PropertySchema(
+      id: 6,
       name: r'lastPlay',
       type: IsarType.long,
     ),
     r'lyric': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'lyric',
       type: IsarType.string,
     ),
     r'numberOfTimesPlayed': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'numberOfTimesPlayed',
       type: IsarType.long,
     ),
     r'path': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'path',
       type: IsarType.string,
     ),
     r'schemaVersion': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'schemaVersion',
       type: IsarType.long,
     ),
     r'size': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'size',
       type: IsarType.long,
     ),
     r'sourceId': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'sourceId',
       type: IsarType.long,
     ),
     r'title': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'title',
       type: IsarType.string,
     ),
     r'uri': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'uri',
       type: IsarType.string,
     )
@@ -162,15 +167,16 @@ void _cachedSongRecordSerialize(
   writer.writeLong(offsets[2], object.dateModifiedMs);
   writer.writeLong(offsets[3], object.duration);
   writer.writeString(offsets[4], object.extension);
-  writer.writeLong(offsets[5], object.lastPlay);
-  writer.writeString(offsets[6], object.lyric);
-  writer.writeLong(offsets[7], object.numberOfTimesPlayed);
-  writer.writeString(offsets[8], object.path);
-  writer.writeLong(offsets[9], object.schemaVersion);
-  writer.writeLong(offsets[10], object.size);
-  writer.writeLong(offsets[11], object.sourceId);
-  writer.writeString(offsets[12], object.title);
-  writer.writeString(offsets[13], object.uri);
+  writer.writeBool(offsets[5], object.isFavorite);
+  writer.writeLong(offsets[6], object.lastPlay);
+  writer.writeString(offsets[7], object.lyric);
+  writer.writeLong(offsets[8], object.numberOfTimesPlayed);
+  writer.writeString(offsets[9], object.path);
+  writer.writeLong(offsets[10], object.schemaVersion);
+  writer.writeLong(offsets[11], object.size);
+  writer.writeLong(offsets[12], object.sourceId);
+  writer.writeString(offsets[13], object.title);
+  writer.writeString(offsets[14], object.uri);
 }
 
 CachedSongRecord _cachedSongRecordDeserialize(
@@ -185,16 +191,17 @@ CachedSongRecord _cachedSongRecordDeserialize(
   object.dateModifiedMs = reader.readLongOrNull(offsets[2]);
   object.duration = reader.readLong(offsets[3]);
   object.extension = reader.readStringOrNull(offsets[4]);
+  object.isFavorite = reader.readBool(offsets[5]);
   object.isarId = id;
-  object.lastPlay = reader.readLongOrNull(offsets[5]);
-  object.lyric = reader.readStringOrNull(offsets[6]);
-  object.numberOfTimesPlayed = reader.readLongOrNull(offsets[7]);
-  object.path = reader.readString(offsets[8]);
-  object.schemaVersion = reader.readLong(offsets[9]);
-  object.size = reader.readLongOrNull(offsets[10]);
-  object.sourceId = reader.readLong(offsets[11]);
-  object.title = reader.readString(offsets[12]);
-  object.uri = reader.readStringOrNull(offsets[13]);
+  object.lastPlay = reader.readLongOrNull(offsets[6]);
+  object.lyric = reader.readStringOrNull(offsets[7]);
+  object.numberOfTimesPlayed = reader.readLongOrNull(offsets[8]);
+  object.path = reader.readString(offsets[9]);
+  object.schemaVersion = reader.readLong(offsets[10]);
+  object.size = reader.readLongOrNull(offsets[11]);
+  object.sourceId = reader.readLong(offsets[12]);
+  object.title = reader.readString(offsets[13]);
+  object.uri = reader.readStringOrNull(offsets[14]);
   return object;
 }
 
@@ -216,22 +223,24 @@ P _cachedSongRecordDeserializeProp<P>(
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 6:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 7:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 8:
-      return (reader.readString(offset)) as P;
-    case 9:
-      return (reader.readLong(offset)) as P;
-    case 10:
       return (reader.readLongOrNull(offset)) as P;
-    case 11:
-      return (reader.readLong(offset)) as P;
-    case 12:
+    case 9:
       return (reader.readString(offset)) as P;
+    case 10:
+      return (reader.readLong(offset)) as P;
+    case 11:
+      return (reader.readLongOrNull(offset)) as P;
+    case 12:
+      return (reader.readLong(offset)) as P;
     case 13:
+      return (reader.readString(offset)) as P;
+    case 14:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -941,6 +950,16 @@ extension CachedSongRecordQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'extension',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CachedSongRecord, CachedSongRecord, QAfterFilterCondition>
+      isFavoriteEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isFavorite',
+        value: value,
       ));
     });
   }
@@ -1995,6 +2014,20 @@ extension CachedSongRecordQuerySortBy
   }
 
   QueryBuilder<CachedSongRecord, CachedSongRecord, QAfterSortBy>
+      sortByIsFavorite() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorite', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CachedSongRecord, CachedSongRecord, QAfterSortBy>
+      sortByIsFavoriteDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorite', Sort.desc);
+    });
+  }
+
+  QueryBuilder<CachedSongRecord, CachedSongRecord, QAfterSortBy>
       sortByLastPlay() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastPlay', Sort.asc);
@@ -2189,6 +2222,20 @@ extension CachedSongRecordQuerySortThenBy
   }
 
   QueryBuilder<CachedSongRecord, CachedSongRecord, QAfterSortBy>
+      thenByIsFavorite() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorite', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CachedSongRecord, CachedSongRecord, QAfterSortBy>
+      thenByIsFavoriteDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isFavorite', Sort.desc);
+    });
+  }
+
+  QueryBuilder<CachedSongRecord, CachedSongRecord, QAfterSortBy>
       thenByIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isarId', Sort.asc);
@@ -2362,6 +2409,13 @@ extension CachedSongRecordQueryWhereDistinct
   }
 
   QueryBuilder<CachedSongRecord, CachedSongRecord, QDistinct>
+      distinctByIsFavorite() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isFavorite');
+    });
+  }
+
+  QueryBuilder<CachedSongRecord, CachedSongRecord, QDistinct>
       distinctByLastPlay() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lastPlay');
@@ -2461,6 +2515,12 @@ extension CachedSongRecordQueryProperty
       extensionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'extension');
+    });
+  }
+
+  QueryBuilder<CachedSongRecord, bool, QQueryOperations> isFavoriteProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isFavorite');
     });
   }
 

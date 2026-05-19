@@ -12,6 +12,8 @@ abstract class AudioRepository {
 
   Future<void> pause();
 
+  Future<void> stop();
+
   Future<void> playNext();
 
   Future<void> playPrevious();
@@ -23,6 +25,8 @@ abstract class AudioRepository {
   Future<void> setPlayMode(PlayMode mode);
 
   Future<void> setContinuePlay(bool isContinuePlay);
+
+  Future<void> toggleFavorite(Song song);
 
   Song? get currentSong;
 

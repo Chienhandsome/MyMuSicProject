@@ -46,7 +46,7 @@
   "voiceSearch": "Tìm kiếm bằng giọng nói",
   "searchFavoriteSong": "Tìm kiếm bài hát yêu thích",
   "typeToSearch": "Nhập tên bài hát để bắt đầu tìm kiếm",
-  "suggestionsForYou": "🎵 Gợi ý cho bạn",
+  "suggestionsForYou": "Gợi ý cho bạn",
   "noResultsFound": "Không tìm thấy kết quả",
   "noMatchingSongs": "Không tìm thấy bài hát phù hợp với \"{query}\"",
   "@noMatchingSongs": {

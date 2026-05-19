@@ -79,12 +79,56 @@ class PlayerPage extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      ScrollingTitle(
-                        text: currentSong.title,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      
+                      Row(
+                        children: [
+                          IconButton(
+                            tooltip: 'Add to playlist',
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    AppLocalizations.of(context)!.notImplemented,
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.playlist_add,
                               color: Colors.white,
-                              fontWeight: FontWeight.bold,
                             ),
+                          ),
+                          Expanded(
+                            child: ScrollingTitle(
+                              text: currentSong.title,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ),
+                          IconButton(
+                            tooltip: AppLocalizations.of(context)!.addToFavorites,
+                            onPressed: () {
+                              ref
+                                  .read(audioProvider.notifier)
+                                  .toggleCurrentSongFavorite();
+                            },
+                            icon: Icon(
+                              currentSong.isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color:
+                              //currentSong.isFavorite
+                                  //? Colors.redAccent
+                                  //:
+                              Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 32),
                       const ProgressSlider(),
@@ -196,16 +240,16 @@ class _PlayerMoreMenu extends ConsumerWidget {
             ],
           ),
         ),
-        PopupMenuItem(
-          value: 'favourite',
-          child: Row(
-            children: [
-              const Icon(Icons.favorite, color: Colors.black),
-              const SizedBox(width: 12),
-              Text(l10n.addToFavorites),
-            ],
-          ),
-        ),
+        // PopupMenuItem(
+        //   value: 'favourite',
+        //   child: Row(
+        //     children: [
+        //       const Icon(Icons.favorite, color: Colors.black),
+        //       const SizedBox(width: 12),
+        //       Text(l10n.addToFavorites),
+        //     ],
+        //   ),
+        // ),
         PopupMenuItem(
           value: 'speed',
           child: Row(
@@ -284,11 +328,11 @@ class _PlayerMoreMenu extends ConsumerWidget {
       _showDetails(context, ref);
     }
 
-    if (value == 'favourite') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.notImplemented)),
-      );
-    }
+    // if (value == 'favourite') {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text(l10n.notImplemented)),
+    //   );
+    // }
 
     if (value == 'delete') {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -336,7 +380,7 @@ class _PlayerMoreMenu extends ConsumerWidget {
                       value: speed,
                       min: 0.5,
                       max: 2.0,
-                      divisions: 11,
+                      divisions: 30,
                       label: '${speed.toStringAsFixed(2)}x',
                       onChanged: (value) => setState(() => speed = value),
                     ),

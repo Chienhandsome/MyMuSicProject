@@ -68,6 +68,24 @@ class SongCacheService {
     });
   }
 
+  Future<void> updateFavorite({
+    required Song song,
+    required bool isFavorite,
+  }) async {
+    final isar = IsarStorageService.instance;
+    await isar.writeTxn(() async {
+      final record = await isar.cachedSongRecords
+          .filter()
+          .pathEqualTo(song.path)
+          .findFirst();
+
+      final updatedRecord = record ?? _songToRecord(song);
+      updatedRecord.isFavorite = isFavorite;
+
+      await isar.cachedSongRecords.put(updatedRecord);
+    });
+  }
+
   SongModel _recordToSongModel(CachedSongRecord record) {
     return SongModel(
       id: record.sourceId,
@@ -83,6 +101,7 @@ class SongCacheService {
       dateModifiedMs: record.dateModifiedMs,
       lastPlay: record.lastPlay,
       numberOfTimesPlayed: record.numberOfTimesPlayed,
+      isFavorite: record.isFavorite,
     );
   }
 
@@ -105,6 +124,7 @@ class SongCacheService {
       ..dateModifiedMs = song.dateModifiedMs
       ..lastPlay = song.lastPlay
       ..numberOfTimesPlayed = song.numberOfTimesPlayed
+      ..isFavorite = song.isFavorite
       ..schemaVersion = SongModel.currentSchemaVersion;
   }
 }

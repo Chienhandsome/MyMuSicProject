@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:my_music_project/presentation/pages/playlist/playlist_page.dart';
 import 'songs/songs_page.dart';
 import 'more/more_page.dart';
 import '../widgets/mini_player.dart';
@@ -29,6 +30,7 @@ class _HomePageState extends State<HomePage> {
         index: _currentIndex,
         children: const [
           SongsPage(),
+          PlaylistPage(),
           MorePage(),
         ],
       ),
@@ -57,6 +59,10 @@ class _HomePageState extends State<HomePage> {
                 BottomNavigationBarItem(
                   icon: const Icon(Icons.music_note),
                   label: l10n.songs,
+                ),
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.playlist_play),
+                  label: 'Playlist',
                 ),
                 BottomNavigationBarItem(
                   icon: const Icon(Icons.more_horiz),

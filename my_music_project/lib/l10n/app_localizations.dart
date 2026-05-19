@@ -383,7 +383,7 @@ abstract class AppLocalizations {
   /// No description provided for @suggestionsForYou.
   ///
   /// In en, this message translates to:
-  /// **'🎵 Suggestions for you'**
+  /// **'Suggestions for you'**
   String get suggestionsForYou;
 
   /// No description provided for @noResultsFound.
