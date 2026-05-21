@@ -19,6 +19,7 @@ class AudioRepositoryImpl implements AudioRepository {
   final StreamController<Song?> _currentSongController =
       StreamController<Song?>.broadcast();
   late final StreamSubscription<PlayerState> _playerStateSubscription;
+  late final StreamSubscription<Duration> _positionSubscription;
   late final StreamSubscription<int?> _currentIndexSubscription;
   late final StreamSubscription<PositionDiscontinuity>
       _positionDiscontinuitySubscription;
@@ -30,6 +31,7 @@ class AudioRepositoryImpl implements AudioRepository {
   bool _isAudioPlaylistLoaded = false;
   bool _isBlockingAutoAdvance = false;
   bool _isManualIndexChange = false;
+  bool _isStoppingAtSongEnd = false;
   int? _manualIndexChangeTarget;
 
   AudioRepositoryImpl(
@@ -54,6 +56,10 @@ class AudioRepositoryImpl implements AudioRepository {
           state.processingState == ProcessingState.completed) {
         unawaited(_stopAtCurrentSongStart());
       }
+    });
+    _positionSubscription =
+        _audioService.audioPlayer.positionStream.listen((position) {
+      unawaited(_stopAtSongEndIfNeeded(position));
     });
     _currentIndexSubscription =
         _audioService.audioPlayer.currentIndexStream.listen((index) {
@@ -321,8 +327,9 @@ class AudioRepositoryImpl implements AudioRepository {
     debugPrint('Continue play disabled: blocking auto advance.');
     _isBlockingAutoAdvance = true;
     try {
-      await _audioService.pause();
       await _audioService.seekToIndex(indexToRestore);
+      await _audioService.seek(Duration.zero);
+      await _audioService.pause();
       _currentIndex = indexToRestore;
       final song = currentSong;
       _currentSongController.add(song);
@@ -350,6 +357,25 @@ class AudioRepositoryImpl implements AudioRepository {
     await _audioService.pause();
   }
 
+  Future<void> _stopAtSongEndIfNeeded(Duration position) async {
+    if (_isContinuePlay ||
+        _isStoppingAtSongEnd ||
+        !_audioService.audioPlayer.playing) {
+      return;
+    }
+
+    final duration = _audioService.audioPlayer.duration;
+    if (duration == null || duration == Duration.zero) return;
+    if (position < duration - const Duration(milliseconds: 300)) return;
+
+    _isStoppingAtSongEnd = true;
+    try {
+      await _stopAtCurrentSongStart();
+    } finally {
+      _isStoppingAtSongEnd = false;
+    }
+  }
+
   @override
   Song? get currentSong =>
       _currentIndex >= 0 && _currentIndex < _playlist.length
@@ -374,6 +400,7 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   void dispose() {
     _playerStateSubscription.cancel();
+    _positionSubscription.cancel();
     _currentIndexSubscription.cancel();
     _positionDiscontinuitySubscription.cancel();
     _currentSongController.close();

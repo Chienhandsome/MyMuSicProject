@@ -92,8 +92,8 @@ class AudioPlayerService extends BaseAudioHandler with SeekHandler {
     required bool continuePlay,
   }) async {
     if (!continuePlay) {
-      await _audioPlayer.setShuffleModeEnabled(mode == PlayMode.shuffle);
-      await _audioPlayer.setLoopMode(LoopMode.off);
+      await _audioPlayer.setShuffleModeEnabled(false);
+      await _audioPlayer.setLoopMode(LoopMode.one);
       return;
     }
 
