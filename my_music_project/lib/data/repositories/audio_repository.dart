@@ -21,7 +21,6 @@ class AudioRepositoryImpl implements AudioRepository {
   final StreamController<Song?> _currentSongController =
       StreamController<Song?>.broadcast();
   late final StreamSubscription<PlayerState> _playerStateSubscription;
-  late final StreamSubscription<int?> _currentIndexSubscription;
 
   List<Song> _playlist = [];
   int _currentIndex = -1;
@@ -44,18 +43,6 @@ class AudioRepositoryImpl implements AudioRepository {
         _handleSongComplete();
       }
     });
-    _currentIndexSubscription =
-        _audioService.audioPlayer.currentIndexStream.listen((index) {
-      if (index == null || index < 0 || index >= _playlist.length) return;
-      if (index == _currentIndex) return;
-
-      _currentIndex = index;
-      _currentSongController.add(currentSong);
-      final song = currentSong;
-      if (song != null) {
-        unawaited(_preferencesRepository.setLastSongPath(song.path));
-      }
-    });
   }
 
   @override
@@ -64,10 +51,7 @@ class AudioRepositoryImpl implements AudioRepository {
     _isAudioPlaylistLoaded = false;
     await _restoreLastSong();
     if (_playlist.isNotEmpty && _currentIndex != -1) {
-      await _audioService.setPlaylist(
-        _playlist,
-        initialIndex: _currentIndex,
-      );
+      await _audioService.setSong(_playlist[_currentIndex]);
       _isAudioPlaylistLoaded = true;
     }
   }
@@ -76,14 +60,15 @@ class AudioRepositoryImpl implements AudioRepository {
   Future<void> playSongAt(int index) async {
     if (index < 0 || index >= _playlist.length) return;
 
+    final previousIndex = _currentIndex;
     _currentIndex = index;
     final song = _playlist[index];
 
-    if (_isAudioPlaylistLoaded) {
-      await _audioService.seekToIndex(index);
-    } else {
-      await _audioService.setPlaylist(_playlist, initialIndex: index);
+    if (!_isAudioPlaylistLoaded || previousIndex != index) {
+      await _audioService.setSong(song);
       _isAudioPlaylistLoaded = true;
+    } else {
+      await _audioService.seek(Duration.zero);
     }
     await _preferencesRepository.setLastSongPath(song.path);
     await _recordPlayback(song);
@@ -266,7 +251,6 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   void dispose() {
     _playerStateSubscription.cancel();
-    _currentIndexSubscription.cancel();
     _currentSongController.close();
     _audioService.dispose();
   }

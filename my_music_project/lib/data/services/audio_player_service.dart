@@ -9,31 +9,13 @@ class AudioPlayerService {
 
   AudioPlayer get audioPlayer => _audioPlayer;
 
-  Future<void> setPlaylist(
-    List<Song> songs, {
-    int initialIndex = 0,
-  }) async {
-    if (songs.isEmpty) {
-      await _audioPlayer.setAudioSource(ConcatenatingAudioSource(children: []));
-      return;
-    }
-
+  Future<void> setSong(Song song) async {
     try {
-      final safeInitialIndex = initialIndex.clamp(0, songs.length - 1);
-      await _audioPlayer.setAudioSource(
-        ConcatenatingAudioSource(
-          children: songs.map(_songToAudioSource).toList(),
-        ),
-        initialIndex: safeInitialIndex,
-      );
+      await _audioPlayer.setAudioSource(_songToAudioSource(song));
     } catch (e) {
-      debugPrint('Error setting audio playlist: $e');
+      debugPrint('Error setting audio source: $e');
       rethrow;
     }
-  }
-
-  Future<void> seekToIndex(int index) async {
-    await _audioPlayer.seek(Duration.zero, index: index);
   }
 
   AudioSource _songToAudioSource(Song song) {

@@ -234,9 +234,9 @@ class _PlayerMoreMenu extends ConsumerWidget {
           value: 'timer',
           child: Row(
             children: [
-              const Icon(Icons.timer, color: Colors.black),
+              const Icon(Icons.timer, color: Colors.black54),
               const SizedBox(width: 12),
-              Text(l10n.sleepTimer),
+              Text(l10n.sleepTimer, style: const TextStyle(color: Colors.black54)),
             ],
           ),
         ),
@@ -254,9 +254,9 @@ class _PlayerMoreMenu extends ConsumerWidget {
           value: 'speed',
           child: Row(
             children: [
-              const Icon(Icons.speed, color: Colors.black),
+              const Icon(Icons.speed, color: Colors.black54),
               const SizedBox(width: 12),
-              Text(l10n.speed),
+              Text(l10n.speed, style: const TextStyle(color: Colors.black54)),
             ],
           ),
         ),
@@ -264,9 +264,9 @@ class _PlayerMoreMenu extends ConsumerWidget {
           value: 'share',
           child: Row(
             children: [
-              const Icon(Icons.share, color: Colors.black),
+              const Icon(Icons.share, color: Colors.black54),
               const SizedBox(width: 12),
-              Text(l10n.share),
+              Text(l10n.share, style: const TextStyle(color: Colors.black54)),
             ],
           ),
         ),
@@ -274,9 +274,9 @@ class _PlayerMoreMenu extends ConsumerWidget {
           value: 'details',
           child: Row(
             children: [
-              const Icon(Icons.info_outline, color: Colors.black),
+              const Icon(Icons.info_outline, color: Colors.black54),
               const SizedBox(width: 12),
-              Text(l10n.details),
+              Text(l10n.details, style: const TextStyle(color: Colors.black54)),
             ],
           ),
         ),
@@ -328,11 +328,6 @@ class _PlayerMoreMenu extends ConsumerWidget {
       _showDetails(context, ref);
     }
 
-    // if (value == 'favourite') {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text(l10n.notImplemented)),
-    //   );
-    // }
 
     if (value == 'delete') {
       ScaffoldMessenger.of(context).showSnackBar(

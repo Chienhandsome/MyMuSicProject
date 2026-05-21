@@ -1,111 +1,145 @@
 # My Music Project - Architecture Guide
 
 ## Project Overview
-Offline music player app built with Flutter using MVVM architecture pattern.
+
+Offline music player app built with Flutter. The current architecture follows a pragmatic MVVM/Clean Architecture style with Riverpod for state management.
 
 ## Architecture
 
-### MVVM Structure
-```
+```text
 lib/
 ├── core/                    # Core utilities and constants
-│   ├── constants/          # App constants
-│   └── utils/              # Utility classes (Result, formatters, etc.)
-├── data/                   # Data layer
-│   ├── models/             # Data models
-│   ├── services/           # External services (audio, permissions, etc.)
-│   └── repositories/       # Repository pattern implementations
-├── presentation/           # Presentation layer
-│   ├── pages/              # Screen pages
-│   │   ├── more/
-│   │   ├── player/
-│   │   ├── search/
-│   │   ├── songs/
-│   │   └── splash/
-│   ├── widgets/            # Reusable widgets
-│   └── viewmodels/         # ViewModels (state management)
-├── generated/              # Generated files (localizations)
-├── l10n/                   # Localization files
-└── main.dart               # App entry point
+│   ├── constants/           # App constants
+│   └── utils/               # Utility classes
+├── domain/                  # Business contracts and use cases
+│   ├── entities/            # Domain entities and enums
+│   ├── repositories/        # Repository interfaces
+│   └── usecases/            # Application use cases
+├── data/                    # Data layer implementations
+│   ├── models/              # Data models, extending domain entities when needed
+│   ├── repositories/        # Repository implementations
+│   └── services/            # External services and package wrappers
+├── presentation/            # Presentation layer
+│   ├── pages/               # Screen pages
+│   ├── providers/           # Riverpod notifiers/providers
+│   └── widgets/             # Reusable widgets
+├── l10n/                    # Localization files
+└── main.dart                # App entry point
 ```
 
-## Key Components
+## Layer Responsibilities
 
-### Repository Layer
-- **MusicRepository**: Handles music data operations
-- **AudioRepository**: Manages audio player operations
-- **PermissionRepository**: Handles permission requests
-- Repository pattern abstracts service layer from viewmodels
+### Presentation
 
-### ViewModels
-- **MusicPlayerViewModel**: Main music player state management
-- **LocaleProvider**: Locale/language state management
-- Uses Provider package for state management
-- Implements dependency injection via factory constructors
+- Contains pages, widgets, and Riverpod providers/notifiers.
+- UI reads state with `ref.watch(...)`.
+- UI triggers actions through notifier methods.
+- UI should not call services directly.
 
-### Services
-- **AudioPlayerService**: Wraps just_audio for playback
-- **MusicQueryService**: Queries device for music files
-- **PermissionService**: Handles storage permissions
+### Domain
 
-### Error Handling
-- Custom `Result<T>` class for operation results
-- Centralized error handling in ViewModels
-- Error state exposed to UI for user feedback
+- Contains entities such as `Song`, `PlayMode`, and `StoragePermissionStatus`.
+- Contains repository interfaces such as `MusicRepository`, `AudioRepository`, `PlayConfigRepository`, `PermissionRepository`, and `PreferencesRepository`.
+- Contains use cases when they hold real application logic. Currently `LoadSongsUseCase` remains; simple permission checks go directly through `PermissionRepository`.
+- Domain should not depend on data-layer implementations.
+
+### Data
+
+- Contains concrete repository implementations.
+- Contains services that wrap external packages:
+  - `AudioPlayerService` wraps `just_audio`.
+  - `MusicQueryService` wraps device music querying.
+  - `PermissionService` wraps `permission_handler`.
+  - `HiveStorageService` initializes Hive and opens/returns boxes only.
+- Persistence details should go through repository implementations, not directly from UI.
+- Hive box names and keys are defined in constants files:
+  - `HiveBoxNames`: `settings`, `playlists`, `songs`.
+  - `SettingsBoxKeys`: language, last song path, permission flags.
+  - `PlaylistsBoxKeys`: playlist-related storage keys.
+  - `SongsBoxKeys`: song cache-related storage keys.
+
+## Key Flows
+
+### Startup
+
+1. `main()` initializes `HiveStorageService`.
+2. `ProviderScope` enables Riverpod.
+3. `MyApp` watches `localeProvider`.
+4. `SplashPage` checks permissions and loads songs.
+5. `HomePage` shows `SongsPage`, `MorePage`, and `MiniPlayer`.
+
+### Music Loading
+
+`SongsPage/SplashPage -> MusicNotifier -> LoadSongsUseCase -> MusicRepository -> MusicQueryService`
+
+After songs are loaded, `MusicNotifier` passes the playlist to `AudioNotifier`.
+
+### Playback
+
+`SongItem/PlayerControls/MiniPlayer -> AudioNotifier -> AudioRepository -> AudioPlayerService`
+
+`AudioRepositoryImpl` owns playlist state, current index, play mode, continue-play behavior, and last-song persistence. `AudioPlayerService` stays focused on low-level `just_audio` operations.
+
+### Permissions
+
+`SplashPage -> PermissionNotifier -> Permission UseCases -> PermissionRepository -> PermissionService`
+
+Permission state distinguishes normal denial from permanent denial using `StoragePermissionStatus`.
 
 ## Build & Test Commands
 
 ### Analyze code
+
 ```bash
 flutter analyze
 ```
 
 ### Run app
+
 ```bash
 flutter run
 ```
 
 ### Build for release
+
 ```bash
 flutter build apk
 ```
 
 ## Key Dependencies
-- `provider: ^6.1.1` - State management
-- `just_audio: ^0.9.36` - Audio playback
-- `on_audio_query: ^2.9.0` - Music file querying
-- `permission_handler: ^11.0.1` - Permissions
-- `shared_preferences: ^2.2.2` - Persistent storage
-- `intl: ^0.20.2` - Internationalization
+
+- `flutter_riverpod` - State management
+- `just_audio` - Audio playback
+- `on_audio_query` - Music file querying
+- `permission_handler` - Permissions
+- `hive_flutter` - Persistent storage
+- `intl` - Internationalization
 
 ## Important Notes
 
 ### Localization
-- App supports English and Vietnamese
-- Localization files in `l10n/` directory
-- Generated files in `generated/l10n/`
-- Use `AppLocalizations.of(context)!` to access translations
+
+- App supports English and Vietnamese.
+- Localization files live in `lib/l10n/`.
+- Use `AppLocalizations.of(context)!` to access translations.
 
 ### State Management
-- All ViewModels extend `ChangeNotifier`
-- Use `Consumer<T>` or `context.watch<T>()` for reactive UI
-- Use `context.read<T>()` for one-time access without rebuild
 
-### File Paths
-- Music files filtered to specific folders:
-  - `/storage/emulated/0/Music`
-  - `/storage/emulated/0/Download`
+- Providers use Riverpod.
+- Use `ref.watch(...)` for reactive reads.
+- Use `ref.read(...)` for one-time reads and actions.
 
 ### Audio Features
-- Play modes: sequential, repeat, shuffle
-- Sleep timer functionality
-- Continue play toggle
-- Playlist management
-- Last played song restoration
+
+- Play modes: sequential, repeat, shuffle.
+- Sleep timer functionality.
+- Continue play toggle.
+- Playlist management.
+- Last played song restoration.
 
 ## Future Improvements
-- Add unit tests for ViewModels and Repositories
-- Implement dependency injection container (get_it)
-- Add more comprehensive error handling
-- Implement caching for music queries
-- Add playlist management features
+
+- Add unit tests for notifiers, use cases, and repository implementations.
+- Add playlist, queue, favorite, share, and delete flows.
+- Improve generated localization coverage for hardcoded strings.
+- Add caching for music queries.
