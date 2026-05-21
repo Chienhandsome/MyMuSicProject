@@ -302,41 +302,38 @@ class _PlayerMoreMenu extends ConsumerWidget {
     WidgetRef ref,
     String value,
   ) async {
-    final l10n = AppLocalizations.of(context)!;
-
-    if (value == 'timer') {
-      showDialog(
-        context: context,
-        builder: (dialogCtx) => AlertDialog(
-          content: _SleepTimerSheet(ref: ref),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+    switch (value) {
+      case 'timer':
+        showDialog(
+          context: context,
+          builder: (dialogCtx) => AlertDialog(
+            content: _SleepTimerSheet(ref: ref),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            contentPadding: EdgeInsets.zero,
           ),
-          contentPadding: EdgeInsets.zero,
-        ),
-      );
-    }
+        );
+        return;
+      case 'share':
+        final currentSong = ref.read(audioProvider).currentSong;
+        if (currentSong == null) return;
 
-    if (value == 'share') {
-      final currentSong = ref.read(audioProvider).currentSong;
-      if (currentSong == null) return;
-
-      await shareSongFile(context, currentSong);
-    }
-
-    if (value == 'details') {
-      _showDetails(context, ref);
-    }
-
-
-    if (value == 'delete') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.notImplemented)),
-      );
-    }
-
-    if (value == 'speed') {
-      _showSpeedDialog(context, ref);
+        await shareSongFile(context, currentSong);
+        return;
+      case 'details':
+        _showDetails(context, ref);
+        return;
+      case 'delete':
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.notImplemented),
+          ),
+        );
+        return;
+      case 'speed':
+        _showSpeedDialog(context, ref);
+        return;
     }
   }
 
@@ -398,7 +395,7 @@ class _PlayerMoreMenu extends ConsumerWidget {
                   ),
                   onPressed: () async {
                     await ref.read(audioProvider.notifier).setSpeed(speed);
-                    if (context.mounted) {
+                    if (ctx.mounted) {
                       Navigator.pop(ctx);
                     }
                   },
