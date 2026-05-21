@@ -221,7 +221,7 @@ class AudioNotifier extends StateNotifier<AudioState> {
 }
 
 final audioServiceProvider = Provider<AudioPlayerService>((ref) {
-  return AudioPlayerService();
+  return audioPlayerHandler;
 });
 
 final audioRepositoryProvider = Provider<AudioRepository>((ref) {

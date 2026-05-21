@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'core/constants/language_keys.dart';
+import 'data/services/audio_player_service.dart';
 import 'presentation/pages/splash/splash_page.dart';
 import 'presentation/providers/locale_provider.dart';
 import 'l10n/app_localizations.dart';
@@ -10,13 +10,7 @@ import 'l10n/app_localizations.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.example.my_music_project.audio',
-    androidNotificationChannelName: 'My Music Project',
-    androidNotificationChannelDescription: 'Music playback controls',
-    androidNotificationIcon: 'drawable/ic_stat_music_note',
-    androidNotificationOngoing: true,
-  );
+  await initAudioPlayerHandler();
 
   runApp(const ProviderScope(child: MyApp()));
 }

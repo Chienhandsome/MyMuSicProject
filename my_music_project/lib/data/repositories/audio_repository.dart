@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
@@ -17,16 +16,21 @@ class AudioRepositoryImpl implements AudioRepository {
   final PreferencesRepository _preferencesRepository;
   final PlayConfigRepository _playConfigRepository;
   final SongCacheService _songCacheService;
-  final Random _random = Random();
   final StreamController<Song?> _currentSongController =
       StreamController<Song?>.broadcast();
   late final StreamSubscription<PlayerState> _playerStateSubscription;
+  late final StreamSubscription<int?> _currentIndexSubscription;
+  late final StreamSubscription<PositionDiscontinuity>
+      _positionDiscontinuitySubscription;
 
   List<Song> _playlist = [];
   int _currentIndex = -1;
   PlayMode _playMode = PlayMode.sequential;
   bool _isContinuePlay = false;
   bool _isAudioPlaylistLoaded = false;
+  bool _isBlockingAutoAdvance = false;
+  bool _isManualIndexChange = false;
+  int? _manualIndexChangeTarget;
 
   AudioRepositoryImpl(
     this._audioService,
@@ -36,13 +40,32 @@ class AudioRepositoryImpl implements AudioRepository {
   ) {
     _playMode = _playConfigRepository.getPlayMode();
     _isContinuePlay = _playConfigRepository.getContinuePlay();
+    _audioService.setNotificationCallbacks(
+      onSkipToNext: playNext,
+      onSkipToPrevious: playPrevious,
+    );
+    unawaited(
+      _audioService.setPlayMode(_playMode, continuePlay: _isContinuePlay),
+    );
 
     _playerStateSubscription =
         _audioService.audioPlayer.playerStateStream.listen((state) {
-      if (state.processingState == ProcessingState.completed) {
-        _handleSongComplete();
+      if (!_isContinuePlay &&
+          state.processingState == ProcessingState.completed) {
+        unawaited(_stopAtCurrentSongStart());
       }
     });
+    _currentIndexSubscription =
+        _audioService.audioPlayer.currentIndexStream.listen((index) {
+      if (_isBlockingAutoAdvance) return;
+      unawaited(_handlePlayerIndexChanged(index));
+    });
+    _positionDiscontinuitySubscription =
+        _audioService.audioPlayer.positionDiscontinuityStream.listen(
+      (discontinuity) {
+        unawaited(_handlePositionDiscontinuity(discontinuity));
+      },
+    );
   }
 
   @override
@@ -51,7 +74,14 @@ class AudioRepositoryImpl implements AudioRepository {
     _isAudioPlaylistLoaded = false;
     await _restoreLastSong();
     if (_playlist.isNotEmpty && _currentIndex != -1) {
-      await _audioService.setSong(_playlist[_currentIndex]);
+      await _audioService.setPlaylist(
+        _playlist,
+        initialIndex: _currentIndex,
+      );
+      await _audioService.setPlayMode(
+        _playMode,
+        continuePlay: _isContinuePlay,
+      );
       _isAudioPlaylistLoaded = true;
     }
   }
@@ -60,18 +90,25 @@ class AudioRepositoryImpl implements AudioRepository {
   Future<void> playSongAt(int index) async {
     if (index < 0 || index >= _playlist.length) return;
 
-    final previousIndex = _currentIndex;
     _currentIndex = index;
     final song = _playlist[index];
 
-    if (!_isAudioPlaylistLoaded || previousIndex != index) {
-      await _audioService.setSong(song);
-      _isAudioPlaylistLoaded = true;
+    if (_isAudioPlaylistLoaded) {
+      await _runManualIndexChange(() async {
+        await _audioService.seekToIndex(index);
+        _manualIndexChangeTarget = index;
+      });
     } else {
-      await _audioService.seek(Duration.zero);
+      await _audioService.setPlaylist(_playlist, initialIndex: index);
+      await _audioService.setPlayMode(
+        _playMode,
+        continuePlay: _isContinuePlay,
+      );
+      _isAudioPlaylistLoaded = true;
     }
     await _preferencesRepository.setLastSongPath(song.path);
     await _recordPlayback(song);
+    await _audioService.setCurrentSong(song);
     _currentSongController.add(currentSong);
     _startPlayback();
   }
@@ -128,17 +165,42 @@ class AudioRepositoryImpl implements AudioRepository {
   Future<void> playNext() async {
     if (_playlist.isEmpty) return;
 
-    final nextIndex = (_currentIndex + 1) % _playlist.length;
-    await playSongAt(nextIndex);
+    if (!_isAudioPlaylistLoaded) {
+      await playSongAt((_currentIndex + 1) % _playlist.length);
+      return;
+    }
+
+    await _runManualIndexChange(() async {
+      await _audioService.seekToNext();
+      _manualIndexChangeTarget = _audioService.audioPlayer.currentIndex;
+    });
+    final index = _audioService.audioPlayer.currentIndex;
+    if (index != null) {
+      await _handleCurrentIndexChanged(index, forceRecord: true);
+    }
+    _startPlayback();
   }
 
   @override
   Future<void> playPrevious() async {
     if (_playlist.isEmpty) return;
 
-    final previousIndex =
-        (_currentIndex - 1 + _playlist.length) % _playlist.length;
-    await playSongAt(previousIndex);
+    if (!_isAudioPlaylistLoaded) {
+      final previousIndex =
+          (_currentIndex - 1 + _playlist.length) % _playlist.length;
+      await playSongAt(previousIndex);
+      return;
+    }
+
+    await _runManualIndexChange(() async {
+      await _audioService.seekToPrevious();
+      _manualIndexChangeTarget = _audioService.audioPlayer.currentIndex;
+    });
+    final index = _audioService.audioPlayer.currentIndex;
+    if (index != null) {
+      await _handleCurrentIndexChanged(index, forceRecord: true);
+    }
+    _startPlayback();
   }
 
   @override
@@ -149,12 +211,14 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   Future<void> setPlayMode(PlayMode mode) async {
     _playMode = mode;
+    await _audioService.setPlayMode(mode, continuePlay: _isContinuePlay);
     await _playConfigRepository.setPlayMode(mode);
   }
 
   @override
   Future<void> setContinuePlay(bool isContinuePlay) async {
     _isContinuePlay = isContinuePlay;
+    await _audioService.setPlayMode(_playMode, continuePlay: _isContinuePlay);
     await _playConfigRepository.setContinuePlay(isContinuePlay);
   }
 
@@ -190,41 +254,100 @@ class AudioRepositoryImpl implements AudioRepository {
     _currentSongController.add(currentSong);
   }
 
-  Future<void> _handleSongComplete() async {
-    if (!_isContinuePlay) {
-      debugPrint('Continue play disabled: not advancing to next song.');
-      await seek(Duration.zero);
-      await pause();
-      return;
-    }
+  Future<void> _handleCurrentIndexChanged(
+    int? index, {
+    bool forceRecord = false,
+  }) async {
+    if (index == null || index < 0 || index >= _playlist.length) return;
+    if (index == _currentIndex && !forceRecord) return;
 
-    switch (_playMode) {
-      case PlayMode.repeat:
-        await seek(Duration.zero);
-        await play();
-        break;
-      case PlayMode.shuffle:
-        await _playRandomSong();
-        break;
-      case PlayMode.sequential:
-        await playNext();
-        break;
+    _currentIndex = index;
+    final song = currentSong;
+    _currentSongController.add(song);
+    if (song == null) return;
+
+    await _audioService.setCurrentSong(song);
+    await _preferencesRepository.setLastSongPath(song.path);
+    if (forceRecord) {
+      await _recordPlayback(song);
     }
   }
 
-  Future<void> _playRandomSong() async {
-    if (_playlist.isEmpty) return;
+  Future<void> _handlePlayerIndexChanged(int? index) async {
+    if (index == null || index < 0 || index >= _playlist.length) return;
 
-    int newIndex;
-    if (_playlist.length == 1) {
-      newIndex = 0;
-    } else {
-      do {
-        newIndex = _random.nextInt(_playlist.length);
-      } while (newIndex == _currentIndex);
+    final isAllowedManualChange =
+        _isManualIndexChange || index == _manualIndexChangeTarget;
+    if (index == _manualIndexChangeTarget) {
+      _manualIndexChangeTarget = null;
     }
 
-    await playSongAt(newIndex);
+    if (!_isContinuePlay && !isAllowedManualChange && index != _currentIndex) {
+      await _blockAutoAdvance(_currentIndex);
+      return;
+    }
+
+    await _handleCurrentIndexChanged(index);
+  }
+
+  Future<void> _handlePositionDiscontinuity(
+    PositionDiscontinuity discontinuity,
+  ) async {
+    if (discontinuity.reason != PositionDiscontinuityReason.autoAdvance) {
+      return;
+    }
+
+    if (_isContinuePlay) {
+      await _handleCurrentIndexChanged(
+        discontinuity.event.currentIndex,
+        forceRecord: true,
+      );
+      return;
+    }
+
+    final previousIndex = discontinuity.previousEvent.currentIndex;
+    if (previousIndex == null ||
+        previousIndex < 0 ||
+        previousIndex >= _playlist.length) {
+      return;
+    }
+
+    await _blockAutoAdvance(previousIndex);
+  }
+
+  Future<void> _blockAutoAdvance(int indexToRestore) async {
+    if (indexToRestore < 0 || indexToRestore >= _playlist.length) return;
+
+    debugPrint('Continue play disabled: blocking auto advance.');
+    _isBlockingAutoAdvance = true;
+    try {
+      await _audioService.pause();
+      await _audioService.seekToIndex(indexToRestore);
+      _currentIndex = indexToRestore;
+      final song = currentSong;
+      _currentSongController.add(song);
+      if (song != null) {
+        await _audioService.setCurrentSong(song);
+        await _preferencesRepository.setLastSongPath(song.path);
+      }
+    } finally {
+      _isBlockingAutoAdvance = false;
+    }
+  }
+
+  Future<void> _runManualIndexChange(Future<void> Function() change) async {
+    _isManualIndexChange = true;
+    try {
+      await change();
+    } finally {
+      _isManualIndexChange = false;
+    }
+  }
+
+  Future<void> _stopAtCurrentSongStart() async {
+    debugPrint('Continue play disabled: stopping at current song start.');
+    await _audioService.seek(Duration.zero);
+    await _audioService.pause();
   }
 
   @override
@@ -251,6 +374,8 @@ class AudioRepositoryImpl implements AudioRepository {
   @override
   void dispose() {
     _playerStateSubscription.cancel();
+    _currentIndexSubscription.cancel();
+    _positionDiscontinuitySubscription.cancel();
     _currentSongController.close();
     _audioService.dispose();
   }
