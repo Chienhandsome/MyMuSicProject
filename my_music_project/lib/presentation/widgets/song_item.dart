@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_music_project/presentation/widgets/delete_file_action_dialog.dart';
 import '../../domain/entities/song.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/audio_provider.dart';
+import '../providers/music_provider.dart';
 import '../pages/player/player_page.dart';
 import '../../core/utils/song_share.dart';
 
@@ -159,6 +161,17 @@ class SongItem extends ConsumerWidget {
                 },
               ),
               ListTile(
+                leading: const Icon(Icons.delete_rounded, color: Colors.redAccent),
+                title: Text(
+                  'Delete',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  await _deleteSong(context, ref);
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.close, color: Colors.white70),
                 title: Text(
                   l10n.cancel,
@@ -171,6 +184,28 @@ class SongItem extends ConsumerWidget {
         );
       },
     );
+  }
+
+  Future<void> _deleteSong(BuildContext context, WidgetRef ref) async {
+    final action = await showDeleteFileActionDialog(context);
+    if (action != DeleteFileAction.deleteFromDevice) return;
+
+    try {
+      await ref.read(musicProvider.notifier).deleteSongFromDevice(song);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Đã xóa file khỏi thiết bị'),
+        ),
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Không thể xóa file này'),
+        ),
+      );
+    }
   }
 
   void _showDetails(BuildContext context) {

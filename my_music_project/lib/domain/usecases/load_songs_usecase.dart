@@ -16,5 +16,9 @@ class LoadSongsUseCase {
     return _repository.saveSongCache(songs);
   }
 
+  Future<void> deleteSongFromDevice(Song song) {
+    return _repository.deleteSongFromDevice(song);
+  }
+
   Future<int?> getLastScanAt() => _repository.getLastScanAt();
 }

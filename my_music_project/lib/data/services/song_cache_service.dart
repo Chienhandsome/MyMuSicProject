@@ -86,6 +86,13 @@ class SongCacheService {
     });
   }
 
+  Future<void> deleteSongByPath(String path) async {
+    final isar = IsarStorageService.instance;
+    await isar.writeTxn(() async {
+      await isar.cachedSongRecords.deleteByPath(path);
+    });
+  }
+
   SongModel _recordToSongModel(CachedSongRecord record) {
     return SongModel(
       id: record.sourceId,

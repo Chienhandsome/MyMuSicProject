@@ -36,10 +36,11 @@ class AudioState {
     PlayMode? playMode,
     bool? isContinuePlay,
     DateTime? sleepTimerEnd,
+    bool clearCurrentSong = false,
     bool clearSleepTimer = false,
   }) {
     return AudioState(
-      currentSong: currentSong ?? this.currentSong,
+      currentSong: clearCurrentSong ? null : (currentSong ?? this.currentSong),
       currentIndex: currentIndex ?? this.currentIndex,
       isPlaying: isPlaying ?? this.isPlaying,
       playMode: playMode ?? this.playMode,
@@ -81,6 +82,7 @@ class AudioNotifier extends StateNotifier<AudioState> {
     state = state.copyWith(
       currentSong: _repository.currentSong,
       currentIndex: _repository.currentIndex,
+      clearCurrentSong: _repository.currentSong == null,
     );
   }
 

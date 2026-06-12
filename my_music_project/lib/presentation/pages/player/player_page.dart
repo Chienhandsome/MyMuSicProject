@@ -3,9 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/audio_provider.dart';
+import '../../providers/music_provider.dart';
 import '../../widgets/progress_slider.dart';
 import '../../widgets/player_controls.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../widgets/delete_file_action_dialog.dart';
 import '../../widgets/scrolling_title.dart';
 import '../../../core/utils/song_share.dart';
 
@@ -284,7 +286,7 @@ class _PlayerMoreMenu extends ConsumerWidget {
           value: 'delete',
           child: Row(
             children: [
-              const Icon(Icons.delete_outline, color: Colors.redAccent),
+              const Icon(Icons.delete_rounded, color: Colors.redAccent),
               const SizedBox(width: 12),
               Text(
                 l10n.delete,
@@ -325,11 +327,30 @@ class _PlayerMoreMenu extends ConsumerWidget {
         _showDetails(context, ref);
         return;
       case 'delete':
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.notImplemented),
-          ),
-        );
+        final action = await showDeleteFileActionDialog(context);
+        if (action != DeleteFileAction.deleteFromDevice) return;
+
+        final currentSong = ref.read(audioProvider).currentSong;
+        if (currentSong == null) return;
+
+        try {
+          await ref.read(musicProvider.notifier).deleteSongFromDevice(
+                currentSong,
+              );
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Đã xóa file khỏi thiết bị'),
+            ),
+          );
+        } catch (_) {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Không thể xóa file này'),
+            ),
+          );
+        }
         return;
       case 'speed':
         _showSpeedDialog(context, ref);

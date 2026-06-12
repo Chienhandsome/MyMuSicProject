@@ -1,5 +1,6 @@
 import '../../domain/entities/song.dart';
 import '../../domain/repositories/music_repository.dart';
+import '../services/music_file_service.dart';
 import '../models/song_model.dart';
 import '../services/music_query_service.dart';
 import '../services/song_cache_service.dart';
@@ -8,8 +9,13 @@ import '../services/song_cache_service.dart';
 class MusicRepositoryImpl implements MusicRepository {
   final MusicQueryService _musicQueryService;
   final SongCacheService _songCacheService;
+  final MusicFileService _musicFileService;
 
-  MusicRepositoryImpl(this._musicQueryService, this._songCacheService);
+  MusicRepositoryImpl(
+    this._musicQueryService,
+    this._songCacheService,
+    this._musicFileService,
+  );
 
   @override
   Future<List<Song>> loadCachedSongs() async {
@@ -57,6 +63,12 @@ class MusicRepositoryImpl implements MusicRepository {
     await _songCacheService.setLastScanAt(
       DateTime.now().millisecondsSinceEpoch,
     );
+  }
+
+  @override
+  Future<void> deleteSongFromDevice(Song song) async {
+    await _musicFileService.deleteSongFile(song);
+    await _songCacheService.deleteSongByPath(song.path);
   }
 
   @override

@@ -9,6 +9,8 @@ abstract class MusicRepository {
 
   Future<void> saveSongCache(List<Song> songs);
 
+  Future<void> deleteSongFromDevice(Song song);
+
   Future<int?> getLastScanAt();
 
   Future<List<Song>> searchSongs(String query);

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/repositories/music_repository.dart';
+import '../../data/services/music_file_service.dart';
 import '../../data/services/music_query_service.dart';
 import '../../data/services/song_cache_service.dart';
 import '../../domain/entities/song.dart';
@@ -89,10 +90,36 @@ class MusicNotifier extends StateNotifier<MusicState> {
       );
     }
   }
+
+  Future<void> deleteSongFromDevice(Song song) async {
+    state = state.copyWith(clearError: true);
+    try {
+      final isCurrentSong =
+          _audioNotifier.state.currentSong?.path == song.path;
+      if (isCurrentSong) {
+        await _audioNotifier.stop();
+      }
+
+      await _loadSongsUseCase.deleteSongFromDevice(song);
+
+      final updatedSongs = state.songs
+          .where((currentSong) => currentSong.path != song.path)
+          .toList();
+      await _audioNotifier.setPlaylist(updatedSongs);
+      state = state.copyWith(songs: updatedSongs, clearError: true);
+    } catch (e) {
+      state = state.copyWith(errorMessage: 'Failed to delete song: $e');
+      rethrow;
+    }
+  }
 }
 
 final musicRepositoryProvider = Provider<MusicRepository>((ref) {
-  return MusicRepositoryImpl(MusicQueryService(), SongCacheService());
+  return MusicRepositoryImpl(
+    MusicQueryService(),
+    SongCacheService(),
+    MusicFileService(),
+  );
 });
 
 final loadSongsUseCaseProvider = Provider<LoadSongsUseCase>((ref) {

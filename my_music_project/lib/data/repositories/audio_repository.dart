@@ -78,6 +78,18 @@ class AudioRepositoryImpl implements AudioRepository {
   Future<void> setPlaylist(List<Song> songs) async {
     _playlist = songs;
     _isAudioPlaylistLoaded = false;
+
+    if (_playlist.isEmpty) {
+      _currentIndex = -1;
+      await _audioService.setPlaylist(const []);
+      _currentSongController.add(null);
+      return;
+    }
+
+    if (_currentIndex >= _playlist.length) {
+      _currentIndex = _playlist.length - 1;
+    }
+
     await _restoreLastSong();
     if (_playlist.isNotEmpty && _currentIndex != -1) {
       await _audioService.setPlaylist(
