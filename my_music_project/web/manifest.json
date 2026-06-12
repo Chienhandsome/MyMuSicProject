@@ -1,6 +1,6 @@
 {
-    "name": "my_music_project",
-    "short_name": "my_music_project",
+    "name": "Pocket Audio",
+    "short_name": "Pocket Audio",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

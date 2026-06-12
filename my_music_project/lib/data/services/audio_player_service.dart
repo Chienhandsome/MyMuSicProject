@@ -16,7 +16,7 @@ Future<AudioPlayerService> initAudioPlayerHandler() async {
     builder: AudioPlayerService.new,
     config: const AudioServiceConfig(
       androidNotificationChannelId: 'com.example.my_music_project.audio',
-      androidNotificationChannelName: 'My Music Project',
+      androidNotificationChannelName: 'Pocket Audio',
       androidNotificationChannelDescription: 'Music playback controls',
       androidNotificationIcon: 'drawable/ic_stat_music_note',
       androidNotificationOngoing: true,

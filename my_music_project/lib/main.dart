@@ -35,7 +35,7 @@ class MyApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       debugShowCheckedModeBanner: false,
-      title: 'Music Player',
+      title: 'Pocket Audio',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
