@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
         index: _currentIndex,
         children: const [
           SongsPage(),
-          PlaylistPage(),
+          // PlaylistPage(),
           MorePage(),
         ],
       ),
@@ -60,10 +60,10 @@ class _HomePageState extends State<HomePage> {
                   icon: const Icon(Icons.music_note),
                   label: l10n.songs,
                 ),
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.playlist_play),
-                  label: 'Playlist',
-                ),
+                // const BottomNavigationBarItem(
+                //   icon: Icon(Icons.playlist_play),
+                //   label: 'Playlist',
+                // ),
                 BottomNavigationBarItem(
                   icon: const Icon(Icons.more_horiz),
                   label: l10n.more,

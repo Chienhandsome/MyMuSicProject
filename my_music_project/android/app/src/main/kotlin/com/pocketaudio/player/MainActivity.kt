@@ -1,4 +1,4 @@
-package com.example.my_music_project
+package com.pocketaudio.player
 
 import com.ryanheise.audioservice.AudioServiceActivity
 
