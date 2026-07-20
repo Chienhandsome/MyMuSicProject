@@ -335,10 +335,12 @@ class AudioRepositoryImpl implements AudioRepository {
 
   Future<void> _blockAutoAdvance(int indexToRestore) async {
     if (indexToRestore < 0 || indexToRestore >= _playlist.length) return;
+    if (_isBlockingAutoAdvance) return;
 
     debugPrint('Continue play disabled: blocking auto advance.');
     _isBlockingAutoAdvance = true;
     try {
+      await Future<void>.delayed(Duration.zero);
       await _audioService.seekToIndex(indexToRestore);
       await _audioService.seek(Duration.zero);
       await _audioService.pause();
@@ -365,6 +367,7 @@ class AudioRepositoryImpl implements AudioRepository {
 
   Future<void> _stopAtCurrentSongStart() async {
     debugPrint('Continue play disabled: stopping at current song start.');
+    await Future<void>.delayed(Duration.zero);
     await _audioService.seek(Duration.zero);
     await _audioService.pause();
   }

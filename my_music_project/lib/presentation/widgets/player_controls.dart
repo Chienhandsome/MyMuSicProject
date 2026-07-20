@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:my_music_project/core/constants/media_keys.dart';
 import 'package:my_music_project/domain/entities/play_mode.dart';
 import '../providers/audio_provider.dart';
@@ -57,7 +56,7 @@ class PlayerControls extends ConsumerWidget {
           icon: Icons.skip_previous,
           onPressed: notifier.playPrevious,
         ),
-        _PlayPauseButton(audioPlayer: notifier.audioPlayer, notifier: notifier),
+        _PlayPauseButton(isPlaying: audioState.isPlaying, notifier: notifier),
 
         _SkipButton(
           icon: Icons.skip_next,
@@ -140,26 +139,19 @@ class _ContinuePlayButton extends StatelessWidget {
 }
 
 class _PlayPauseButton extends StatelessWidget {
-  final AudioPlayer audioPlayer;
+  final bool isPlaying;
   final AudioNotifier notifier;
 
-  const _PlayPauseButton({required this.audioPlayer, required this.notifier});
+  const _PlayPauseButton({required this.isPlaying, required this.notifier});
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<PlayerState>(
-      stream: audioPlayer.playerStateStream,
-      builder: (context, snapshot) {
-        final isPlaying = snapshot.data?.playing ?? false;
-
-        return IconButton(
-          icon: Icon(
-            isPlaying ? Icons.pause_circle : Icons.play_circle,
-            size: 64,
-          ),
-          onPressed: isPlaying ? notifier.pause : notifier.play,
-        );
-      },
+    return IconButton(
+      icon: Icon(
+        isPlaying ? Icons.pause_circle : Icons.play_circle,
+        size: 64,
+      ),
+      onPressed: isPlaying ? notifier.pause : notifier.play,
     );
   }
 }

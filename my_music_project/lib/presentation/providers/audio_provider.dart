@@ -239,3 +239,11 @@ final audioProvider = StateNotifierProvider<AudioNotifier, AudioState>((ref) {
   final repository = ref.watch(audioRepositoryProvider);
   return AudioNotifier(repository);
 });
+
+final playerStateProvider = StreamProvider<PlayerState>((ref) {
+  return ref.watch(audioProvider.notifier).audioPlayer.playerStateStream;
+});
+
+final positionProvider = StreamProvider<Duration>((ref) {
+  return ref.watch(audioProvider.notifier).audioPlayer.positionStream;
+});
