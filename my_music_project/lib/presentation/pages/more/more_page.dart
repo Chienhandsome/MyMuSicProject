@@ -15,7 +15,7 @@ class MorePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final locale = ref.watch(localeProvider);
+    final locale = ref.watch(localeProvider).locale;
     final currentLanguage =
         locale.languageCode == 'en' ? 'English' : 'Vietnamese';
 

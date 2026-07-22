@@ -61,12 +61,11 @@ class _SplashPageState extends ConsumerState<SplashPage>
   }
 
   Future<void> _initializeApp() async {
-    await _controller.forward();
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    if (!mounted) return;
-
     try {
+      final minimumSplashDuration = () async {
+        await _controller.forward();
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+      }();
       final result = await ref.read(appInitializationUseCaseProvider)();
       if (!mounted) return;
 
@@ -77,6 +76,9 @@ class _SplashPageState extends ConsumerState<SplashPage>
           .read(localeProvider.notifier)
           .restoreLanguageCode(result.languageCode);
       ref.read(permissionProvider.notifier).restore(result.permission);
+
+      await minimumSplashDuration;
+      if (!mounted) return;
 
       if (ref.read(permissionProvider).hasPermission) {
         await _prepareHomePage();
@@ -211,23 +213,33 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
   @override
   Widget build(BuildContext context) {
+    final localeIsInitialized = ref.watch(
+      localeProvider.select((state) => state.isInitialized),
+    );
+    final logo = ClipRRect(
+      borderRadius: BorderRadius.circular(32),
+      child: Image.asset(
+        'assets/icon/ic_my_melody.png',
+        width: 128,
+        height: 128,
+      ),
+    );
+
     return Scaffold(
       body: SplashBackground(
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, child) {
             return Center(
-              child: SplashContent(
-                fadeAnimation: _fadeAnimation,
-                logo: ClipRRect(
-                  borderRadius: BorderRadius.circular(32),
-                  child: Image.asset(
-                    'assets/icon/ic_my_melody.png',
-                    width: 128,
-                    height: 128,
-                  ),
-                ),
-              ),
+              child: localeIsInitialized
+                  ? SplashContent(
+                      fadeAnimation: _fadeAnimation,
+                      logo: logo,
+                    )
+                  : FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: logo,
+                    ),
             );
           },
         ),

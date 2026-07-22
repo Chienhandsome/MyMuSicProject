@@ -61,6 +61,8 @@ class AudioNotifier extends StateNotifier<AudioState> {
   AudioNotifier(PlaybackUseCases playbackUseCases)
       : _playbackUseCases = playbackUseCases,
         super(AudioState(
+          currentSong: playbackUseCases.currentSong,
+          currentIndex: playbackUseCases.currentIndex,
           playMode: playbackUseCases.playMode,
           isContinuePlay: playbackUseCases.continuePlay,
         )) {
