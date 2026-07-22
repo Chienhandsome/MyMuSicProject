@@ -10,9 +10,8 @@ class PlayConfigRepositoryImpl implements PlayConfigRepository {
 
   @override
   PlayMode getPlayMode() {
-    final value =
-        _settingsService.getString(SettingsBoxKeys.playMode) ??
-            PlayMode.sequential.name;
+    final value = _settingsService.getString(SettingsBoxKeys.playMode) ??
+        PlayMode.sequential.name;
 
     return PlayMode.values.firstWhere(
       (mode) => mode.name == value,

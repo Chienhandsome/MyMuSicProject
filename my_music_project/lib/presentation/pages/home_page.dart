@@ -37,12 +37,10 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 12.0),
             child: MiniPlayer(),
           ),
-
           SafeArea(
             top: false,
             child: BottomNavigationBar(

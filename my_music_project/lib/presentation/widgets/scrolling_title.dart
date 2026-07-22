@@ -5,12 +5,10 @@ class ScrollingTitle extends StatelessWidget {
   final String text;
   final TextStyle? style;
 
-
   const ScrollingTitle({
     super.key,
     required this.text,
     this.style,
-
   });
 
   @override
@@ -27,7 +25,6 @@ class ScrollingTitle extends StatelessWidget {
         fadingEdgeStartFraction: 0.1,
         fadingEdgeEndFraction: 0.1,
         showFadingOnlyWhenScrolling: true,
-
       ),
     );
   }

@@ -1,17 +1,14 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../splash/splash_background.dart';
 import '../splash/splash_content.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../data/services/isar_storage_service.dart';
+import '../../../di/app_providers.dart';
 import '../home_page.dart';
 import '../../providers/locale_provider.dart';
 import '../../providers/music_provider.dart';
 import '../../providers/permission_provider.dart';
-
 
 class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
@@ -21,8 +18,7 @@ class SplashPage extends ConsumerStatefulWidget {
 }
 
 class _SplashPageState extends ConsumerState<SplashPage>
-  with TickerProviderStateMixin, WidgetsBindingObserver {
-
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
 
@@ -70,24 +66,17 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
     if (!mounted) return;
 
-    final permissionNotifier = ref.read(permissionProvider.notifier);
-
     try {
-      await IsarStorageService.init();
-      if (!mounted) return;
-
-      await ref.read(localeProvider.notifier).loadLocale();
+      final result = await ref.read(appInitializationUseCaseProvider)();
       if (!mounted) return;
 
       // Load trạng thái permission denied trước
-      await permissionNotifier.loadDeniedStatus();
-
-      if (!mounted) return;
-
       // Luôn kiểm tra quyền hiện tại trước
-      await permissionNotifier.checkPermission();
-
       if (!mounted) return;
+      ref
+          .read(localeProvider.notifier)
+          .restoreLanguageCode(result.languageCode);
+      ref.read(permissionProvider.notifier).restore(result.permission);
 
       if (ref.read(permissionProvider).hasPermission) {
         await _prepareHomePage();
@@ -104,12 +93,12 @@ class _SplashPageState extends ConsumerState<SplashPage>
     }
   }
 
-  void _exitApp() {
-    SystemNavigator.pop();
+  Future<void> _exitApp() {
+    return ref.read(appPlatformUseCaseProvider).exitApp();
   }
 
   Future<void> _openAppSettings() async {
-    await openAppSettings();
+    await ref.read(appPlatformUseCaseProvider).openAppSettings();
   }
 
   Future<void> _prepareHomePage() async {
@@ -172,9 +161,9 @@ class _SplashPageState extends ConsumerState<SplashPage>
         content: Text(l10n.permissionDeniedMessage),
         actions: [
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(dialogContext).pop();
-              _exitApp();
+              await _exitApp();
             },
             child: Text(l10n.cancel),
           ),
@@ -245,5 +234,4 @@ class _SplashPageState extends ConsumerState<SplashPage>
       ),
     );
   }
-
 }

@@ -1,3 +1,4 @@
 class PrivacyPolicy {
-  static const privacyPolicyUrl = 'https://chienhandsome.github.io/MyMuSicProject/';
+  static const privacyPolicyUrl =
+      'https://chienhandsome.github.io/MyMuSicProject/';
 }

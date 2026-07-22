@@ -48,12 +48,18 @@ class AudioPlayerService extends BaseAudioHandler with SeekHandler {
     );
   }
 
-  void setNotificationCallbacks({required PlaybackCallback onSkipToNext, required PlaybackCallback onSkipToPrevious,}) {
+  void setNotificationCallbacks({
+    required PlaybackCallback onSkipToNext,
+    required PlaybackCallback onSkipToPrevious,
+  }) {
     _onSkipToNext = onSkipToNext;
     _onSkipToPrevious = onSkipToPrevious;
   }
 
-  Future<void> setPlaylist(List<Song> songs, {int initialIndex = 0,}) async {
+  Future<void> setPlaylist(
+    List<Song> songs, {
+    int initialIndex = 0,
+  }) async {
     queue.add(songs.map(_songToMediaItem).toList());
 
     if (songs.isEmpty) {
@@ -81,7 +87,10 @@ class AudioPlayerService extends BaseAudioHandler with SeekHandler {
     mediaItem.add(_songToMediaItem(song));
   }
 
-  Future<void> setPlayMode(PlayMode mode, {required bool continuePlay,}) async {
+  Future<void> setPlayMode(
+    PlayMode mode, {
+    required bool continuePlay,
+  }) async {
     if (!continuePlay) {
       await _audioPlayer.setShuffleModeEnabled(false);
       await _audioPlayer.setLoopMode(LoopMode.one);

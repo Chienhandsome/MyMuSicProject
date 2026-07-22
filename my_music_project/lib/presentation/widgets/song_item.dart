@@ -6,7 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../providers/audio_provider.dart';
 import '../providers/music_provider.dart';
 import '../pages/player/player_page.dart';
-import '../../core/utils/song_share.dart';
+import '../services/song_share_service.dart';
 
 final _songItemTapLockProvider = StateProvider<bool>((ref) => false);
 
@@ -75,7 +75,8 @@ class SongItem extends ConsumerWidget {
       } catch (_) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.noSongPlaying)),
+            SnackBar(
+                content: Text(AppLocalizations.of(context)!.noSongPlaying)),
           );
         }
         return;
@@ -157,11 +158,12 @@ class SongItem extends ConsumerWidget {
                 ),
                 onTap: () async {
                   Navigator.pop(ctx);
-                  await shareSongFile(context, song);
+                  await shareSongFile(context, ref, song);
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.delete_rounded, color: Colors.redAccent),
+                leading:
+                    const Icon(Icons.delete_rounded, color: Colors.redAccent),
                 title: Text(
                   'Delete',
                   style: const TextStyle(color: Colors.white),
@@ -240,7 +242,8 @@ class SongItem extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(l10n.close, style: const TextStyle(color: Colors.white70)),
+              child: Text(l10n.close,
+                  style: const TextStyle(color: Colors.white70)),
             ),
           ],
         );

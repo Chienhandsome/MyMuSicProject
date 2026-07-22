@@ -4,7 +4,7 @@ import '../../../../l10n/app_localizations.dart';
 class SplashContent extends StatelessWidget {
   final Animation<double> fadeAnimation;
   final Widget logo;
-  
+
   const SplashContent({
     super.key,
     required this.fadeAnimation,
@@ -23,7 +23,7 @@ class SplashContent extends StatelessWidget {
           // App logo
           logo,
           const SizedBox(height: 32),
-          
+
           // App name
           ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
@@ -49,7 +49,7 @@ class SplashContent extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 12),
 
           // Subtitle
@@ -62,22 +62,23 @@ class SplashContent extends StatelessWidget {
               letterSpacing: 1.0,
             ),
           ),
-          
+
           const SizedBox(height: 60),
-          
+
           // Loading indicator
           SizedBox(
             width: 50,
             height: 50,
             child: CircularProgressIndicator(
               strokeWidth: 3,
-              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF7C4DFF)),
+              valueColor:
+                  const AlwaysStoppedAnimation<Color>(Color(0xFF7C4DFF)),
               backgroundColor: Colors.white.withValues(alpha: 0.1),
             ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Loading text
           Text(
             l10n.startingUp,

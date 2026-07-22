@@ -1,16 +1,12 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:just_audio/just_audio.dart';
+
 import '../../core/constants/media_keys.dart';
-import '../../data/repositories/audio_repository.dart';
-import '../../data/services/audio_player_service.dart';
-import '../../data/services/song_cache_service.dart';
+import '../../di/app_providers.dart';
 import '../../domain/entities/play_mode.dart';
 import '../../domain/entities/song.dart';
-import '../../domain/repositories/audio_repository.dart';
-import 'play_config_provider.dart';
-import 'preferences_provider.dart';
+import '../../domain/usecases/playback_usecases.dart';
 
 class AudioState {
   final Song? currentSong;
@@ -19,6 +15,7 @@ class AudioState {
   final PlayMode playMode;
   final bool isContinuePlay;
   final DateTime? sleepTimerEnd;
+  final int sleepTimerCompletionId;
 
   const AudioState({
     this.currentSong,
@@ -27,6 +24,7 @@ class AudioState {
     this.playMode = PlayMode.sequential,
     this.isContinuePlay = false,
     this.sleepTimerEnd,
+    this.sleepTimerCompletionId = 0,
   });
 
   AudioState copyWith({
@@ -36,6 +34,7 @@ class AudioState {
     PlayMode? playMode,
     bool? isContinuePlay,
     DateTime? sleepTimerEnd,
+    int? sleepTimerCompletionId,
     bool clearCurrentSong = false,
     bool clearSleepTimer = false,
   }) {
@@ -47,66 +46,68 @@ class AudioState {
       isContinuePlay: isContinuePlay ?? this.isContinuePlay,
       sleepTimerEnd:
           clearSleepTimer ? null : (sleepTimerEnd ?? this.sleepTimerEnd),
+      sleepTimerCompletionId:
+          sleepTimerCompletionId ?? this.sleepTimerCompletionId,
     );
   }
 }
 
 class AudioNotifier extends StateNotifier<AudioState> {
-  final AudioRepository _repository;
+  final PlaybackUseCases _playbackUseCases;
   late final StreamSubscription<Song?> _currentSongSubscription;
-  late final StreamSubscription<PlayerState> _playerStateSubscription;
+  late final StreamSubscription<bool> _playingSubscription;
   Timer? _sleepTimer;
 
-  AudioNotifier(AudioRepository repository)
-      : _repository = repository,
+  AudioNotifier(PlaybackUseCases playbackUseCases)
+      : _playbackUseCases = playbackUseCases,
         super(AudioState(
-          playMode: repository.playMode,
-          isContinuePlay: repository.continuePlay,
+          playMode: playbackUseCases.playMode,
+          isContinuePlay: playbackUseCases.continuePlay,
         )) {
-    _playerStateSubscription =
-        _repository.audioPlayer.playerStateStream.listen((playerState) {
-      state = state.copyWith(isPlaying: playerState.playing);
+    _playingSubscription = _playbackUseCases.playingStream.listen((isPlaying) {
+      state = state.copyWith(isPlaying: isPlaying);
     });
-    _currentSongSubscription = _repository.currentSongStream.listen((song) {
+    _currentSongSubscription =
+        _playbackUseCases.currentSongStream.listen((song) {
       state = state.copyWith(
         currentSong: song,
-        currentIndex: _repository.currentIndex,
+        currentIndex: _playbackUseCases.currentIndex,
       );
     });
   }
 
-  AudioPlayer get audioPlayer => _repository.audioPlayer;
+  double get speed => _playbackUseCases.speed;
 
   Future<void> setPlaylist(List<Song> songs) async {
-    await _repository.setPlaylist(songs);
+    await _playbackUseCases.setPlaylist(songs);
     state = state.copyWith(
-      currentSong: _repository.currentSong,
-      currentIndex: _repository.currentIndex,
-      clearCurrentSong: _repository.currentSong == null,
+      currentSong: _playbackUseCases.currentSong,
+      currentIndex: _playbackUseCases.currentIndex,
+      clearCurrentSong: _playbackUseCases.currentSong == null,
     );
   }
 
   Future<void> playSongAt(int index) async {
-    await _repository.playSongAt(index);
+    await _playbackUseCases.playSongAt(index);
     state = state.copyWith(
-      currentSong: _repository.currentSong,
-      currentIndex: _repository.currentIndex,
+      currentSong: _playbackUseCases.currentSong,
+      currentIndex: _playbackUseCases.currentIndex,
       isPlaying: true,
     );
   }
 
   Future<void> play() async {
-    await _repository.play();
+    await _playbackUseCases.play();
     state = state.copyWith(isPlaying: true);
   }
 
   Future<void> pause() async {
-    await _repository.pause();
+    await _playbackUseCases.pause();
     state = state.copyWith(isPlaying: false);
   }
 
   Future<void> stop() async {
-    await _repository.stop();
+    await _playbackUseCases.stop();
     state = state.copyWith(isPlaying: false);
   }
 
@@ -119,86 +120,62 @@ class AudioNotifier extends StateNotifier<AudioState> {
   }
 
   Future<void> playNext() async {
-    await _repository.playNext();
+    await _playbackUseCases.playNext();
     state = state.copyWith(
-      currentSong: _repository.currentSong,
-      currentIndex: _repository.currentIndex,
+      currentSong: _playbackUseCases.currentSong,
+      currentIndex: _playbackUseCases.currentIndex,
       isPlaying: true,
     );
   }
 
   Future<void> playPrevious() async {
-    await _repository.playPrevious();
+    await _playbackUseCases.playPrevious();
     state = state.copyWith(
-      currentSong: _repository.currentSong,
-      currentIndex: _repository.currentIndex,
+      currentSong: _playbackUseCases.currentSong,
+      currentIndex: _playbackUseCases.currentIndex,
       isPlaying: true,
     );
   }
 
-  Future<void> seek(Duration position) async {
-    await _repository.seek(position);
-  }
+  Future<void> seek(Duration position) => _playbackUseCases.seek(position);
 
   Future<void> togglePlayMode() async {
     const modes = PlayMode.values;
     final next = modes[(modes.indexOf(state.playMode) + 1) % modes.length];
-    await _repository.setPlayMode(next);
+    await _playbackUseCases.setPlayMode(next);
     state = state.copyWith(playMode: next);
   }
 
   String getPlayModeKey() {
-    switch (state.playMode) {
-      case PlayMode.repeat:
-        return MediaKeys.repeatMode;
-      case PlayMode.sequential:
-        return MediaKeys.sequentialMode;
-      case PlayMode.shuffle:
-        return MediaKeys.shuffleMode;
-    }
+    return switch (state.playMode) {
+      PlayMode.repeat => MediaKeys.repeatMode,
+      PlayMode.sequential => MediaKeys.sequentialMode,
+      PlayMode.shuffle => MediaKeys.shuffleMode,
+    };
   }
 
   Future<void> toggleContinuePlay() async {
     final next = !state.isContinuePlay;
-    await _repository.setContinuePlay(next);
+    await _playbackUseCases.setContinuePlay(next);
     state = state.copyWith(isContinuePlay: next);
   }
 
   Future<void> toggleCurrentSongFavorite() async {
     final song = state.currentSong;
     if (song == null) return;
-
-    await _repository.toggleFavorite(song);
-    state = state.copyWith(currentSong: _repository.currentSong);
+    await _playbackUseCases.toggleFavorite(song);
+    state = state.copyWith(currentSong: _playbackUseCases.currentSong);
   }
 
-  void startSleepTimer(BuildContext context, Duration duration) {
+  void startSleepTimer(Duration duration) {
     _sleepTimer?.cancel();
-    final endTime = DateTime.now().add(duration);
-    state = state.copyWith(sleepTimerEnd: endTime);
-
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Đã đặt hẹn giờ: ${duration.inMinutes} phút'),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: const Color(0xFF2A2A3D),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-
+    state = state.copyWith(sleepTimerEnd: DateTime.now().add(duration));
     _sleepTimer = Timer(duration, () async {
       await pause();
-      state = state.copyWith(clearSleepTimer: true);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đã tắt nhạc theo hẹn giờ'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Color(0xFF2A2A3D),
-          ),
-        );
-      }
+      state = state.copyWith(
+        clearSleepTimer: true,
+        sleepTimerCompletionId: state.sleepTimerCompletionId + 1,
+      );
     });
   }
 
@@ -208,42 +185,25 @@ class AudioNotifier extends StateNotifier<AudioState> {
     state = state.copyWith(clearSleepTimer: true);
   }
 
-  Future<void> setSpeed(double speed) async {
-    await _repository.setSpeed(speed);
-  }
+  Future<void> setSpeed(double speed) => _playbackUseCases.setSpeed(speed);
 
   @override
   void dispose() {
     _sleepTimer?.cancel();
-    _playerStateSubscription.cancel();
+    _playingSubscription.cancel();
     _currentSongSubscription.cancel();
-    _repository.dispose();
     super.dispose();
   }
 }
 
-final audioServiceProvider = Provider<AudioPlayerService>((ref) {
-  return audioPlayerHandler;
-});
-
-final audioRepositoryProvider = Provider<AudioRepository>((ref) {
-  return AudioRepositoryImpl(
-    ref.watch(audioServiceProvider),
-    ref.watch(preferencesRepositoryProvider),
-    ref.watch(playConfigRepositoryProvider),
-    SongCacheService(),
-  );
-});
-
 final audioProvider = StateNotifierProvider<AudioNotifier, AudioState>((ref) {
-  final repository = ref.watch(audioRepositoryProvider);
-  return AudioNotifier(repository);
+  return AudioNotifier(ref.watch(playbackUseCasesProvider));
 });
 
-final playerStateProvider = StreamProvider<PlayerState>((ref) {
-  return ref.watch(audioProvider.notifier).audioPlayer.playerStateStream;
+final playingProvider = StreamProvider<bool>((ref) {
+  return ref.watch(playbackUseCasesProvider).playingStream;
 });
 
 final positionProvider = StreamProvider<Duration>((ref) {
-  return ref.watch(audioProvider.notifier).audioPlayer.positionStream;
+  return ref.watch(playbackUseCasesProvider).positionStream;
 });

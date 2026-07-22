@@ -14,7 +14,8 @@ class SearchPage extends ConsumerStatefulWidget {
   ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends ConsumerState<SearchPage> with SingleTickerProviderStateMixin {
+class _SearchPageState extends ConsumerState<SearchPage>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   late AnimationController _animationController;
@@ -118,15 +119,18 @@ class _SearchPageState extends ConsumerState<SearchPage> with SingleTickerProvid
             decoration: InputDecoration(
               hintText: l10n.searchSongs,
               hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
-              prefixIcon: const Icon(Icons.search, color: Colors.deepPurpleAccent, size: 22),
+              prefixIcon: const Icon(Icons.search,
+                  color: Colors.deepPurpleAccent, size: 22),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear, color: Colors.white70, size: 20),
+                      icon: const Icon(Icons.clear,
+                          color: Colors.white70, size: 20),
                       onPressed: _clearSearch,
                     )
                   : null,
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
             onChanged: _performSearch,
           ),
@@ -134,7 +138,8 @@ class _SearchPageState extends ConsumerState<SearchPage> with SingleTickerProvid
         actions: [
           IconButton(
             onPressed: _onMicClick,
-            icon: const Icon(Icons.mic_outlined, color: Colors.deepPurpleAccent),
+            icon:
+                const Icon(Icons.mic_outlined, color: Colors.deepPurpleAccent),
             tooltip: l10n.voiceSearch,
           ),
         ],
@@ -306,7 +311,8 @@ class _SearchPageState extends ConsumerState<SearchPage> with SingleTickerProvid
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              const Icon(Icons.search, color: Colors.deepPurpleAccent, size: 20),
+              const Icon(Icons.search,
+                  color: Colors.deepPurpleAccent, size: 20),
               const SizedBox(width: 8),
               Text(
                 l10n.foundResults('${_searchResults.length}'),
@@ -371,5 +377,3 @@ class _SearchPageState extends ConsumerState<SearchPage> with SingleTickerProvid
     );
   }
 }
-
-

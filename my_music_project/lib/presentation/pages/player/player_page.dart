@@ -9,7 +9,7 @@ import '../../widgets/player_controls.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../widgets/delete_file_action_dialog.dart';
 import '../../widgets/scrolling_title.dart';
-import '../../../core/utils/song_share.dart';
+import '../../services/song_share_service.dart';
 
 class PlayerPage extends ConsumerWidget {
   const PlayerPage({super.key});
@@ -20,6 +20,18 @@ class PlayerPage extends ConsumerWidget {
       print("player page build");
     }
     final currentSong = ref.watch(audioProvider).currentSong;
+    ref.listen<int>(
+      audioProvider.select((state) => state.sleepTimerCompletionId),
+      (previous, next) {
+        if (previous == null || next <= previous) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${AppLocalizations.of(context)!.sleepTimer}: 00:00'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      },
+    );
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -81,7 +93,6 @@ class PlayerPage extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      
                       Row(
                         children: [
                           IconButton(
@@ -90,7 +101,8 @@ class PlayerPage extends ConsumerWidget {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    AppLocalizations.of(context)!.notImplemented,
+                                    AppLocalizations.of(context)!
+                                        .notImplemented,
                                   ),
                                 ),
                               );
@@ -113,7 +125,8 @@ class PlayerPage extends ConsumerWidget {
                             ),
                           ),
                           IconButton(
-                            tooltip: AppLocalizations.of(context)!.addToFavorites,
+                            tooltip:
+                                AppLocalizations.of(context)!.addToFavorites,
                             onPressed: () {
                               ref
                                   .read(audioProvider.notifier)
@@ -124,10 +137,10 @@ class PlayerPage extends ConsumerWidget {
                                   ? Icons.favorite
                                   : Icons.favorite_border,
                               color:
-                              //currentSong.isFavorite
+                                  //currentSong.isFavorite
                                   //? Colors.redAccent
                                   //:
-                              Colors.white,
+                                  Colors.white,
                             ),
                           ),
                         ],
@@ -137,7 +150,6 @@ class PlayerPage extends ConsumerWidget {
                       const SizedBox(height: 32),
                       const PlayerControls(),
                       const Spacer(),
-
                     ],
                   ),
                 ),
@@ -151,7 +163,8 @@ class _SleepTimerCountdown extends ConsumerStatefulWidget {
   const _SleepTimerCountdown();
 
   @override
-  ConsumerState<_SleepTimerCountdown> createState() => _SleepTimerCountdownState();
+  ConsumerState<_SleepTimerCountdown> createState() =>
+      _SleepTimerCountdownState();
 }
 
 class _SleepTimerCountdownState extends ConsumerState<_SleepTimerCountdown> {
@@ -181,8 +194,10 @@ class _SleepTimerCountdownState extends ConsumerState<_SleepTimerCountdown> {
     final remaining = sleepTimerEnd.difference(DateTime.now());
     if (remaining.isNegative) return const Spacer();
 
-    final minutes = remaining.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = remaining.inSeconds.remainder(60).toString().padLeft(2, '0');
+    final minutes =
+        remaining.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds =
+        remaining.inSeconds.remainder(60).toString().padLeft(2, '0');
 
     return Expanded(
       child: Column(
@@ -199,7 +214,8 @@ class _SleepTimerCountdownState extends ConsumerState<_SleepTimerCountdown> {
           ),
           const SizedBox(height: 4),
           TextButton(
-            onPressed: () => ref.read(audioProvider.notifier).cancelSleepTimer(),
+            onPressed: () =>
+                ref.read(audioProvider.notifier).cancelSleepTimer(),
             style: TextButton.styleFrom(
               foregroundColor: Colors.white,
               backgroundColor: const Color(0xFF6A5AE0),
@@ -213,7 +229,10 @@ class _SleepTimerCountdownState extends ConsumerState<_SleepTimerCountdown> {
             ),
             child: Text(
               l10n.cancelSleepTimer,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.2),
+              style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.2),
             ),
           ),
         ],
@@ -238,7 +257,8 @@ class _PlayerMoreMenu extends ConsumerWidget {
             children: [
               const Icon(Icons.timer, color: Colors.black54),
               const SizedBox(width: 12),
-              Text(l10n.sleepTimer, style: const TextStyle(color: Colors.black54)),
+              Text(l10n.sleepTimer,
+                  style: const TextStyle(color: Colors.black54)),
             ],
           ),
         ),
@@ -321,7 +341,7 @@ class _PlayerMoreMenu extends ConsumerWidget {
         final currentSong = ref.read(audioProvider).currentSong;
         if (currentSong == null) return;
 
-        await shareSongFile(context, currentSong);
+        await shareSongFile(context, ref, currentSong);
         return;
       case 'details':
         _showDetails(context, ref);
@@ -360,7 +380,7 @@ class _PlayerMoreMenu extends ConsumerWidget {
 
   void _showSpeedDialog(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final currentSpeed = ref.read(audioProvider.notifier).audioPlayer.speed;
+    final currentSpeed = ref.read(audioProvider.notifier).speed;
     double speed = currentSpeed.clamp(0.5, 2.0);
 
     showDialog(
@@ -370,14 +390,17 @@ class _PlayerMoreMenu extends ConsumerWidget {
           builder: (ctx, setState) {
             return AlertDialog(
               backgroundColor: const Color(0xFF1C1C2E),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              title: Text(l10n.playbackSpeed, style: const TextStyle(color: Colors.white)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              title: Text(l10n.playbackSpeed,
+                  style: const TextStyle(color: Colors.white)),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     '${speed.toStringAsFixed(1)}x',
-                    style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w700, color: Colors.white),
                   ),
                   const SizedBox(height: 6),
                   SliderTheme(
@@ -385,9 +408,11 @@ class _PlayerMoreMenu extends ConsumerWidget {
                       activeTrackColor: const Color(0xFF8F7CFF),
                       inactiveTrackColor: Colors.white.withValues(alpha: 0.2),
                       thumbColor: const Color(0xFF6A5AE0),
-                      overlayColor: const Color(0xFF6A5AE0).withValues(alpha: 0.2),
+                      overlayColor:
+                          const Color(0xFF6A5AE0).withValues(alpha: 0.2),
                       valueIndicatorColor: const Color(0xFF6A5AE0),
-                      valueIndicatorTextStyle: const TextStyle(color: Colors.white),
+                      valueIndicatorTextStyle:
+                          const TextStyle(color: Colors.white),
                     ),
                     child: Slider(
                       value: speed,
@@ -412,7 +437,8 @@ class _PlayerMoreMenu extends ConsumerWidget {
                   style: FilledButton.styleFrom(
                     backgroundColor: const Color(0xFF6A5AE0),
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: () async {
                     await ref.read(audioProvider.notifier).setSpeed(speed);
@@ -445,17 +471,22 @@ class _PlayerMoreMenu extends ConsumerWidget {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: const Color(0xFF1C1C2E),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Text(currentSong.title, style: const TextStyle(color: Colors.white)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(currentSong.title,
+              style: const TextStyle(color: Colors.white)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${l10n.pathLabel}: ${currentSong.path}', style: const TextStyle(color: Colors.white70)),
+              Text('${l10n.pathLabel}: ${currentSong.path}',
+                  style: const TextStyle(color: Colors.white70)),
               const SizedBox(height: 8),
-              Text('${l10n.durationLabel}: ${currentSong.durationText}', style: const TextStyle(color: Colors.white70)),
+              Text('${l10n.durationLabel}: ${currentSong.durationText}',
+                  style: const TextStyle(color: Colors.white70)),
               const SizedBox(height: 8),
-              Text(l10n.sizeText(sizeMb), style: const TextStyle(color: Colors.white70)),
+              Text(l10n.sizeText(sizeMb),
+                  style: const TextStyle(color: Colors.white70)),
             ],
           ),
           actions: [
@@ -507,7 +538,8 @@ class _SleepTimerSheet extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             l10n.sleepTimer,
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.white),
           ),
           Divider(color: Colors.white.withValues(alpha: 0.12)),
           _item(context, l10n.seconds10, const Duration(seconds: 10)),
@@ -518,7 +550,8 @@ class _SleepTimerSheet extends StatelessWidget {
           _item(context, l10n.hour1, const Duration(hours: 1)),
           _item(context, l10n.hour2, const Duration(hours: 2)),
           ListTile(
-            title: Text(l10n.cancel, style: const TextStyle(color: Colors.redAccent)),
+            title: Text(l10n.cancel,
+                style: const TextStyle(color: Colors.redAccent)),
             onTap: () => Navigator.pop(context),
           ),
           const SizedBox(height: 10),
@@ -533,7 +566,13 @@ class _SleepTimerSheet extends StatelessWidget {
       trailing: const Icon(Icons.chevron_right, color: Colors.white70),
       onTap: () {
         Navigator.pop(context);
-        ref.read(audioProvider.notifier).startSleepTimer(context, d);
+        ref.read(audioProvider.notifier).startSleepTimer(d);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${AppLocalizations.of(context)!.sleepTimer}: $text'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       },
     );
   }

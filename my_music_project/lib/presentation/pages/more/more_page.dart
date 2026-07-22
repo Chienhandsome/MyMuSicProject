@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_music_project/core/constants/privacy_policy.dart';
-import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import '../../../di/app_providers.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../providers/locale_provider.dart';
 import '../../widgets/app_scaffold.dart';
@@ -13,12 +12,12 @@ import '../../widgets/app_scaffold.dart';
 class MorePage extends ConsumerWidget {
   const MorePage({super.key});
 
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final locale = ref.watch(localeProvider);
-    final currentLanguage = locale.languageCode == 'en' ? 'English' : 'Vietnamese';
+    final currentLanguage =
+        locale.languageCode == 'en' ? 'English' : 'Vietnamese';
 
     return AppScaffold(
       title: l10n.settings,
@@ -29,7 +28,7 @@ class MorePage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildLanguageOption(context, l10n, currentLanguage, ref),
-            _buildPrivacyPolicy(context, l10n),
+            _buildPrivacyPolicy(context, l10n, ref),
           ],
         ),
       ),
@@ -87,8 +86,9 @@ class MorePage extends ConsumerWidget {
                 return;
               }
 
-              final newLocale =
-                  newValue == 'English' ? const Locale('en') : const Locale('vi');
+              final newLocale = newValue == 'English'
+                  ? const Locale('en')
+                  : const Locale('vi');
               ref.read(localeProvider.notifier).setLocale(newLocale);
             },
           ),
@@ -97,12 +97,16 @@ class MorePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildPrivacyPolicy(BuildContext context, AppLocalizations l10n) {
+  Widget _buildPrivacyPolicy(
+    BuildContext context,
+    AppLocalizations l10n,
+    WidgetRef ref,
+  ) {
     return Container(
       margin: const EdgeInsets.only(top: 16),
       decoration: _cardDecoration(),
       child: ListTile(
-        onTap: () => _openPrivacyPolicy(context),
+        onTap: () => _openPrivacyPolicy(context, ref),
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         leading: _buildLeadingIcon(Icons.policy_outlined),
         title: Text(
@@ -177,19 +181,13 @@ class MorePage extends ConsumerWidget {
     );
   }
 
-  Future<void> _openPrivacyPolicy(BuildContext context) async {
+  Future<void> _openPrivacyPolicy(BuildContext context, WidgetRef ref) async {
     final uri = Uri.parse(PrivacyPolicy.privacyPolicyUrl);
 
-    try {
-      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
-
-      if (!opened && context.mounted) {
-        _showOpenPolicyError(context);
-      }
-    } on PlatformException {
-      if (context.mounted) {
-        _showOpenPolicyError(context);
-      }
+    final opened =
+        await ref.read(appPlatformUseCaseProvider).openExternalUrl(uri);
+    if (!opened && context.mounted) {
+      _showOpenPolicyError(context);
     }
   }
 

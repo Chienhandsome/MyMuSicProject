@@ -20,7 +20,8 @@ class SongCacheService {
     final isar = IsarStorageService.instance;
     await isar.writeTxn(() async {
       await isar.cachedSongRecords.clear();
-      await isar.cachedSongRecords.putAll(songs.map(_songModelToRecord).toList());
+      await isar.cachedSongRecords
+          .putAll(songs.map(_songModelToRecord).toList());
     });
   }
 

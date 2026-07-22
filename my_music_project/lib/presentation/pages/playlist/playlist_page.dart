@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class PlaylistPage extends StatelessWidget{
+class PlaylistPage extends StatelessWidget {
   const PlaylistPage({super.key});
 
   @override
@@ -15,5 +15,4 @@ class PlaylistPage extends StatelessWidget{
       ),
     );
   }
-
 }

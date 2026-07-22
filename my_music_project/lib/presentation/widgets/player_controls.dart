@@ -51,21 +51,19 @@ class PlayerControls extends ConsumerWidget {
             showToast(nextPlayModeLabel());
           },
         ),
-
         _SkipButton(
           icon: Icons.skip_previous,
           onPressed: notifier.playPrevious,
         ),
         _PlayPauseButton(isPlaying: audioState.isPlaying, notifier: notifier),
-
         _SkipButton(
           icon: Icons.skip_next,
           onPressed: notifier.playNext,
         ),
-
         _ContinuePlayButton(
-          icon:
-              audioState.isContinuePlay ? Icons.repeat_on_rounded : Icons.repeat,
+          icon: audioState.isContinuePlay
+              ? Icons.repeat_on_rounded
+              : Icons.repeat,
           onPressed: () async {
             await notifier.toggleContinuePlay();
             showToast(
@@ -155,4 +153,3 @@ class _PlayPauseButton extends StatelessWidget {
     );
   }
 }
-

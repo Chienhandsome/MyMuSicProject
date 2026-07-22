@@ -146,7 +146,8 @@ class SongsPage extends ConsumerWidget {
     // More actions menu - to be implemented
   }
 
-  Widget _buildFilterBar(BuildContext context, WidgetRef ref, int numberOfSong) {
+  Widget _buildFilterBar(
+      BuildContext context, WidgetRef ref, int numberOfSong) {
     final l10n = AppLocalizations.of(context)!;
 
     return Padding(
@@ -157,8 +158,7 @@ class SongsPage extends ConsumerWidget {
         TextButton.icon(
           onPressed: () => _showSortSheet(context, ref),
           icon: const Icon(Icons.sort, color: Colors.white70),
-          label:
-              Text(l10n.sort, style: const TextStyle(color: Colors.white70)),
+          label: Text(l10n.sort, style: const TextStyle(color: Colors.white70)),
         )
       ]),
     );
@@ -324,19 +324,18 @@ class _SongsList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final audioState = ref.watch(audioProvider);
     return ListView.builder(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    padding: const EdgeInsets.all(16),
-    itemCount: songs.length,
-    itemBuilder: (context, index) {
-      final songEntry = songs[index];
-      return SongItem(
-        index: songEntry.key,
-        song: songEntry.value,
-        currentIndex: audioState.currentIndex,
-      );
-    },
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(16),
+      itemCount: songs.length,
+      itemBuilder: (context, index) {
+        final songEntry = songs[index];
+        return SongItem(
+          index: songEntry.key,
+          song: songEntry.value,
+          currentIndex: audioState.currentIndex,
+        );
+      },
     );
-
   }
 }

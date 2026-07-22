@@ -11,6 +11,14 @@ abstract class MusicRepository {
 
   Future<void> deleteSongFromDevice(Song song);
 
+  Future<void> updatePlaybackStats(
+    Song song, {
+    required int lastPlay,
+    required int numberOfTimesPlayed,
+  });
+
+  Future<void> updateFavorite(Song song, {required bool isFavorite});
+
   Future<int?> getLastScanAt();
 
   Future<List<Song>> searchSongs(String query);

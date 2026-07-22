@@ -1,10 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/repositories/permission_repository.dart';
-import '../../data/services/permission_service.dart';
+import '../../di/app_providers.dart';
 import '../../domain/entities/storage_permission_status.dart';
-import '../../domain/repositories/permission_repository.dart';
-import '../../domain/repositories/preferences_repository.dart';
-import 'preferences_provider.dart';
+import '../../domain/usecases/permission_usecases.dart';
 
 class PermissionState {
   final bool hasPermission;
@@ -35,65 +32,42 @@ class PermissionState {
 }
 
 class PermissionNotifier extends StateNotifier<PermissionState> {
-  final PermissionRepository _permissionRepository;
-  final PreferencesRepository _preferencesRepository;
+  final PermissionUseCases _permissionUseCases;
 
-  PermissionNotifier(
-    this._permissionRepository,
-    this._preferencesRepository,
-  )
-      : super(const PermissionState());
+  PermissionNotifier(this._permissionUseCases) : super(const PermissionState());
 
-  Future<void> loadDeniedStatus() async {
-    final denied = _preferencesRepository.getPermissionDenied();
-    state = state.copyWith(hasDeniedBefore: denied);
+  void restore(PermissionSnapshot snapshot) {
+    state = _stateFromSnapshot(snapshot);
   }
 
   Future<void> checkPermission() async {
     state = state.copyWith(isLoading: true);
-    final status = await _permissionRepository.checkStoragePermission();
-    state = state.copyWith(
-      hasPermission: status == StoragePermissionStatus.granted,
-      isPermanentlyDenied: status == StoragePermissionStatus.permanentlyDenied,
-      isLoading: false,
-    );
+    state = _stateFromSnapshot(await _permissionUseCases.loadCurrent());
   }
 
   Future<void> requestPermission() async {
     state = state.copyWith(isLoading: true);
-    final status = await _permissionRepository.requestStoragePermission();
-    if (status == StoragePermissionStatus.granted) {
-      await _preferencesRepository.setPermissionDenied(false);
-      state = state.copyWith(
-          hasPermission: true,
-          hasDeniedBefore: false,
-          isPermanentlyDenied: false,
-          isLoading: false);
-    } else {
-      await _preferencesRepository.setPermissionDenied(true);
-      state = state.copyWith(
-          hasPermission: false,
-          hasDeniedBefore: true,
-          isPermanentlyDenied:
-              status == StoragePermissionStatus.permanentlyDenied,
-          isLoading: false);
-    }
+    state = _stateFromSnapshot(await _permissionUseCases.request());
   }
 
   Future<void> resetDeniedStatus() async {
-    await _preferencesRepository.setPermissionDenied(false);
+    await _permissionUseCases.resetDeniedStatus();
     state = state.copyWith(hasDeniedBefore: false, isPermanentlyDenied: false);
   }
-}
 
-final permissionRepositoryProvider = Provider<PermissionRepository>((ref) {
-  return PermissionRepositoryImpl(PermissionService());
-});
+  PermissionState _stateFromSnapshot(PermissionSnapshot snapshot) {
+    return PermissionState(
+      hasPermission: snapshot.status == StoragePermissionStatus.granted,
+      hasDeniedBefore: snapshot.hasDeniedBefore,
+      isPermanentlyDenied:
+          snapshot.status == StoragePermissionStatus.permanentlyDenied,
+    );
+  }
+}
 
 final permissionProvider =
     StateNotifierProvider<PermissionNotifier, PermissionState>((ref) {
   return PermissionNotifier(
-    ref.watch(permissionRepositoryProvider),
-    ref.watch(preferencesRepositoryProvider),
+    ref.watch(permissionUseCasesProvider),
   );
 });

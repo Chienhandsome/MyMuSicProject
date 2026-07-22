@@ -5,7 +5,8 @@ class DateConverter {
     if (millisecondsSinceEpoch == null) {
       return null;
     }
-    return DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch).toLocal();
+    return DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch)
+        .toLocal();
   }
 
   static int? localDateToInt(DateTime? dateTime) {
@@ -15,4 +16,3 @@ class DateConverter {
     return dateTime.toLocal().millisecondsSinceEpoch;
   }
 }
-

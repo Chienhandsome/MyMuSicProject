@@ -11,7 +11,6 @@ class MusicQueryService {
     '/storage/emulated/0/Download',
   ];
 
-
   Future<List<SongModel>> loadSongs() async {
     try {
       // querySongs() runs via platform channel — already off the main thread.
@@ -48,9 +47,9 @@ class MusicQueryService {
                 dateModifiedMs: song.dateModified,
               ))
           .toList();
-    } catch (e) {
-      debugPrint('Error loading songs: $e');
-      return [];
+    } catch (error, stackTrace) {
+      debugPrint('Error loading songs: $error');
+      Error.throwWithStackTrace(error, stackTrace);
     }
   }
 }

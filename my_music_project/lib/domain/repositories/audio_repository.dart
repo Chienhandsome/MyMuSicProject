@@ -1,12 +1,17 @@
-import 'package:just_audio/just_audio.dart';
-
 import '../entities/play_mode.dart';
+import '../entities/playback_event.dart';
 import '../entities/song.dart';
 
 abstract class AudioRepository {
-  Future<void> setPlaylist(List<Song> songs);
+  Future<void> setPlaylist(List<Song> songs, {int initialIndex = 0});
 
-  Future<void> playSongAt(int index);
+  Future<void> setCurrentSong(Song song);
+
+  Future<void> seekToIndex(int index);
+
+  Future<void> seekToNext();
+
+  Future<void> seekToPrevious();
 
   Future<void> play();
 
@@ -14,31 +19,34 @@ abstract class AudioRepository {
 
   Future<void> stop();
 
-  Future<void> playNext();
-
-  Future<void> playPrevious();
-
   Future<void> seek(Duration position);
 
   Future<void> setSpeed(double speed);
 
-  Future<void> setPlayMode(PlayMode mode);
+  Future<void> setPlayMode(PlayMode mode, {required bool continuePlay});
 
-  Future<void> setContinuePlay(bool isContinuePlay);
+  void setNotificationCallbacks({
+    required Future<void> Function() onSkipToNext,
+    required Future<void> Function() onSkipToPrevious,
+  });
 
-  Future<void> toggleFavorite(Song song);
+  int? get currentIndex;
 
-  Song? get currentSong;
+  bool get isPlaying;
 
-  Stream<Song?> get currentSongStream;
+  Duration? get duration;
 
-  int get currentIndex;
+  double get speed;
 
-  PlayMode get playMode;
+  Stream<bool> get playingStream;
 
-  bool get continuePlay;
+  Stream<PlaybackProcessingState> get processingStateStream;
 
-  AudioPlayer get audioPlayer;
+  Stream<Duration> get positionStream;
+
+  Stream<int?> get currentIndexStream;
+
+  Stream<PlaybackDiscontinuity> get discontinuityStream;
 
   void dispose();
 }

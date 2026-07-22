@@ -72,6 +72,27 @@ class MusicRepositoryImpl implements MusicRepository {
   }
 
   @override
+  Future<void> updatePlaybackStats(
+    Song song, {
+    required int lastPlay,
+    required int numberOfTimesPlayed,
+  }) {
+    return _songCacheService.updatePlaybackStats(
+      song: song,
+      lastPlay: lastPlay,
+      numberOfTimesPlayed: numberOfTimesPlayed,
+    );
+  }
+
+  @override
+  Future<void> updateFavorite(Song song, {required bool isFavorite}) {
+    return _songCacheService.updateFavorite(
+      song: song,
+      isFavorite: isFavorite,
+    );
+  }
+
+  @override
   Future<int?> getLastScanAt() {
     return _songCacheService.getLastScanAt();
   }
