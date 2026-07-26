@@ -22,7 +22,6 @@ class _SplashPageState extends ConsumerState<SplashPage>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
 
-  // Pre-built HomePage để chuyển đổi mượt mà
   Widget? _preloadedHomePage;
 
   bool _waitingForSettings = false;
@@ -66,6 +65,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
         await _controller.forward();
         await Future<void>.delayed(const Duration(milliseconds: 500));
       }();
+
       final result = await ref.read(appInitializationUseCaseProvider)();
       if (!mounted) return;
 
@@ -85,7 +85,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
         return;
       }
 
-      // Luôn dùng system dialog để xin quyền
+      //system dialog để xin quyền
       await _requestPermission();
     } catch (e) {
       developer.log('Error in _initializeApp: $e');
