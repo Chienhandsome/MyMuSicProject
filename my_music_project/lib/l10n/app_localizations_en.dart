@@ -328,4 +328,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeFromPlaylist => 'Remove from playlist';
+
+  @override
+  String get addSongs => 'Add songs';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get searchSongsToAdd => 'Search songs to add...';
+
+  @override
+  String selectedCount(String count) {
+    return '$count selected';
+  }
 }

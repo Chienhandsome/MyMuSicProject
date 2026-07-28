@@ -5,6 +5,7 @@ import '../../../domain/entities/playlist.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../providers/music_provider.dart';
 import '../../providers/playlist_provider.dart';
+import 'song_picker_page.dart';
 
 class PlaylistPage extends ConsumerStatefulWidget {
   final VoidCallback? onPlaylistSelected;
@@ -230,8 +231,20 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
             onPressed: () {
               final name = nameController.text.trim();
               if (name.isNotEmpty) {
-                ref.read(playlistProvider.notifier).createPlaylist(name);
-                Navigator.pop(ctx);
+                ref.read(playlistProvider.notifier).createPlaylist(name).then((_) {
+                  Navigator.pop(ctx);
+                  // Navigate to song picker for the newly created playlist
+                  final state = ref.read(playlistProvider);
+                  final newPlaylist = state.playlists.lastOrNull;
+                  if (newPlaylist != null && !newPlaylist.isDefault) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SongPickerPage(playlistId: newPlaylist.id),
+                      ),
+                    );
+                  }
+                });
               }
             },
             child: Text(l10n.create,

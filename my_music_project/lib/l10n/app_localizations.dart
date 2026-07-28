@@ -709,6 +709,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove from playlist'**
   String get removeFromPlaylist;
+
+  /// No description provided for @addSongs.
+  ///
+  /// In en, this message translates to:
+  /// **'Add songs'**
+  String get addSongs;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @searchSongsToAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Search songs to add...'**
+  String get searchSongsToAdd;
+
+  /// No description provided for @selectedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String selectedCount(String count);
 }
 
 class _AppLocalizationsDelegate

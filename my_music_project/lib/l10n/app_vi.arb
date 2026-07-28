@@ -135,5 +135,16 @@
     }
   },
   "addToPlaylist": "Thêm vào playlist",
-  "removeFromPlaylist": "Xóa khỏi playlist"
+  "removeFromPlaylist": "Xóa khỏi playlist",
+  "addSongs": "Thêm bài hát",
+  "done": "Xong",
+  "searchSongsToAdd": "Tìm bài hát để thêm...",
+  "selectedCount": "Đã chọn {count}",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

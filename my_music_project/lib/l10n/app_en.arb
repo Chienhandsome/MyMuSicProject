@@ -135,5 +135,16 @@
     }
   },
   "addToPlaylist": "Add to playlist",
-  "removeFromPlaylist": "Remove from playlist"
+  "removeFromPlaylist": "Remove from playlist",
+  "addSongs": "Add songs",
+  "done": "Done",
+  "searchSongsToAdd": "Search songs to add...",
+  "selectedCount": "{count} selected",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }
