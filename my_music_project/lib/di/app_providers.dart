@@ -6,17 +6,20 @@ import '../data/repositories/audio_repository.dart';
 import '../data/repositories/music_repository.dart';
 import '../data/repositories/permission_repository.dart';
 import '../data/repositories/play_config_repository.dart';
+import '../data/repositories/playlist_repository.dart';
 import '../data/repositories/preferences_repository.dart';
 import '../data/services/app_settings_service.dart';
 import '../data/services/audio_player_service.dart';
 import '../data/services/music_file_service.dart';
 import '../data/services/music_query_service.dart';
 import '../data/services/permission_service.dart';
+import '../data/services/playlist_cache_service.dart';
 import '../data/services/song_cache_service.dart';
 import '../domain/repositories/audio_repository.dart';
 import '../domain/repositories/music_repository.dart';
 import '../domain/repositories/permission_repository.dart';
 import '../domain/repositories/play_config_repository.dart';
+import '../domain/repositories/playlist_repository.dart' as domain;
 import '../domain/repositories/preferences_repository.dart';
 import '../domain/usecases/app_initialization_usecase.dart';
 import '../domain/usecases/app_platform_usecase.dart';
@@ -24,6 +27,7 @@ import '../domain/usecases/load_songs_usecase.dart';
 import '../domain/usecases/locale_usecases.dart';
 import '../domain/usecases/permission_usecases.dart';
 import '../domain/usecases/playback_usecases.dart';
+import '../domain/usecases/playlist_usecases.dart';
 
 final appSettingsServiceProvider = Provider<AppSettingsService>((ref) {
   return AppSettingsService();
@@ -78,7 +82,20 @@ final loadSongsUseCaseProvider = Provider<LoadSongsUseCase>((ref) {
   return LoadSongsUseCase(
     ref.watch(musicRepositoryProvider),
     ref.watch(playbackUseCasesProvider),
+    ref.watch(playlistUseCasesProvider),
   );
+});
+
+final playlistCacheServiceProvider = Provider<PlaylistCacheService>((ref) {
+  return PlaylistCacheService();
+});
+
+final playlistRepositoryProvider = Provider<domain.PlaylistRepository>((ref) {
+  return PlaylistRepositoryImpl(ref.watch(playlistCacheServiceProvider));
+});
+
+final playlistUseCasesProvider = Provider<PlaylistUseCases>((ref) {
+  return PlaylistUseCases(ref.watch(playlistRepositoryProvider));
 });
 
 final permissionUseCasesProvider = Provider<PermissionUseCases>((ref) {
