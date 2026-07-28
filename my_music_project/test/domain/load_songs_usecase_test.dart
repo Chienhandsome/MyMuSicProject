@@ -1,8 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:my_music_project/domain/entities/playlist.dart';
 import 'package:my_music_project/domain/entities/song.dart';
 import 'package:my_music_project/domain/repositories/music_repository.dart';
+import 'package:my_music_project/domain/repositories/playlist_repository.dart';
 import 'package:my_music_project/domain/usecases/load_songs_usecase.dart';
 import 'package:my_music_project/domain/usecases/playback_usecases.dart';
+import 'package:my_music_project/domain/usecases/playlist_usecases.dart';
 
 void main() {
   test('scan failure preserves cache and does not save an empty replacement',
@@ -13,7 +16,7 @@ void main() {
       scanError: StateError('scan failed'),
     );
     final playback = _FakeLibraryPlaybackController();
-    final useCase = LoadSongsUseCase(repository, playback);
+    final useCase = LoadSongsUseCase(repository, playback, PlaylistUseCases(_FakePlaylistRepository()));
 
     await expectLater(
       useCase.loadLibrary().toList(),
@@ -35,7 +38,7 @@ void main() {
       scannedSongs: [scannedSong],
     );
     final playback = _FakeLibraryPlaybackController();
-    final useCase = LoadSongsUseCase(repository, playback);
+    final useCase = LoadSongsUseCase(repository, playback, PlaylistUseCases(_FakePlaylistRepository()));
 
     final progress = await useCase.loadLibrary().toList();
 
@@ -116,4 +119,43 @@ class _FakeMusicRepository implements MusicRepository {
     required int lastPlay,
     required int numberOfTimesPlayed,
   }) async {}
+}
+
+class _FakePlaylistRepository implements PlaylistRepository {
+  @override
+  Future<List<Playlist>> getPlaylists() async => const [];
+
+  @override
+  Future<Playlist?> getPlaylistById(String id) async => null;
+
+  @override
+  Future<Playlist> createPlaylist(String name) async {
+    return Playlist(
+      id: 'fake',
+      name: name,
+      songPaths: const [],
+      createdAt: 0,
+    );
+  }
+
+  @override
+  Future<void> deletePlaylist(String id) async {}
+
+  @override
+  Future<void> addSong(String playlistId, String songPath) async {}
+
+  @override
+  Future<void> removeSong(String playlistId, String songPath) async {}
+
+  @override
+  Future<void> updateSongPaths(String playlistId, List<String> paths) async {}
+
+  @override
+  Future<String?> getCurrentPlaylistId() async => null;
+
+  @override
+  Future<void> setCurrentPlaylistId(String? id) async {}
+
+  @override
+  Future<void> initDefaultPlaylists() async {}
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/entities/playlist.dart';
 import '../providers/playlist_provider.dart';
 
 class PlaylistHorizontalList extends ConsumerWidget {

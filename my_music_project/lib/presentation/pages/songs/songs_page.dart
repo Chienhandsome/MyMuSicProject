@@ -74,7 +74,7 @@ class SongsPage extends ConsumerWidget {
       body: Consumer(builder: (context, ref, _) {
         final musicState = ref.watch(musicProvider);
         final sortOption = ref.watch(sortOptionProvider);
-        final playlistState = ref.watch(playlistProvider);
+        ref.watch(playlistProvider);
 
         if (musicState.isLoading) {
           return const Center(
