@@ -56,7 +56,7 @@ class PlaylistCacheService {
           .filter()
           .idEqualTo(playlistId)
           .findFirst();
-      if (record == null) return;
+      if (record == null || record.isDefault) return;
 
       if (!record.songPaths.contains(songPath)) {
         record.songPaths = [...record.songPaths, songPath];
@@ -74,7 +74,7 @@ class PlaylistCacheService {
           .filter()
           .idEqualTo(playlistId)
           .findFirst();
-      if (record == null) return;
+      if (record == null || record.isDefault) return;
 
       record.songPaths =
           record.songPaths.where((p) => p != songPath).toList();
@@ -128,7 +128,16 @@ class PlaylistCacheService {
         .idEqualTo(_favoritesPlaylistId)
         .findFirst();
 
-    if (existing != null) return;
+    if (existing != null) {
+      // Đảm bảo songPaths luôn rỗng cho playlist mặc định
+      if (existing.songPaths.isNotEmpty) {
+        await isar.writeTxn(() async {
+          existing.songPaths = [];
+          await isar.playlistRecords.put(existing);
+        });
+      }
+      return;
+    }
 
     await isar.writeTxn(() async {
       final record = PlaylistRecord()

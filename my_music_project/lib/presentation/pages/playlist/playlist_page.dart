@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../domain/entities/playlist.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../providers/music_provider.dart';
 import '../../providers/playlist_provider.dart';
 
@@ -76,6 +77,7 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
   }
 
   Widget _buildAppBar() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -91,7 +93,7 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
                 controller: _searchController,
                 style: const TextStyle(color: Colors.white, fontSize: 14),
                 decoration: InputDecoration(
-                  hintText: 'Tìm kiếm playlist...',
+                  hintText: l10n.searchPlaylists,
                   hintStyle: TextStyle(
                     color: Colors.white.withOpacity(0.5),
                     fontSize: 14,
@@ -121,6 +123,7 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -133,8 +136,8 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
           const SizedBox(height: 16),
           Text(
             _searchQuery.isEmpty
-                ? 'Chưa có playlist nào'
-                : 'Không tìm thấy playlist',
+                ? l10n.noPlaylists
+                : l10n.noPlaylistsFound,
             style: TextStyle(
               color: Colors.white.withOpacity(0.6),
               fontSize: 16,
@@ -143,7 +146,7 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
           if (_searchQuery.isEmpty) ...[
             const SizedBox(height: 8),
             Text(
-              'Nhấn + để tạo playlist mới',
+              l10n.tapToCreate,
               style: TextStyle(
                 color: Colors.white.withOpacity(0.4),
                 fontSize: 14,
@@ -191,21 +194,22 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
 
   void _showCreatePlaylistDialog() {
     final nameController = TextEditingController();
+    final l10n = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E2C),
-        title: const Text(
-          'Tạo playlist mới',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          l10n.createPlaylist,
+          style: const TextStyle(color: Colors.white),
         ),
         content: TextField(
           controller: nameController,
           autofocus: true,
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
-            hintText: 'Tên playlist',
+            hintText: l10n.playlistName,
             hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
             enabledBorder: UnderlineInputBorder(
               borderSide:
@@ -219,8 +223,8 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Hủy',
-                style: TextStyle(color: Colors.white70)),
+            child: Text(l10n.cancel,
+                style: const TextStyle(color: Colors.white70)),
           ),
           TextButton(
             onPressed: () {
@@ -230,8 +234,8 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
                 Navigator.pop(ctx);
               }
             },
-            child: const Text('Tạo',
-                style: TextStyle(color: Colors.deepPurpleAccent)),
+            child: Text(l10n.create,
+                style: const TextStyle(color: Colors.deepPurpleAccent)),
           ),
         ],
       ),
@@ -239,7 +243,8 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
   }
 
   void _showPlaylistOptions(Playlist playlist) {
-    if (playlist.isDefault) return; // Không cho xóa playlist mặc định
+    if (playlist.isDefault) return;
+    final l10n = AppLocalizations.of(context)!;
 
     showModalBottomSheet(
       context: context,
@@ -254,8 +259,8 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
             ListTile(
               leading:
                   const Icon(Icons.delete_outline, color: Colors.redAccent),
-              title: const Text('Xóa playlist',
-                  style: TextStyle(color: Colors.white)),
+              title: Text(l10n.deletePlaylist,
+                  style: const TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(ctx);
                 _confirmDeletePlaylist(playlist);
@@ -268,29 +273,31 @@ class _PlaylistPageState extends ConsumerState<PlaylistPage> {
   }
 
   void _confirmDeletePlaylist(Playlist playlist) {
+    final l10n = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E2C),
-        title: const Text('Xóa playlist',
-            style: TextStyle(color: Colors.white)),
+        title: Text(l10n.deletePlaylist,
+            style: const TextStyle(color: Colors.white)),
         content: Text(
-          'Bạn có chắc muốn xóa "${playlist.name}"?',
+          l10n.deletePlaylistConfirm(playlist.name),
           style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child:
-                const Text('Hủy', style: TextStyle(color: Colors.white70)),
+                Text(l10n.cancel, style: const TextStyle(color: Colors.white70)),
           ),
           TextButton(
             onPressed: () {
               ref.read(playlistProvider.notifier).deletePlaylist(playlist.id);
               Navigator.pop(ctx);
             },
-            child: const Text('Xóa',
-                style: TextStyle(color: Colors.redAccent)),
+            child: Text(l10n.delete,
+                style: const TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -317,6 +324,7 @@ class _PlaylistTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       color: Colors.white.withOpacity(0.05),
       margin: const EdgeInsets.only(bottom: 8),
@@ -340,14 +348,14 @@ class _PlaylistTile extends StatelessWidget {
           ),
         ),
         title: Text(
-          playlist.name,
+          playlist.isDefault ? l10n.favorites : playlist.name,
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w500,
           ),
         ),
         subtitle: Text(
-          '$songCount bài hát',
+          l10n.playlistSongsCount(songCount.toString()),
           style: TextStyle(color: Colors.white.withOpacity(0.5)),
         ),
         trailing: const Icon(

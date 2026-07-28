@@ -277,4 +277,56 @@ class AppLocalizationsVi extends AppLocalizations {
   String songsCount(String count) {
     return '$count bài hát';
   }
+
+  @override
+  String get playlist => 'Playlist';
+
+  @override
+  String get playlists => 'Danh sách phát';
+
+  @override
+  String get favorites => 'Yêu thích';
+
+  @override
+  String get allSongs => 'Tất cả';
+
+  @override
+  String get searchPlaylists => 'Tìm kiếm playlist...';
+
+  @override
+  String get noPlaylists => 'Chưa có playlist nào';
+
+  @override
+  String get noPlaylistsFound => 'Không tìm thấy playlist';
+
+  @override
+  String get tapToCreate => 'Nhấn + để tạo playlist mới';
+
+  @override
+  String get createPlaylist => 'Tạo playlist mới';
+
+  @override
+  String get playlistName => 'Tên playlist';
+
+  @override
+  String get create => 'Tạo';
+
+  @override
+  String get deletePlaylist => 'Xóa playlist';
+
+  @override
+  String deletePlaylistConfirm(String name) {
+    return 'Bạn có chắc muốn xóa "$name"?';
+  }
+
+  @override
+  String playlistSongsCount(String count) {
+    return '$count bài hát';
+  }
+
+  @override
+  String get addToPlaylist => 'Thêm vào playlist';
+
+  @override
+  String get removeFromPlaylist => 'Xóa khỏi playlist';
 }

@@ -62,9 +62,9 @@ class _HomePageState extends State<HomePage> {
                   icon: const Icon(Icons.music_note),
                   label: l10n.songs,
                 ),
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.playlist_play),
-                  label: 'Playlist',
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.playlist_play),
+                  label: l10n.playlist,
                 ),
                 BottomNavigationBarItem(
                   icon: const Icon(Icons.more_horiz),

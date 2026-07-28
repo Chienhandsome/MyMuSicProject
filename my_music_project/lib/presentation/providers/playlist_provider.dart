@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../di/app_providers.dart';
 import '../../domain/entities/playlist.dart';
 import '../../domain/entities/song.dart';
+import '../../domain/usecases/playback_usecases.dart';
 import '../../domain/usecases/playlist_usecases.dart';
+import 'music_provider.dart';
 
 class PlaylistState {
   final List<Playlist> playlists;
@@ -47,8 +49,14 @@ class PlaylistState {
 
 class PlaylistNotifier extends StateNotifier<PlaylistState> {
   final PlaylistUseCases _playlistUseCases;
+  final PlaybackUseCases _playbackUseCases;
+  final List<Song> Function() _getAllSongs;
 
-  PlaylistNotifier(this._playlistUseCases) : super(const PlaylistState());
+  PlaylistNotifier(
+    this._playlistUseCases,
+    this._playbackUseCases,
+    this._getAllSongs,
+  ) : super(const PlaylistState());
 
   Future<void> loadPlaylists() async {
     state = state.copyWith(isLoading: true, clearError: true);
@@ -125,11 +133,13 @@ class PlaylistNotifier extends StateNotifier<PlaylistState> {
   Future<void> selectPlaylist(String playlistId) async {
     await _playlistUseCases.setCurrentPlaylistId(playlistId);
     state = state.copyWith(currentPlaylistId: playlistId);
+    await _syncAudioPlaylist();
   }
 
   Future<void> clearSelection() async {
     await _playlistUseCases.setCurrentPlaylistId(null);
     state = state.copyWith(clearPlaylistId: true);
+    await _syncAudioPlaylist();
   }
 
   /// Lọc songs theo playlist hiện tại
@@ -137,6 +147,13 @@ class PlaylistNotifier extends StateNotifier<PlaylistState> {
     final playlist = state.currentPlaylist;
     if (playlist == null) return allSongs;
     return _playlistUseCases.filterSongsByPlaylist(playlist, allSongs);
+  }
+
+  /// Đồng bộ audio player playlist với playlist đang chọn
+  Future<void> _syncAudioPlaylist() async {
+    final allSongs = _getAllSongs();
+    final filtered = filterSongs(allSongs);
+    await _playbackUseCases.setPlaylist(filtered);
   }
 
   Future<void> _refreshPlaylist(String playlistId) async {
@@ -153,5 +170,9 @@ class PlaylistNotifier extends StateNotifier<PlaylistState> {
 
 final playlistProvider =
     StateNotifierProvider<PlaylistNotifier, PlaylistState>((ref) {
-  return PlaylistNotifier(ref.watch(playlistUseCasesProvider));
+  return PlaylistNotifier(
+    ref.watch(playlistUseCasesProvider),
+    ref.watch(playbackUseCasesProvider),
+    () => ref.read(musicProvider).songs,
+  );
 });

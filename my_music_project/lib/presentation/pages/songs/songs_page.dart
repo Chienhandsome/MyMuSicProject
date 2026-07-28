@@ -331,6 +331,14 @@ class _SongsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final audioState = ref.watch(audioProvider);
+    ref.watch(playlistProvider); // rebuild khi playlist thay đổi
+    final musicState = ref.watch(musicProvider);
+
+    // Audio player playlist = filtered songs (chưa sort)
+    final audioPlaylist = ref
+        .read(playlistProvider.notifier)
+        .filterSongs(musicState.songs);
+
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -338,8 +346,12 @@ class _SongsList extends ConsumerWidget {
       itemCount: songs.length,
       itemBuilder: (context, index) {
         final songEntry = songs[index];
+        // Tìm index thực của song trong audio player playlist
+        final audioIndex = audioPlaylist.indexWhere(
+          (s) => s.path == songEntry.value.path,
+        );
         return SongItem(
-          index: songEntry.key,
+          index: audioIndex >= 0 ? audioIndex : index,
           song: songEntry.value,
           currentIndex: audioState.currentIndex,
         );

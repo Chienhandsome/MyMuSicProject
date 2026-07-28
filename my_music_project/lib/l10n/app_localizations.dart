@@ -613,6 +613,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} songs'**
   String songsCount(String count);
+
+  /// No description provided for @playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist'**
+  String get playlist;
+
+  /// No description provided for @playlists.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlists'**
+  String get playlists;
+
+  /// No description provided for @favorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favorites;
+
+  /// No description provided for @allSongs.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allSongs;
+
+  /// No description provided for @searchPlaylists.
+  ///
+  /// In en, this message translates to:
+  /// **'Search playlists...'**
+  String get searchPlaylists;
+
+  /// No description provided for @noPlaylists.
+  ///
+  /// In en, this message translates to:
+  /// **'No playlists yet'**
+  String get noPlaylists;
+
+  /// No description provided for @noPlaylistsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No playlists found'**
+  String get noPlaylistsFound;
+
+  /// No description provided for @tapToCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to create a new playlist'**
+  String get tapToCreate;
+
+  /// No description provided for @createPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Create new playlist'**
+  String get createPlaylist;
+
+  /// No description provided for @playlistName.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist name'**
+  String get playlistName;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @deletePlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete playlist'**
+  String get deletePlaylist;
+
+  /// No description provided for @deletePlaylistConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{name}\"?'**
+  String deletePlaylistConfirm(String name);
+
+  /// No description provided for @playlistSongsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} songs'**
+  String playlistSongsCount(String count);
+
+  /// No description provided for @addToPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to playlist'**
+  String get addToPlaylist;
+
+  /// No description provided for @removeFromPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from playlist'**
+  String get removeFromPlaylist;
 }
 
 class _AppLocalizationsDelegate

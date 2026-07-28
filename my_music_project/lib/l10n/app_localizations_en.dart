@@ -276,4 +276,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String songsCount(String count) {
     return '$count songs';
   }
+
+  @override
+  String get playlist => 'Playlist';
+
+  @override
+  String get playlists => 'Playlists';
+
+  @override
+  String get favorites => 'Favorites';
+
+  @override
+  String get allSongs => 'All';
+
+  @override
+  String get searchPlaylists => 'Search playlists...';
+
+  @override
+  String get noPlaylists => 'No playlists yet';
+
+  @override
+  String get noPlaylistsFound => 'No playlists found';
+
+  @override
+  String get tapToCreate => 'Tap + to create a new playlist';
+
+  @override
+  String get createPlaylist => 'Create new playlist';
+
+  @override
+  String get playlistName => 'Playlist name';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get deletePlaylist => 'Delete playlist';
+
+  @override
+  String deletePlaylistConfirm(String name) {
+    return 'Are you sure you want to delete "$name"?';
+  }
+
+  @override
+  String playlistSongsCount(String count) {
+    return '$count songs';
+  }
+
+  @override
+  String get addToPlaylist => 'Add to playlist';
+
+  @override
+  String get removeFromPlaylist => 'Remove from playlist';
 }
