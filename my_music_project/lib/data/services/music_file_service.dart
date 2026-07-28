@@ -7,7 +7,8 @@ class MusicFileService {
     final file = File(song.path);
     final exists = await file.exists();
     if (!exists) {
-      throw FileSystemException('File does not exist', song.path);
+      // File đã không còn trên thiết bị — coi như xóa thành công
+      return;
     }
 
     await file.delete();

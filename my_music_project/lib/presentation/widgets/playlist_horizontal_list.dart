@@ -51,14 +51,12 @@ class PlaylistHorizontalList extends ConsumerWidget {
 class _PlaylistChip extends StatelessWidget {
   final String label;
   final IconData icon;
-  final Color? iconColor;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _PlaylistChip({
     required this.label,
     required this.icon,
-    this.iconColor,
     required this.isSelected,
     required this.onTap,
   });
@@ -74,9 +72,7 @@ class _PlaylistChip extends StatelessWidget {
               ? Colors.deepPurpleAccent
               : Colors.white.withOpacity(0.08),
           borderRadius: BorderRadius.circular(20),
-          border: isSelected
-              ? null
-              : Border.all(color: Colors.white.withOpacity(0.15)),
+
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -84,9 +80,7 @@ class _PlaylistChip extends StatelessWidget {
             Icon(
               icon,
               size: 16,
-              color: isSelected
-                  ? Colors.white
-                  : (iconColor ?? Colors.white70),
+              color: isSelected ? Colors.white : Colors.white70,
             ),
             const SizedBox(width: 6),
             Text(
