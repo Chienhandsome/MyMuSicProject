@@ -1,6 +1,7 @@
 import '../entities/song.dart';
 import '../repositories/music_repository.dart';
 import 'playback_usecases.dart';
+import 'playlist_usecases.dart';
 
 class LibraryLoadProgress {
   final List<Song> songs;
@@ -17,8 +18,13 @@ class LibraryLoadProgress {
 class LoadSongsUseCase {
   final MusicRepository _musicRepository;
   final LibraryPlaybackController _playbackUseCases;
+  final PlaylistUseCases _playlistUseCases;
 
-  LoadSongsUseCase(this._musicRepository, this._playbackUseCases);
+  LoadSongsUseCase(
+    this._musicRepository,
+    this._playbackUseCases,
+    this._playlistUseCases,
+  );
 
   Stream<LibraryLoadProgress> loadLibrary() async* {
     final cachedSongs = await _musicRepository.loadCachedSongs();
@@ -34,6 +40,10 @@ class LoadSongsUseCase {
     );
 
     final scannedSongs = await _musicRepository.scanDeviceSongs();
+
+    // Reconcile playlists: loại path chết, match file rename
+    await _playlistUseCases.reconcilePlaylists(scannedSongs, cachedSongs);
+
     await _musicRepository.saveSongCache(scannedSongs);
     await _playbackUseCases.setPlaylist(scannedSongs);
     yield LibraryLoadProgress(
