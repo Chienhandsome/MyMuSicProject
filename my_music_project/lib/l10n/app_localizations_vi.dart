@@ -329,4 +329,18 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get removeFromPlaylist => 'Xóa khỏi playlist';
+
+  @override
+  String get addSongs => 'Thêm bài hát';
+
+  @override
+  String get done => 'Xong';
+
+  @override
+  String get searchSongsToAdd => 'Tìm bài hát để thêm...';
+
+  @override
+  String selectedCount(String count) {
+    return 'Đã chọn $count';
+  }
 }
