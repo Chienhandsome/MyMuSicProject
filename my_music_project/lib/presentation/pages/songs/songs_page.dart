@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../domain/entities/song.dart';
 import '../../providers/music_provider.dart';
 import '../../providers/audio_provider.dart';
+import '../../providers/playlist_provider.dart';
 import '../../widgets/app_scaffold.dart';
+import '../../widgets/playlist_horizontal_list.dart';
 import '../../widgets/song_item.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../search/search_page.dart';
@@ -72,6 +74,7 @@ class SongsPage extends ConsumerWidget {
       body: Consumer(builder: (context, ref, _) {
         final musicState = ref.watch(musicProvider);
         final sortOption = ref.watch(sortOptionProvider);
+        final playlistState = ref.watch(playlistProvider);
 
         if (musicState.isLoading) {
           return const Center(
@@ -119,7 +122,11 @@ class SongsPage extends ConsumerWidget {
           );
         }
 
-        final sortedSongs = _sortSongEntries(musicState.songs, sortOption);
+        // Lọc songs theo playlist được chọn
+        final filteredSongs = ref
+            .read(playlistProvider.notifier)
+            .filterSongs(musicState.songs);
+        final sortedSongs = _sortSongEntries(filteredSongs, sortOption);
 
         return Column(
           children: [
@@ -129,7 +136,8 @@ class SongsPage extends ConsumerWidget {
                 color: Colors.deepPurpleAccent,
                 backgroundColor: Colors.transparent,
               ),
-            _buildFilterBar(context, ref, musicState.songs.length),
+            const PlaylistHorizontalList(),
+            _buildFilterBar(context, ref, filteredSongs.length),
             _SongsList(songs: sortedSongs),
           ],
         );

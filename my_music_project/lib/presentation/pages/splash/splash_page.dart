@@ -9,6 +9,7 @@ import '../home_page.dart';
 import '../../providers/locale_provider.dart';
 import '../../providers/music_provider.dart';
 import '../../providers/permission_provider.dart';
+import '../../providers/playlist_provider.dart';
 
 class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
@@ -108,6 +109,11 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
     // Tạo HomePage widget trước
     _preloadedHomePage = const HomePage();
+
+    // Init default playlists (tạo "Yêu thích" nếu chưa có)
+    await ref.read(playlistProvider.notifier).loadPlaylists();
+    await ref.read(playlistUseCasesProvider).initDefaultPlaylists();
+    await ref.read(playlistProvider.notifier).loadPlaylists();
 
     // Load songs thông qua musicProvider
     await ref.read(musicProvider.notifier).loadSongs();

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:my_music_project/presentation/pages/playlist/playlist_page.dart';
+import 'playlist/playlist_page.dart';
 import 'songs/songs_page.dart';
 import 'more/more_page.dart';
 import '../widgets/mini_player.dart';
@@ -16,6 +16,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
+  void _switchToSongsTab() {
+    setState(() => _currentIndex = 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -28,10 +32,10 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: const Color(0xFF121212),
       body: IndexedStack(
         index: _currentIndex,
-        children: const [
-          SongsPage(),
-          // PlaylistPage(),
-          MorePage(),
+        children: [
+          const SongsPage(),
+          PlaylistPage(onPlaylistSelected: _switchToSongsTab),
+          const MorePage(),
         ],
       ),
       bottomNavigationBar: Column(
@@ -58,10 +62,10 @@ class _HomePageState extends State<HomePage> {
                   icon: const Icon(Icons.music_note),
                   label: l10n.songs,
                 ),
-                // const BottomNavigationBarItem(
-                //   icon: Icon(Icons.playlist_play),
-                //   label: 'Playlist',
-                // ),
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.playlist_play),
+                  label: 'Playlist',
+                ),
                 BottomNavigationBarItem(
                   icon: const Icon(Icons.more_horiz),
                   label: l10n.more,
