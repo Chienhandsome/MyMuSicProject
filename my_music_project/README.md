@@ -131,3 +131,15 @@ test/
 │   └── load_songs_usecase_test.dart
 └── widget_test.dart
 ```
+
+## Dong gop
+
+Xem [CONTRIBUTING.md](CONTRIBUTING.md) de biet huong dan dong gop.
+
+## Changelog
+
+Xem [CHANGELOG.md](CHANGELOG.md) de theo doi lich su thay doi.
+
+## Giay phep
+
+Du an nay la ma nguon dong noi bo. Xem file LICENSE de biet them chi tiet.
