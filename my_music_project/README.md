@@ -121,25 +121,3 @@ flutter build apk --release
 # Build App Bundle (cho Google Play)
 flutter build appbundle --release
 ```
-
-## Cau truc thu muc test
-
-```
-test/
-├── architecture_test.dart    # Kiem tra quy tac phu thuoc giua cac layer
-├── domain/
-│   └── load_songs_usecase_test.dart
-└── widget_test.dart
-```
-
-## Dong gop
-
-Xem [CONTRIBUTING.md](CONTRIBUTING.md) de biet huong dan dong gop.
-
-## Changelog
-
-Xem [CHANGELOG.md](CHANGELOG.md) de theo doi lich su thay doi.
-
-## Giay phep
-
-Du an nay la ma nguon dong noi bo. Xem file LICENSE de biet them chi tiet.
