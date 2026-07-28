@@ -105,5 +105,35 @@
         "type": "String"
       }
     }
-  }
+  },
+  "playlist": "Playlist",
+  "playlists": "Playlists",
+  "favorites": "Favorites",
+  "allSongs": "All",
+  "searchPlaylists": "Search playlists...",
+  "noPlaylists": "No playlists yet",
+  "noPlaylistsFound": "No playlists found",
+  "tapToCreate": "Tap + to create a new playlist",
+  "createPlaylist": "Create new playlist",
+  "playlistName": "Playlist name",
+  "create": "Create",
+  "deletePlaylist": "Delete playlist",
+  "deletePlaylistConfirm": "Are you sure you want to delete \"{name}\"?",
+  "@deletePlaylistConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistSongsCount": "{count} songs",
+  "@playlistSongsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "addToPlaylist": "Add to playlist",
+  "removeFromPlaylist": "Remove from playlist"
 }

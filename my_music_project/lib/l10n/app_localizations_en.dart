@@ -315,7 +315,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String deletePlaylistConfirm(String name) {
-    return 'Are you sure you want to delete "$name"?';
+    return 'Are you sure you want to delete \"$name\"?';
   }
 
   @override

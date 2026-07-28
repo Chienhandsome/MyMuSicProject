@@ -37,7 +37,6 @@ class PlaylistHorizontalList extends ConsumerWidget {
           return _PlaylistChip(
             label: playlist.isDefault ? l10n.favorites : playlist.name,
             icon: playlist.isDefault ? Icons.favorite : Icons.playlist_play,
-            iconColor: playlist.isDefault ? Colors.redAccent : null,
             isSelected: currentId == playlist.id,
             onTap: () {
               ref.read(playlistProvider.notifier).selectPlaylist(playlist.id);

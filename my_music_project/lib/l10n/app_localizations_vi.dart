@@ -316,7 +316,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String deletePlaylistConfirm(String name) {
-    return 'Bạn có chắc muốn xóa "$name"?';
+    return 'Bạn có chắc muốn xóa \"$name\"?';
   }
 
   @override

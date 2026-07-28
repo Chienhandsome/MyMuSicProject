@@ -105,5 +105,35 @@
         "type": "String"
       }
     }
-  }
+  },
+  "playlist": "Playlist",
+  "playlists": "Danh sách phát",
+  "favorites": "Yêu thích",
+  "allSongs": "Tất cả",
+  "searchPlaylists": "Tìm kiếm playlist...",
+  "noPlaylists": "Chưa có playlist nào",
+  "noPlaylistsFound": "Không tìm thấy playlist",
+  "tapToCreate": "Nhấn + để tạo playlist mới",
+  "createPlaylist": "Tạo playlist mới",
+  "playlistName": "Tên playlist",
+  "create": "Tạo",
+  "deletePlaylist": "Xóa playlist",
+  "deletePlaylistConfirm": "Bạn có chắc muốn xóa \"{name}\"?",
+  "@deletePlaylistConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistSongsCount": "{count} bài hát",
+  "@playlistSongsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "addToPlaylist": "Thêm vào playlist",
+  "removeFromPlaylist": "Xóa khỏi playlist"
 }
