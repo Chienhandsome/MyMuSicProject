@@ -2,6 +2,7 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../models/cached_song_record.dart';
+import '../models/playlist_record.dart';
 
 class IsarStorageService {
   static Isar? _instance;
@@ -19,6 +20,7 @@ class IsarStorageService {
         CachedSongRecordSchema,
         SongCacheMetadataRecordSchema,
         AppSettingRecordSchema,
+        PlaylistRecordSchema,
       ],
       directory: directory.path,
     );
